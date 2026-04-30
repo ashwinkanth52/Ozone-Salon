@@ -363,19 +363,19 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
       <div class="setup-dot" id="sdot-3"></div>
     </div>
 
-    <!-- Step 1: Google Sheets URL -->
+    <!-- Step 1: Firebase Config -->
     <div id="setup-step-1">
       <div class="setup-step-num">Step 1 of 3</div>
-      <h2 class="setup-title">Connect Google Sheets</h2>
-      <p class="setup-desc">Deploy the Apps Script, then paste the URL here. This is your single source of truth — all billing, attendance, and expenses will sync here.</p>
+      <h2 class="setup-title">Connect Firebase</h2>
+      <p class="setup-desc">Create a Firebase project, then paste your Firebase config here. This replaces Google Sheets — faster, real-time, and works offline automatically.</p>
       <div class="setup-field">
-        <label class="setup-label">Apps Script Web App URL</label>
-        <input type="url" class="setup-input" id="setup-url" placeholder="https://script.google.com/macros/s/…/exec">
-        <div class="setup-hint">Found in Apps Script → Deploy → Manage Deployments → copy the URL</div>
+        <label class="setup-label">Firebase Config (JSON)</label>
+        <textarea class="setup-input" id="setup-fb-config" rows="7" placeholder='{"apiKey":"…","authDomain":"…","projectId":"…","storageBucket":"…","messagingSenderId":"…","appId":"…"}' style="font-family:monospace;font-size:13px;resize:vertical;"></textarea>
+        <div class="setup-hint">Firebase Console → Project Settings → Your apps → Firebase SDK snippet → Config object</div>
       </div>
       <div id="setup-connect-result" class="setup-connect-result"></div>
       <div style="display:flex;gap:10px;margin-top:20px;">
-        <button class="btn btn-secondary" onclick="testConnection()" style="flex:1">Test Connection</button>
+        <button class="btn btn-secondary" onclick="testFirebaseConnection()" style="flex:1">Test Connection</button>
         <button class="btn btn-primary" onclick="setupNext(1)" style="flex:1">Next →</button>
       </div>
     </div>
@@ -619,7 +619,7 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="confirm-title">Transaction Saved ✓</div>
-    <div class="confirm-subtitle" id="confirm-sub">Bill synced to your Google Sheet. Counter ready for next customer.</div>
+    <div class="confirm-subtitle" id="confirm-sub">Bill saved to Firebase. Counter ready for next customer.</div>
     <button class="btn btn-primary" style="min-width:220px" onclick="resetAndGoHome()">New Customer</button>
   </div>
 </section>
@@ -807,18 +807,34 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
      ═══════════════════════════════════════════════════ -->
+<!-- Firebase SDK (compat v10) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 /* ────────────────────────────────────────────────────
    CONSTANTS
 ──────────────────────────────────────────────────── */
 const SK = {
   CONFIG:    'oz_config',
-  QUEUE:     'oz_queue',
   SETUP:     'oz_setup_done',
-  URL:       'oz_sheets_url',
-  SECRET:    'oz_secret_key',
+  FB_CONFIG: 'oz_fb_config',
   ATT:       'oz_attendance_today',
   FOOTFALL:  'oz_footfall_today',
+};
+
+// Firestore collection names
+const COL = {
+  CONFIG:        'config',         // single doc 'shop'
+  STAFF:         'staff',
+  SERVICES:      'services',
+  TRANSACTIONS:  'transactions',
+  EXPENSES:      'expenses',
+  FIXED:         'fixedExpenses',
+  SALARIES:      'salaries',
+  EMI:           'emi',
+  ATTENDANCE:    'attendance',
+  FOOTFALL:      'footfall',
 };
 
 const DEFAULTS = {
@@ -907,76 +923,147 @@ function saveConfig() {
 }
 
 /* ────────────────────────────────────────────────────
-   SHEETS API LAYER
+   FIREBASE LAYER
+   Firestore SDK loaded above (compat). We use offline
+   persistence so the app works without internet, and
+   writes are auto-queued by the SDK and flushed on
+   reconnect — no manual queue needed.
 ──────────────────────────────────────────────────── */
-function sheetsUrl() { return localStorage.getItem(SK.URL) || ''; }
-function secretKey() { return localStorage.getItem(SK.SECRET) || ''; }
+let fbApp = null;
+let db    = null;
+let fbAuth = null;
 
-async function sheetsGet(params) {
-  const url = sheetsUrl();
-  if (!url) return null;
-  const p = new URLSearchParams({ ...params, key: secretKey() });
-  try {
-    const res = await fetch(url + '?' + p.toString(), { redirect: 'follow' });
-    return await res.json();
-  } catch(e) {
-    console.warn('Sheets GET failed', e);
-    return null;
-  }
+function fbConfig() {
+  try { return JSON.parse(localStorage.getItem(SK.FB_CONFIG) || 'null'); }
+  catch(e) { return null; }
 }
 
-async function sheetsWrite(payload) {
-  const url = sheetsUrl();
-  if (!url) { queueWrite(payload); return false; }
-  const p = new URLSearchParams({
-    action: 'write',
-    key: secretKey(),
-    payload: encodeURIComponent(JSON.stringify(payload))
-  });
+function initFirebase() {
+  const cfg = fbConfig();
+  if (!cfg) return false;
+  if (fbApp) return true;
   try {
-    showSync('syncing');
-    const res = await fetch(url + '?' + p.toString(), { redirect: 'follow' });
-    const data = await res.json();
-    if (data.ok) { showSync('ok'); return true; }
-    showSync('error');
-    queueWrite(payload);
-    return false;
+    fbApp = firebase.initializeApp(cfg);
+    db    = firebase.firestore();
+    fbAuth = firebase.auth();
+    // Enable offline persistence (IndexedDB cache + auto write queue)
+    db.enablePersistence({ synchronizeTabs: true })
+      .catch(err => console.warn('Persistence not available:', err && err.code));
+    // Anonymous sign-in so Firestore rules can require auth
+    fbAuth.signInAnonymously().catch(err => console.warn('Anon auth failed:', err));
+    return true;
   } catch(e) {
-    showSync('error');
-    queueWrite(payload);
+    console.error('Firebase init failed:', e);
     return false;
   }
 }
 
-function queueWrite(payload) {
-  try {
-    const q = JSON.parse(localStorage.getItem(SK.QUEUE) || '[]');
-    q.push({ payload, ts: Date.now() });
-    localStorage.setItem(SK.QUEUE, JSON.stringify(q));
-  } catch(e){}
+async function fbGetCollection(name) {
+  if (!db) return [];
+  const snap = await db.collection(name).get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-async function flushQueue() {
-  const url = sheetsUrl();
-  if (!url) return;
+async function fbGetConfigDoc() {
+  if (!db) return {};
+  const d = await db.collection(COL.CONFIG).doc('shop').get();
+  return d.exists ? d.data() : {};
+}
+
+async function fbSetConfig(partial) {
+  if (!db) return false;
+  showSync('syncing');
   try {
-    const q = JSON.parse(localStorage.getItem(SK.QUEUE) || '[]');
-    if (!q.length) return;
-    const remaining = [];
-    for (const item of q) {
-      const p = new URLSearchParams({
-        action: 'write', key: secretKey(),
-        payload: encodeURIComponent(JSON.stringify(item.payload))
-      });
-      try {
-        const res = await fetch(url + '?' + p.toString(), { redirect: 'follow' });
-        const d = await res.json();
-        if (!d.ok) remaining.push(item);
-      } catch(e) { remaining.push(item); }
-    }
-    localStorage.setItem(SK.QUEUE, JSON.stringify(remaining));
-    if (remaining.length === 0 && q.length > 0) toast('Synced ' + q.length + ' pending items ✓');
-  } catch(e){}
+    await db.collection(COL.CONFIG).doc('shop').set(partial, { merge: true });
+    showSync('ok');
+    return true;
+  } catch(e) {
+    console.error('setConfig failed:', e);
+    showSync('error');
+    return false;
+  }
+}
+
+async function fbAddDoc(coll, data) {
+  if (!db) return false;
+  showSync('syncing');
+  try {
+    const docId = data.id || db.collection(coll).doc().id;
+    await db.collection(coll).doc(docId).set({ ...data, id: docId });
+    showSync('ok');
+    return docId;
+  } catch(e) {
+    console.error('addDoc failed:', coll, e);
+    showSync('error');
+    return false;
+  }
+}
+
+async function fbReplaceCollection(coll, rows) {
+  // Wipe collection and rewrite. Used for config-style collections
+  // (staff/services/fixedExpenses/emi) where the whole list is small.
+  if (!db) return false;
+  showSync('syncing');
+  try {
+    const existing = await db.collection(coll).get();
+    const batch = db.batch();
+    existing.docs.forEach(d => batch.delete(d.ref));
+    (rows || []).forEach(r => {
+      const id = r.id || db.collection(coll).doc().id;
+      batch.set(db.collection(coll).doc(id), { ...r, id });
+    });
+    await batch.commit();
+    showSync('ok');
+    return true;
+  } catch(e) {
+    console.error('replaceCollection failed:', coll, e);
+    showSync('error');
+    return false;
+  }
+}
+
+async function fbQueryByMonth(coll, month) {
+  // month: "YYYY-MM"; documents have a string field "date" in YYYY-MM-DD form
+  if (!db) return [];
+  if (!month) {
+    return fbGetCollection(coll);
+  }
+  const start = month + '-00';
+  const end   = month + '-32';
+  const snap = await db.collection(coll)
+    .where('date', '>=', start)
+    .where('date', '<=', end)
+    .get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function fbUpsertAttendance(row) {
+  // Composite key: date_staffName so we never duplicate per-day check-in
+  if (!db) return false;
+  const docId = `${row.date}_${row.staffName}`.replace(/[^A-Za-z0-9_-]/g, '_');
+  return fbAddDoc(COL.ATTENDANCE, { ...row, id: docId });
+}
+
+async function fbUpsertFootfall(date, count) {
+  if (!db) return false;
+  showSync('syncing');
+  try {
+    await db.collection(COL.FOOTFALL).doc(date).set({ date, count });
+    showSync('ok');
+    return true;
+  } catch(e) { showSync('error'); return false; }
+}
+
+async function fbIncrementEMIPaid(emiId) {
+  if (!db) return false;
+  showSync('syncing');
+  try {
+    await db.collection(COL.EMI).doc(emiId).update({
+      monthsPaid: firebase.firestore.FieldValue.increment(1)
+    });
+    showSync('ok');
+    return true;
+  } catch(e) { showSync('error'); return false; }
 }
 
 /* ────────────────────────────────────────────────────
@@ -1019,41 +1106,54 @@ async function init() {
   } catch(e) {}
 
   const setupDone = localStorage.getItem(SK.SETUP) === '1';
-  if (!setupDone || !sheetsUrl()) {
+  if (!setupDone || !fbConfig()) {
     showScreen('setup');
     return;
   }
 
-  document.getElementById('loading-status').textContent = 'Connecting to Google Sheets…';
+  document.getElementById('loading-status').textContent = 'Connecting to Firebase…';
 
-  // Try to sync config from Sheets
-  const data = await sheetsGet({ action: 'getAll' });
-  if (data && data.ok) {
-    // Merge remote config into local (remote wins for shared settings)
-    if (data.config) {
-      const rc = data.config;
-      if (rc.shopName) config.shopName = rc.shopName;
-      if (rc.location) config.location = rc.location;
-      if (rc.gstRate !== undefined) config.gstRate = parseFloat(rc.gstRate) || 0;
-      if (rc.upiId) config.upiId = rc.upiId;
-      if (rc.receiptFooter) config.receiptFooter = rc.receiptFooter;
-      if (rc.adminPin) config.adminPin = rc.adminPin;
-      if (rc.staffPin) config.staffPin = rc.staffPin;
+  if (!initFirebase()) {
+    showScreen('setup');
+    return;
+  }
+
+  // Pull latest data from Firestore (Firestore handles offline cache automatically)
+  try {
+    const [shopCfg, staff, services, fixed, emi] = await Promise.all([
+      fbGetConfigDoc(),
+      fbGetCollection(COL.STAFF),
+      fbGetCollection(COL.SERVICES),
+      fbGetCollection(COL.FIXED),
+      fbGetCollection(COL.EMI),
+    ]);
+
+    if (shopCfg) {
+      if (shopCfg.shopName)         config.shopName = shopCfg.shopName;
+      if (shopCfg.location)         config.location = shopCfg.location;
+      if (shopCfg.gstRate !== undefined) config.gstRate = parseFloat(shopCfg.gstRate) || 0;
+      if (shopCfg.upiId)            config.upiId = shopCfg.upiId;
+      if (shopCfg.qrImage)          config.qrImage = shopCfg.qrImage;
+      if (shopCfg.receiptFooter)    config.receiptFooter = shopCfg.receiptFooter;
+      if (shopCfg.adminPin)         config.adminPin = shopCfg.adminPin;
+      if (shopCfg.staffPin)         config.staffPin = shopCfg.staffPin;
+      if (shopCfg.discountRequiresPin !== undefined) config.discountRequiresPin = !!shopCfg.discountRequiresPin;
     }
-    if (data.staff && data.staff.length) config.staff = data.staff;
-    if (data.fixedExpenses && data.fixedExpenses.length) config.fixedExpenses = data.fixedExpenses;
-    if (data.emi && data.emi.length) config.emi = data.emi;
-    if (data.services && data.services.length) {
+    if (staff && staff.length)         config.staff = staff;
+    if (fixed && fixed.length)         config.fixedExpenses = fixed;
+    if (emi && emi.length)             config.emi = emi;
+    if (services && services.length) {
       // Convert array of {category,name,price} back to object
       const svcs = {};
-      data.services.forEach(s => {
+      services.forEach(s => {
         if (!svcs[s.category]) svcs[s.category] = [];
         svcs[s.category].push({ name: s.name, price: parseFloat(s.price) || 0 });
       });
       if (Object.keys(svcs).length) config.services = svcs;
     }
     saveConfig();
-    flushQueue();
+  } catch(e) {
+    console.warn('Firestore load failed, using local cache:', e);
   }
 
   // Set initial tab
@@ -1072,34 +1172,61 @@ function setupShowStep(n) {
   });
 }
 
-async function testConnection() {
-  const url = document.getElementById('setup-url').value.trim();
+function parseFirebaseConfig(raw) {
+  if (!raw) return null;
+  let txt = raw.trim();
+  // Tolerate users pasting the JS snippet "const firebaseConfig = {...};"
+  const match = txt.match(/\{[\s\S]*\}/);
+  if (match) txt = match[0];
+  try {
+    // Convert JS-style keys (apiKey: "x") to JSON
+    const jsonish = txt
+      .replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":')
+      .replace(/'/g, '"')
+      .replace(/,\s*([}\]])/g, '$1');
+    const obj = JSON.parse(jsonish);
+    if (!obj.apiKey || !obj.projectId) return null;
+    return obj;
+  } catch(e) {
+    return null;
+  }
+}
+
+async function testFirebaseConnection() {
+  const raw = document.getElementById('setup-fb-config').value;
   const res = document.getElementById('setup-connect-result');
   res.style.display = '';
   res.className = 'setup-connect-result';
   res.textContent = 'Testing…';
-  if (!url) { res.className = 'setup-connect-result err'; res.textContent = '⚠ Please enter a URL first.'; return; }
+  const cfg = parseFirebaseConfig(raw);
+  if (!cfg) {
+    res.className = 'setup-connect-result err';
+    res.textContent = '⚠ Invalid config. Paste the full Firebase config object (must include apiKey & projectId).';
+    return;
+  }
   try {
-    const r = await fetch(url + '?action=ping', { redirect: 'follow' });
-    const d = await r.json();
-    if (d.ok) {
-      res.className = 'setup-connect-result ok';
-      res.textContent = '✓ ' + (d.msg || 'Connected successfully!');
-    } else {
-      res.className = 'setup-connect-result err';
-      res.textContent = '⚠ Script responded but returned an error. Check deployment.';
-    }
+    // Init a temp app for testing so we don't pollute the default
+    const tempName = 'oz_test_' + Date.now();
+    const tApp = firebase.initializeApp(cfg, tempName);
+    const tDb  = firebase.firestore(tApp);
+    const tAuth = firebase.auth(tApp);
+    await tAuth.signInAnonymously();
+    // Try a tiny read — collection may be empty, that's fine
+    await tDb.collection(COL.CONFIG).limit(1).get();
+    await tApp.delete();
+    res.className = 'setup-connect-result ok';
+    res.textContent = '✓ Connected to Firebase project "' + cfg.projectId + '"';
   } catch(e) {
     res.className = 'setup-connect-result err';
-    res.textContent = '⚠ Connection failed. Make sure the script is deployed and URL is correct.';
+    res.textContent = '⚠ Connection failed: ' + (e.message || e.code || 'check rules + Anonymous Auth is enabled');
   }
 }
 
 function setupNext(step) {
   if (step === 1) {
-    const url = document.getElementById('setup-url').value.trim();
-    if (!url || !url.startsWith('https://')) { toast('Please enter a valid Apps Script URL'); return; }
-    localStorage.setItem(SK.URL, url);
+    const cfg = parseFirebaseConfig(document.getElementById('setup-fb-config').value);
+    if (!cfg) { toast('Please paste a valid Firebase config first'); return; }
+    localStorage.setItem(SK.FB_CONFIG, JSON.stringify(cfg));
     setupShowStep(2);
   } else if (step === 2) {
     setupShowStep(3);
@@ -1120,25 +1247,28 @@ async function completeSetup() {
   const upiId    = document.getElementById('s-upiId').value.trim();
   const gstRate  = parseFloat(document.getElementById('s-gst').value) || 0;
 
-  // Generate a simple secret key
-  const sk = Math.random().toString(36).slice(2, 10).toUpperCase();
-  localStorage.setItem(SK.SECRET, sk);
-
   config = Object.assign(config, { shopName, location, upiId, gstRate, adminPin, staffPin });
   saveConfig();
 
-  // Send setup to Sheets
-  const payload = {
-    action: 'setup',
-    config: { shopName, location, upiId, gstRate, adminPin, staffPin, secretKey: sk, receiptFooter: config.receiptFooter },
-    services: flattenServices(config.services),
-    staff: [], fixedExpenses: [], emi: [],
-  };
-  const p = new URLSearchParams({ action: 'write', key: '', payload: encodeURIComponent(JSON.stringify(payload)) });
+  if (!initFirebase()) {
+    toast('Could not initialize Firebase. Check your config.');
+    return;
+  }
+
+  // Write initial config + services to Firestore
   try {
-    const url = sheetsUrl();
-    await fetch(url + '?' + p.toString(), { redirect: 'follow' });
-  } catch(e) {}
+    await fbSetConfig({
+      shopName, location, upiId, gstRate,
+      adminPin, staffPin,
+      receiptFooter: config.receiptFooter,
+      discountRequiresPin: !!config.discountRequiresPin,
+    });
+    // Seed default services so a fresh shop has the menu ready
+    await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
+  } catch(e) {
+    console.warn('Initial write to Firestore failed:', e);
+    toast('⚠ Saved locally — Firestore write failed. Check rules.');
+  }
 
   localStorage.setItem(SK.SETUP, '1');
   toast('Setup complete! ✓');
@@ -1218,11 +1348,8 @@ async function checkIn(staffName) {
   // Persist locally
   localStorage.setItem(SK.ATT + state.todayStr, JSON.stringify(state.attendanceCache));
   renderStaffDashboard();
-  // Sync to Sheets
-  await sheetsWrite({
-    action: 'logAttendance',
-    row: { id: uid(), date: state.todayStr, staffName, checkIn: now }
-  });
+  // Sync to Firestore (upserts on date+staffName composite id)
+  await fbUpsertAttendance({ date: state.todayStr, staffName, checkIn: now });
   toast(staffName + ' checked in ✓');
 }
 
@@ -1230,7 +1357,7 @@ function changeFootfall(delta) {
   state.footfallCount = Math.max(0, state.footfallCount + delta);
   document.getElementById('footfall-count').textContent = state.footfallCount;
   localStorage.setItem(SK.FOOTFALL + state.todayStr, state.footfallCount);
-  sheetsWrite({ action: 'updateFootfall', date: state.todayStr, count: state.footfallCount });
+  fbUpsertFootfall(state.todayStr, state.footfallCount);
 }
 
 /* ────────────────────────────────────────────────────
@@ -1456,8 +1583,8 @@ async function finaliseTransaction(phone) {
     staffName,
   };
 
-  // Log to Sheets
-  sheetsWrite({ action: 'logTransaction', row: txRow });
+  // Log to Firestore (writes are queued automatically when offline)
+  fbAddDoc(COL.TRANSACTIONS, txRow);
 
   // Send WhatsApp if phone provided
   if (phone) {
@@ -1524,13 +1651,36 @@ async function renderAdminDashboard() {
     <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Loading from Sheets…</div>
   `;
 
-  const data = await sheetsGet({ action: 'getDashboard', month: ym });
-  if (!data || !data.ok) {
+  let txs, variable, fixed, salaries, emi, footfalls;
+  try {
+    [txs, variable, fixed, salaries, emi, footfalls] = await Promise.all([
+      fbQueryByMonth(COL.TRANSACTIONS, ym),
+      fbQueryByMonth(COL.EXPENSES, ym),
+      fbGetCollection(COL.FIXED),
+      fbGetCollection(COL.SALARIES),
+      fbGetCollection(COL.EMI),
+      fbGetCollection(COL.FOOTFALL),
+    ]);
+  } catch(e) {
     host.innerHTML += '<div class="muted-text center" style="margin-top:12px">⚠ Could not load. Check internet connection.</div>';
     return;
   }
 
-  const { revenue, varExpenses, fixedTotal, salaryTotal, emiTotal, totalExpenses, netPL, txCount, footfall } = data;
+  const sumOf = (arr, key) => arr.reduce((s, r) => s + (parseFloat(r[key]) || 0), 0);
+  const [yy, mm] = ym.split('-');
+  const revenue     = sumOf(txs, 'total');
+  const varExpenses = sumOf(variable, 'amount');
+  const fixedTotal  = sumOf(fixed, 'amount');
+  const salaryTotal = (salaries || [])
+    .filter(s => String(s.month) === mm && String(s.year) === yy)
+    .reduce((a, s) => a + (parseFloat(s.amount) || 0), 0);
+  const emiTotal    = sumOf(emi, 'monthlyEMI');
+  const totalExpenses = varExpenses + fixedTotal + salaryTotal + emiTotal;
+  const netPL       = revenue - totalExpenses;
+  const txCount     = txs.length;
+  const footfall    = (footfalls || [])
+    .filter(r => String(r.date || '').startsWith(ym))
+    .reduce((s, r) => s + (parseInt(r.count) || 0), 0);
   const plPct = revenue > 0 ? Math.min(100, Math.round((revenue / (totalExpenses || 1)) * 100)) : 0;
   const isProfit = netPL >= 0;
 
@@ -1595,12 +1745,14 @@ async function loadSales() {
   const ym = document.getElementById('sales-month').value;
   const host = document.getElementById('sales-list');
   host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loading…</div>';
-  const data = await sheetsGet({ action: 'getTransactions', month: ym });
-  if (!data || !data.ok) { host.innerHTML = '<div class="muted-text center">Could not load. Check connection.</div>'; return; }
-  const txs = data.transactions || [];
+  let txs;
+  try { txs = await fbQueryByMonth(COL.TRANSACTIONS, ym); }
+  catch(e) { host.innerHTML = '<div class="muted-text center">Could not load. Check connection.</div>'; return; }
   if (!txs.length) { host.innerHTML = '<div class="muted-text center" style="padding:24px">No transactions for this month.</div>'; return; }
-  // Sort newest first
-  const sorted = [...txs].reverse();
+  // Sort newest first (by date+time string)
+  const sorted = [...txs].sort((a, b) =>
+    (b.date + ' ' + (b.time || '')).localeCompare(a.date + ' ' + (a.time || ''))
+  );
   let total = 0;
   let html = '';
   sorted.forEach(tx => {
@@ -1679,7 +1831,7 @@ async function saveExpense() {
   if (!amount || !date) { toast('Fill in amount and date'); return; }
   closeModal('modal-add-expense');
   const row = { id: uid(), date, category, description: desc || category, amount };
-  await sheetsWrite({ action: 'logExpense', row });
+  await fbAddDoc(COL.EXPENSES, row);
   toast('Expense saved ✓');
   loadExpenses();
 }
@@ -1688,9 +1840,9 @@ async function loadExpenses() {
   const ym = document.getElementById('exp-month').value;
   const host = document.getElementById('var-expenses-list');
   host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loading…</div>';
-  const data = await sheetsGet({ action: 'getExpenses', month: ym });
-  if (!data || !data.ok) { host.innerHTML = '<div class="muted-text center">Could not load.</div>'; return; }
-  const exps = data.expenses || [];
+  let exps;
+  try { exps = await fbQueryByMonth(COL.EXPENSES, ym); }
+  catch(e) { host.innerHTML = '<div class="muted-text center">Could not load.</div>'; return; }
   if (!exps.length) { host.innerHTML = '<div class="muted-text center" style="padding:20px">No variable expenses this month.</div>'; return; }
   let total = 0;
   let html = '';
@@ -1722,7 +1874,7 @@ async function saveFixedExpense() {
   if (!config.fixedExpenses) config.fixedExpenses = [];
   config.fixedExpenses.push({ id: uid(), name, amount });
   saveConfig();
-  await sheetsWrite({ action: 'saveFixedExpenses', expenses: config.fixedExpenses });
+  await fbReplaceCollection(COL.FIXED, config.fixedExpenses);
   closeModal('modal-add-fixed');
   toast('Fixed expense added ✓');
   renderAdminExpenses();
@@ -1732,7 +1884,7 @@ function deleteFixedExpense(id) {
   if (!confirm('Delete this fixed expense?')) return;
   config.fixedExpenses = (config.fixedExpenses || []).filter(e => e.id !== id);
   saveConfig();
-  sheetsWrite({ action: 'saveFixedExpenses', expenses: config.fixedExpenses });
+  fbReplaceCollection(COL.FIXED, config.fixedExpenses);
   renderAdminExpenses();
 }
 
@@ -1752,13 +1904,13 @@ async function renderAdminPayroll() {
   }
 
   // Fetch which staff were paid this month
-  const data = await sheetsGet({ action: 'getSalaries' });
   const paid = new Set();
-  if (data && data.ok) {
-    data.salaries.forEach(s => {
+  try {
+    const salaries = await fbGetCollection(COL.SALARIES);
+    salaries.forEach(s => {
       if (String(s.month) === month && String(s.year) === year) paid.add(String(s.staffName));
     });
-  }
+  } catch(e) { console.warn('payroll load failed:', e); }
 
   let html = `<div class="admin-section-title">Payroll — ${monthName}</div>`;
   let totalSalary = 0;
@@ -1792,7 +1944,7 @@ async function markSalaryPaid(name, staffId, amount, month, year) {
   if (!confirm(`Mark salary of ₹${fmt(amount)} paid to ${name}?`)) return;
   const today = state.todayStr;
   const row = { id: uid(), staffId, staffName: name, month, year, amount, paidDate: today };
-  await sheetsWrite({ action: 'logSalary', row });
+  await fbAddDoc(COL.SALARIES, row);
   toast(name + ' salary marked paid ✓');
   renderAdminPayroll();
 }
@@ -1861,7 +2013,7 @@ async function saveEMI() {
   if (!config.emi) config.emi = [];
   config.emi.push({ id: uid(), name, totalAmount: total, monthlyEMI: monthly, startDate: start, monthsPaid: paid });
   saveConfig();
-  await sheetsWrite({ action: 'saveEMI', emi: config.emi });
+  await fbReplaceCollection(COL.EMI, config.emi);
   closeModal('modal-add-emi');
   toast('EMI added ✓');
   renderAdminEMI();
@@ -1871,7 +2023,7 @@ async function markEMIPaid(emiId, name) {
   if (!confirm(`Mark one month paid for ${name}?`)) return;
   const e = (config.emi || []).find(x => x.id === emiId);
   if (e) { e.monthsPaid = (parseInt(e.monthsPaid) || 0) + 1; saveConfig(); }
-  await sheetsWrite({ action: 'markEMIPaid', emiId });
+  await fbIncrementEMIPaid(emiId);
   toast(name + ' — month marked paid ✓');
   renderAdminEMI();
 }
@@ -1880,7 +2032,7 @@ function deleteEMI(id) {
   if (!confirm('Delete this EMI record?')) return;
   config.emi = (config.emi || []).filter(e => e.id !== id);
   saveConfig();
-  sheetsWrite({ action: 'saveEMI', emi: config.emi });
+  fbReplaceCollection(COL.EMI, config.emi);
   renderAdminEMI();
 }
 
@@ -1948,7 +2100,7 @@ function deleteStaff(idx) {
 
 async function saveStaffToSheets() {
   saveConfig();
-  await sheetsWrite({ action: 'saveStaff', staff: config.staff });
+  await fbReplaceCollection(COL.STAFF, config.staff);
   toast('Staff saved ✓');
 }
 
@@ -1998,7 +2150,7 @@ function addService(cat) {
 
 async function saveServicesToSheets() {
   saveConfig();
-  await sheetsWrite({ action: 'saveServices', services: flattenServices(config.services) });
+  await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
   toast('Services saved ✓');
 }
 
@@ -2056,7 +2208,14 @@ async function saveShopSettings() {
   config.upiId         = document.getElementById('set-upi').value.trim();
   config.receiptFooter = document.getElementById('set-footer').value.trim();
   saveConfig();
-  await sheetsWrite({ action: 'saveConfig', config: { shopName: config.shopName, location: config.location, gstRate: config.gstRate, upiId: config.upiId, receiptFooter: config.receiptFooter }});
+  await fbSetConfig({
+    shopName: config.shopName,
+    location: config.location,
+    gstRate: config.gstRate,
+    upiId: config.upiId,
+    qrImage: config.qrImage,
+    receiptFooter: config.receiptFooter,
+  });
   toast('Settings saved ✓');
 }
 
@@ -2088,9 +2247,10 @@ function renderAdminSecurity() {
     </div>
     <div class="separator"></div>
     <div class="setting-row">
-      <label class="setting-label">Google Sheets URL</label>
-      <input type="url" id="update-sheets-url" class="setup-input" value="${localStorage.getItem(SK.URL)||''}">
-      <button class="btn btn-secondary" style="margin-top:10px;width:100%" onclick="updateSheetsUrl()">Update URL</button>
+      <label class="setting-label">Firebase Config</label>
+      <div class="muted-text">Replace your Firebase project config (advanced — only if you migrate projects).</div>
+      <textarea id="update-fb-config" class="setup-input" rows="6" style="margin-top:10px;font-family:monospace;font-size:12px;resize:vertical;">${esc(JSON.stringify(fbConfig() || {}, null, 2))}</textarea>
+      <button class="btn btn-secondary" style="margin-top:10px;width:100%" onclick="updateFirebaseConfig()">Update Firebase Config</button>
     </div>
   `;
 }
@@ -2100,7 +2260,7 @@ async function changeStaffPin() {
   if (p.length !== 4) { toast('PIN must be 4 digits'); return; }
   config.staffPin = p;
   saveConfig();
-  await sheetsWrite({ action: 'saveConfig', config: { staffPin: p }});
+  await fbSetConfig({ staffPin: p });
   toast('Staff PIN updated ✓');
 }
 
@@ -2109,7 +2269,7 @@ async function changeAdminPin() {
   if (p.length !== 4) { toast('PIN must be 4 digits'); return; }
   config.adminPin = p;
   saveConfig();
-  await sheetsWrite({ action: 'saveConfig', config: { adminPin: p }});
+  await fbSetConfig({ adminPin: p });
   toast('Admin PIN updated ✓');
 }
 
@@ -2117,13 +2277,16 @@ function togglePinDiscount(el) {
   config.discountRequiresPin = !config.discountRequiresPin;
   el.classList.toggle('on', config.discountRequiresPin);
   saveConfig();
+  fbSetConfig({ discountRequiresPin: config.discountRequiresPin });
 }
 
-function updateSheetsUrl() {
-  const url = document.getElementById('update-sheets-url').value.trim();
-  if (!url) { toast('Enter a URL'); return; }
-  localStorage.setItem(SK.URL, url);
-  toast('URL updated ✓');
+function updateFirebaseConfig() {
+  const raw = document.getElementById('update-fb-config').value;
+  const cfg = parseFirebaseConfig(raw);
+  if (!cfg) { toast('Invalid Firebase config'); return; }
+  localStorage.setItem(SK.FB_CONFIG, JSON.stringify(cfg));
+  toast('Firebase config updated. Reloading…');
+  setTimeout(() => location.reload(), 800);
 }
 
 /* ────────────────────────────────────────────────────
@@ -2215,7 +2378,9 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&
 function escAttr(s) { return esc(s); }
 
 /* ────────────────────────────────────────────────────
-   PWA + AUTO-SYNC
+   PWA
+   Firestore SDK handles offline persistence + write
+   queue automatically (via IndexedDB). No manual sync.
 ──────────────────────────────────────────────────── */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -2223,14 +2388,8 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Flush queue when coming online
-window.addEventListener('online', () => {
-  toast('Back online — syncing…');
-  flushQueue();
-});
-
-// Auto-flush queue every 5 minutes
-setInterval(flushQueue, 5 * 60 * 1000);
+window.addEventListener('online',  () => showSync('ok'));
+window.addEventListener('offline', () => showSync('error'));
 
 // ── START ──
 init();

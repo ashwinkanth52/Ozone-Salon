@@ -1,5 +1,5 @@
-// Ozone Salon & Spa — ERP Service Worker
-const CACHE = 'ozone-erp-v1';
+// Ozone Salon & Spa — ERP Service Worker (Firebase edition)
+const CACHE = 'ozone-erp-v2';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
@@ -19,8 +19,20 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Only cache same-origin requests (not Google Sheets API calls)
-  if (!e.request.url.startsWith(self.location.origin)) return;
+  const url = e.request.url;
+  // Never intercept Firebase / Google API traffic — Firestore manages its own
+  // offline persistence via IndexedDB and must talk to the network directly.
+  if (
+    url.includes('firestore.googleapis.com') ||
+    url.includes('firebaseio.com') ||
+    url.includes('identitytoolkit.googleapis.com') ||
+    url.includes('securetoken.googleapis.com') ||
+    url.includes('googleapis.com')
+  ) return;
+
+  // Only cache same-origin assets
+  if (!url.startsWith(self.location.origin)) return;
+
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;

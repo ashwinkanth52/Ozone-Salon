@@ -1,0 +1,11 @@
+# Office/temp lock files
+~$*
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# OS
+*.log
