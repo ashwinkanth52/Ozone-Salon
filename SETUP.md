@@ -53,26 +53,102 @@ Live, real-time salon ERP. **Firestore** is the database, **Firebase Anonymous A
 
    Save this — you'll paste it into the app in Step 4.
 
-### Step 2 — Enable Firestore + Anonymous Auth
+### Step 2 — Enable Firestore + Google Auth
 
 1. Left sidebar → **Build → Firestore Database** → **Create database**.
    - Mode: **Start in production mode** → Next.
    - Region: pick closest (e.g. `asia-south1` for India) → **Enable**.
 2. Left sidebar → **Build → Authentication** → **Get started**.
-3. **Sign-in method** tab → click **Anonymous** → enable toggle → **Save**.
+3. **Sign-in method** tab → click **Google** → enable toggle → set **support email** → **Save**.
+
+> The app now uses **Google Sign-In** with role-based access. The first Google account that signs in becomes the Owner/Admin automatically. After that, the owner adds more accounts (admin or staff) from **Admin → Team**.
 
 ### Step 3 — Set Firestore Security Rules
 
 1. Firestore Database → **Rules** tab.
-2. Replace contents with:
+2. Replace contents with the **role-aware** rules below. They check the signed-in Google account email against the `adminEmails` / `staffEmails` arrays stored in your `config/shop` doc.
 
    ```
    rules_version = '2';
    service cloud.firestore {
      match /databases/{database}/documents {
-       // Any signed-in user (incl. Anonymous) can read/write.
-       match /{document=**} {
-         allow read, write: if request.auth != null;
+
+       // Signed-in user's verified Google email
+       function userEmail() {
+         return request.auth != null
+           ? request.auth.token.email.lower()
+           : null;
+       }
+
+       // Lookup once: the team lists from config/shop
+       function shopCfg() {
+         return get(/databases/$(database)/documents/config/shop).data;
+       }
+       function admins() {
+         return shopCfg().adminEmails != null ? shopCfg().adminEmails : [];
+       }
+       function staff() {
+         return shopCfg().staffEmails != null ? shopCfg().staffEmails : [];
+       }
+
+       function isAdmin() {
+         return request.auth != null && admins().hasAny([userEmail()]);
+       }
+       function isStaff() {
+         return request.auth != null
+           && (admins().hasAny([userEmail()]) || staff().hasAny([userEmail()]));
+       }
+
+       // === Bootstrap: while no admins exist yet, the first signed-in user
+       // can create the config/shop doc and seed services ===
+       function noAdminsYet() {
+         return !exists(/databases/$(database)/documents/config/shop)
+           || shopCfg().adminEmails == null
+           || shopCfg().adminEmails.size() == 0;
+       }
+
+       // config/shop: admins only (or first user during bootstrap)
+       match /config/{doc} {
+         allow read:  if request.auth != null;
+         allow write: if isAdmin() || (request.auth != null && noAdminsYet());
+       }
+
+       // Append-only logs: any signed-in staff/admin can create.
+       // Updates/deletes restricted to admin.
+       match /transactions/{doc} {
+         allow read:   if isStaff();
+         allow create: if isStaff();
+         allow update, delete: if isAdmin();
+       }
+       match /expenses/{doc} {
+         allow read:   if isStaff();
+         allow create: if isStaff();
+         allow update, delete: if isAdmin();
+       }
+       match /salaries/{doc} {
+         allow read, create, update, delete: if isAdmin();
+       }
+       match /attendance/{doc} {
+         allow read:        if isStaff();
+         allow create, update: if isStaff();
+         allow delete:      if isAdmin();
+       }
+       match /footfall/{doc} {
+         allow read, create, update: if isStaff();
+         allow delete: if isAdmin();
+       }
+
+       // Setup-style lists: admin manages, staff can read.
+       match /staff/{doc}         { allow read: if isStaff(); allow write: if isAdmin() || (request.auth != null && noAdminsYet()); }
+       match /services/{doc}      { allow read: if isStaff(); allow write: if isAdmin() || (request.auth != null && noAdminsYet()); }
+       match /fixedExpenses/{doc} { allow read: if isStaff(); allow write: if isAdmin(); }
+       match /emi/{doc}           { allow read: if isStaff(); allow write: if isAdmin(); }
+
+       // Audit log — append-only for everyone signed in; only admins read.
+       match /audit/{doc} {
+         allow create: if request.auth != null;
+         allow read:   if isAdmin();
+         allow update, delete: if false;
        }
      }
    }
@@ -80,7 +156,7 @@ Live, real-time salon ERP. **Firestore** is the database, **Firebase Anonymous A
 
 3. Click **Publish**.
 
-> These rules are basic. They prevent random internet traffic but anyone with your Firebase config + ability to anonymously sign in can read/write. The PIN system in the app is the real access control. For tighter rules, see "Hardening" below.
+> These rules give true role-based access at the database level. Even someone with the API key cannot write outside the rules unless their Google account email is on the team list.
 
 ### Step 4 — Authorize Your GitHub Pages Domain
 
@@ -107,14 +183,16 @@ Live, real-time salon ERP. **Firestore** is the database, **Firebase Anonymous A
 1. Open the live URL on your phone.
 2. **Setup wizard, Step 1**: Paste the `firebaseConfig` object from Step 1 → **Test Connection** → expect `✓ Connected to Firebase project "..."` → **Next**.
 3. **Step 2**: Shop name, location, UPI ID, GST % → **Next**.
-4. **Step 3**: Set 4-digit Staff PIN + 4-digit Admin PIN → **Complete Setup**.
+4. **Step 3**: Set 4-digit Staff PIN + 4-digit Admin PIN (used for sensitive actions like discount approval) → **Complete Setup**.
 5. App writes initial config + default service menu to Firestore.
-6. Add to Home Screen (iOS Share → *Add to Home Screen* / Android: install prompt).
+6. **Sign in with Google** — the first Google account becomes the Owner/Admin.
+7. Add to Home Screen (iOS Share → *Add to Home Screen* / Android: install prompt).
 
-### Step 7 — Add Staff & Customise Services
+### Step 7 — Add Team, Staff & Customise Services
 
-- Login as Admin (PIN from Step 6) → **Setup** tab → **Staff** → add names + salaries → **Save Staff**.
-- **Services** sub-tab → edit prices/items → **Save Services**.
+- Open **Admin → Team** → add Google account emails for other admins or counter staff. Each user must sign in with that exact Google account.
+- **Setup** tab → **Staff** → add staff names + salaries (used in payroll).
+- **Setup → Services** → edit prices/items → **Save Services**.
 - All changes sync to Firestore in real time.
 
 ---

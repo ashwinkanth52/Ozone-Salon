@@ -1,12 +1,20 @@
 // Ozone Salon & Spa — ERP Service Worker (Firebase edition)
-const CACHE = 'ozone-erp-v2';
+// Bump the cache version on every release so installed PWAs auto-update.
+const CACHE = 'ozone-erp-v4-enterprise';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(ASSETS))
   );
-  self.skipWaiting();
+  // Do NOT call skipWaiting() here. We want the page to be notified that an
+  // update is ready and to choose when to activate it (so users finishing a
+  // bill don't get the rug pulled mid-flow).
+});
+
+self.addEventListener('message', e => {
+  // The page can send {type:'SKIP_WAITING'} to activate the new SW immediately.
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {

@@ -103,6 +103,25 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .sync-pill.syncing{background:var(--gold);}
 .sync-pill.error{background:var(--danger);}
 
+/* USER CHIP (signed-in indicator) */
+.user-chip{display:flex;align-items:center;gap:10px;background:var(--offwhite);border:1px solid var(--line);border-radius:50px;padding:6px 6px 6px 6px;margin-bottom:32px;width:100%;max-width:340px;box-shadow:var(--shadow-soft);}
+.user-chip img{width:36px;height:36px;border-radius:50%;object-fit:cover;}
+.user-chip #user-chip-initial{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--gold-soft));color:white;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:18px;flex-shrink:0;}
+.user-chip-meta{flex:1;min-width:0;}
+.user-chip-name{font-size:13px;font-weight:500;color:var(--charcoal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-chip-role{font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-top:1px;}
+.user-chip-out{width:36px;height:36px;border-radius:50%;background:var(--ivory);color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--line);}
+.user-chip-out:active{background:var(--rose);color:white;border-color:var(--rose);}
+
+/* TEAM TAB */
+.team-row{background:var(--offwhite);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.team-row-info{flex:1;min-width:0;}
+.team-row-email{font-size:14px;color:var(--charcoal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.team-row-role{font-size:11px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.team-role-pill{font-size:11px;padding:4px 10px;border-radius:12px;background:var(--line);color:var(--charcoal);text-transform:uppercase;letter-spacing:.06em;}
+.team-role-pill.admin{background:rgba(201,168,76,.18);color:var(--gold);}
+.team-role-pill.staff{background:rgba(168,181,162,.2);color:var(--success);}
+
 /* STAFF DASHBOARD */
 .staff-section{padding:20px 16px;}
 .section-title{font-family:var(--serif);font-size:20px;color:var(--charcoal);margin-bottom:14px;}
@@ -367,11 +386,12 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
     <div id="setup-step-1">
       <div class="setup-step-num">Step 1 of 3</div>
       <h2 class="setup-title">Connect Firebase</h2>
-      <p class="setup-desc">Create a Firebase project, then paste your Firebase config here. This replaces Google Sheets — faster, real-time, and works offline automatically.</p>
+      <p class="setup-desc">Create a Firebase project (free), then paste your Firebase config below. The app uses Firestore for real-time sync and works offline automatically.</p>
       <div class="setup-field">
         <label class="setup-label">Firebase Config (JSON)</label>
         <textarea class="setup-input" id="setup-fb-config" rows="7" placeholder='{"apiKey":"…","authDomain":"…","projectId":"…","storageBucket":"…","messagingSenderId":"…","appId":"…"}' style="font-family:monospace;font-size:13px;resize:vertical;"></textarea>
         <div class="setup-hint">Firebase Console → Project Settings → Your apps → Firebase SDK snippet → Config object</div>
+        <div class="setup-hint" style="margin-top:8px;color:var(--gold);">⚠ Also enable <strong>Google</strong> sign-in: Authentication → Sign-in method → Google → Enable.</div>
       </div>
       <div id="setup-connect-result" class="setup-connect-result"></div>
       <div style="display:flex;gap:10px;margin-top:20px;">
@@ -410,8 +430,8 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
     <!-- Step 3: Set PINs -->
     <div id="setup-step-3" style="display:none">
       <div class="setup-step-num">Step 3 of 3</div>
-      <h2 class="setup-title">Set Access PINs</h2>
-      <p class="setup-desc">Staff PIN is shared with all counter staff. Admin PIN is yours only — keep it private.</p>
+      <h2 class="setup-title">Action PINs</h2>
+      <p class="setup-desc">Sign-in is via Google Account. These 4-digit PINs are an extra layer for sensitive staff actions (e.g. approving discounts at the counter).</p>
       <div class="setup-field">
         <label class="setup-label">Staff PIN (4 digits — shared with all staff)</label>
         <input type="tel" class="setup-input" id="s-staffPin" maxlength="4" placeholder="e.g. 1111" inputmode="numeric">
@@ -430,6 +450,60 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 </section>
 
 <!-- ═══════════════════════════════════════════════════
+     SCREEN: AUTH GATE (Google Sign-In)
+     ═══════════════════════════════════════════════════ -->
+<section class="screen" id="screen-auth">
+  <div class="landing-wrap">
+    <div class="landing-logo">O</div>
+    <h1 class="landing-title" id="auth-shop-name">Ozone Salon &amp; Spa</h1>
+    <div class="landing-loc" id="auth-shop-loc">Ozone Heights Clubhouse</div>
+
+    <div style="margin:32px 0 24px;text-align:center;">
+      <div style="font-family:var(--serif);font-size:22px;color:var(--charcoal);margin-bottom:6px;">Welcome</div>
+      <div class="muted-text" style="max-width:280px;margin:0 auto;line-height:1.5">Sign in with your Google account to continue.</div>
+    </div>
+
+    <button class="landing-btn landing-btn-admin" onclick="signInWithGoogle()" id="google-signin-btn">
+      <div class="landing-btn-icon" style="background:white;">
+        <svg viewBox="0 0 48 48" style="width:22px;height:22px;">
+          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
+          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16.1 19 13 24 13c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+          <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.5-5.2l-6.2-5.3c-2 1.5-4.5 2.5-7.3 2.5-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
+          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.2 5.3C40.9 36 44 30.5 44 24c0-1.3-.1-2.4-.4-3.5z"/>
+        </svg>
+      </div>
+      <div class="landing-btn-text">
+        <div class="landing-btn-label">Sign in with Google</div>
+        <div class="landing-btn-sub">Secure · Role-based access</div>
+      </div>
+    </button>
+
+    <div id="auth-error" style="display:none;margin-top:16px;padding:14px 16px;border-radius:12px;background:rgba(197,106,106,.12);color:var(--danger);font-size:13px;text-align:center;line-height:1.5;"></div>
+
+    <div style="margin-top:auto;padding-top:32px;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.06em;">
+      TODAY · <span id="auth-date"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN: ACCESS DENIED (signed-in but not authorized)
+     ═══════════════════════════════════════════════════ -->
+<section class="screen" id="screen-no-access">
+  <div class="landing-wrap" style="justify-content:center;">
+    <div class="confirm-mark" style="background:linear-gradient(135deg,var(--danger),#E89999);margin-bottom:24px;">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+    <h1 class="landing-title" style="margin-bottom:8px;">Access Pending</h1>
+    <div class="muted-text center" style="max-width:300px;margin:0 auto 24px;line-height:1.6">
+      Your Google account <strong id="no-access-email" style="color:var(--charcoal)"></strong> is not authorized for this Ozone ERP yet.
+      <br><br>Please ask the shop owner to add you in <em>Admin → Team</em>.
+    </div>
+    <button class="btn btn-secondary" onclick="signOut()" style="min-width:180px">Sign out &amp; try another account</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
      SCREEN: LANDING
      ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-landing">
@@ -438,23 +512,35 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
     <h1 class="landing-title" id="landing-shop-name">Ozone Salon &amp; Spa</h1>
     <div class="landing-loc" id="landing-location">Ozone Heights Clubhouse</div>
 
-    <button class="landing-btn landing-btn-staff" onclick="loginStaff()">
+    <div class="user-chip" id="user-chip">
+      <img id="user-chip-photo" src="" alt="" style="display:none">
+      <div id="user-chip-initial">O</div>
+      <div class="user-chip-meta">
+        <div class="user-chip-name" id="user-chip-name">—</div>
+        <div class="user-chip-role" id="user-chip-role">Signed in</div>
+      </div>
+      <button class="user-chip-out" onclick="signOut()" title="Sign out">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+
+    <button class="landing-btn landing-btn-staff" onclick="enterStaff()" id="btn-enter-staff">
       <div class="landing-btn-icon">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       </div>
       <div class="landing-btn-text">
-        <div class="landing-btn-label">Staff Login</div>
+        <div class="landing-btn-label">Staff Counter</div>
         <div class="landing-btn-sub">Attendance · Billing · Footfall</div>
       </div>
     </button>
 
-    <button class="landing-btn landing-btn-admin" onclick="loginAdmin()">
+    <button class="landing-btn landing-btn-admin" onclick="enterAdmin()" id="btn-enter-admin">
       <div class="landing-btn-icon">
         <svg viewBox="0 0 24 24" stroke="var(--charcoal)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </div>
       <div class="landing-btn-text">
-        <div class="landing-btn-label">Admin Login</div>
-        <div class="landing-btn-sub">ERP · P&amp;L · Reports · Settings</div>
+        <div class="landing-btn-label">Admin ERP</div>
+        <div class="landing-btn-sub">Dashboard · P&amp;L · Reports · Setup</div>
       </div>
     </button>
 
@@ -580,13 +666,24 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
      ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-receipt">
   <div class="top-bar">
+    <button class="back-btn" onclick="showScreen('payment')">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back
+    </button>
     <div class="brand">
-      <div class="brand-name">Send Receipt</div>
+      <div class="brand-name" style="font-size:18px">Send Receipt</div>
       <div class="brand-tag">Complete Transaction</div>
     </div>
     <div style="width:44px"></div>
   </div>
   <div class="form-wrap">
+    <div style="background:linear-gradient(135deg,var(--rose),var(--gold-soft));color:white;border-radius:14px;padding:14px 18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-soft);">
+      <div>
+        <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;">Bill Total</div>
+        <div style="font-family:var(--serif);font-size:24px;margin-top:2px;" id="receipt-total">₹0</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:.1em;text-align:right;opacity:.9;">PAID<br>VIA UPI</div>
+    </div>
+
     <label class="form-label">Served by (Staff)</label>
     <div class="input-group">
       <select class="input" id="receipt-staff" style="padding-left:16px;">
@@ -619,7 +716,7 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="confirm-title">Transaction Saved ✓</div>
-    <div class="confirm-subtitle" id="confirm-sub">Bill saved to Firebase. Counter ready for next customer.</div>
+    <div class="confirm-subtitle" id="confirm-sub">Bill saved · Counter ready for next customer.</div>
     <button class="btn btn-primary" style="min-width:220px" onclick="resetAndGoHome()">New Customer</button>
   </div>
 </section>
@@ -643,6 +740,7 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
     <button class="admin-tab" data-atab="payroll" onclick="setAdminTab('payroll')">👥 Payroll</button>
     <button class="admin-tab" data-atab="emi" onclick="setAdminTab('emi')">📋 EMI</button>
     <button class="admin-tab" data-atab="setup" onclick="setAdminTab('setup')">⚙️ Setup</button>
+    <button class="admin-tab" data-atab="team" onclick="setAdminTab('team')">👥 Team</button>
     <button class="admin-tab" data-atab="security" onclick="setAdminTab('security')">🔒 Security</button>
   </div>
 
@@ -653,6 +751,7 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
     <div id="admin-tab-payroll" style="display:none"></div>
     <div id="admin-tab-emi" style="display:none"></div>
     <div id="admin-tab-setup" style="display:none"></div>
+    <div id="admin-tab-team" style="display:none"></div>
     <div id="admin-tab-security" style="display:none"></div>
   </div>
 </section>
@@ -835,6 +934,7 @@ const COL = {
   EMI:           'emi',
   ATTENDANCE:    'attendance',
   FOOTFALL:      'footfall',
+  AUDIT:         'audit',          // append-only audit log of admin actions
 };
 
 const DEFAULTS = {
@@ -847,6 +947,8 @@ const DEFAULTS = {
   adminPin: '1234',
   staffPin: '0000',
   discountRequiresPin: false,
+  adminEmails: [],   // Google account emails with admin/owner access
+  staffEmails: [],   // Google account emails allowed staff access
   staff: [],
   fixedExpenses: [],
   emi: [],
@@ -909,6 +1011,8 @@ let state = {
   todayStr: todayISO(),
   attendanceCache: {},  // staffName → checkInTime
   footfallCount: 0,
+  txInFlight: false,    // guard against double-submit on receipt screen
+  expInFlight: false,   // guard for expense save
 };
 
 function loadConfig() {
@@ -932,6 +1036,7 @@ function saveConfig() {
 let fbApp = null;
 let db    = null;
 let fbAuth = null;
+let currentUser = null;   // { email, name, photo, role: 'admin'|'staff'|null }
 
 function fbConfig() {
   try { return JSON.parse(localStorage.getItem(SK.FB_CONFIG) || 'null'); }
@@ -949,13 +1054,122 @@ function initFirebase() {
     // Enable offline persistence (IndexedDB cache + auto write queue)
     db.enablePersistence({ synchronizeTabs: true })
       .catch(err => console.warn('Persistence not available:', err && err.code));
-    // Anonymous sign-in so Firestore rules can require auth
-    fbAuth.signInAnonymously().catch(err => console.warn('Anon auth failed:', err));
     return true;
   } catch(e) {
     console.error('Firebase init failed:', e);
     return false;
   }
+}
+
+/* ────────────────────────────────────────────────────
+   GOOGLE AUTH + ROLE-BASED ACCESS
+──────────────────────────────────────────────────── */
+function normEmail(e) { return String(e || '').trim().toLowerCase(); }
+
+function resolveRole(email) {
+  const e = normEmail(email);
+  if (!e) return null;
+  const admins = (config.adminEmails || []).map(normEmail);
+  const staff  = (config.staffEmails || []).map(normEmail);
+  // Bootstrap: if no admin emails configured yet, the FIRST signed-in user
+  // is treated as the owner-admin so they can finish setup.
+  if (!admins.length) return 'admin';
+  if (admins.includes(e)) return 'admin';
+  if (staff.includes(e))  return 'staff';
+  return null;
+}
+
+async function signInWithGoogle() {
+  if (!fbAuth) {
+    if (!initFirebase()) {
+      showAuthError('Firebase not configured. Complete setup first.');
+      return;
+    }
+  }
+  const btn = document.getElementById('google-signin-btn');
+  btn.style.opacity = '.6';
+  btn.style.pointerEvents = 'none';
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    await fbAuth.signInWithPopup(provider);
+    // onAuthStateChanged handles the rest
+  } catch(e) {
+    console.error('Google sign-in failed:', e);
+    showAuthError(e.code === 'auth/popup-closed-by-user'
+      ? 'Sign-in cancelled.'
+      : 'Sign-in failed: ' + (e.message || e.code));
+    btn.style.opacity = '';
+    btn.style.pointerEvents = '';
+  }
+}
+
+async function signOut() {
+  // Unsubscribe live listeners so they don't keep firing under the next user.
+  while (liveUnsubs.length) { try { liveUnsubs.pop()(); } catch(e){} }
+  try {
+    if (fbAuth) await fbAuth.signOut();
+  } catch(e) { console.warn('Sign-out:', e); }
+  currentUser = null;
+  showScreen('auth');
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.style.display = '';
+  el.textContent = msg;
+}
+
+function clearAuthError() {
+  const el = document.getElementById('auth-error');
+  if (el) { el.style.display = 'none'; el.textContent = ''; }
+}
+
+async function handleAuthStateChange(user) {
+  if (!user) {
+    currentUser = null;
+    showScreen('auth');
+    return;
+  }
+  // Refresh config so role check uses latest admin/staff lists
+  try {
+    const shopCfg = await fbGetConfigDoc();
+    if (shopCfg) {
+      if (Array.isArray(shopCfg.adminEmails)) config.adminEmails = shopCfg.adminEmails;
+      if (Array.isArray(shopCfg.staffEmails)) config.staffEmails = shopCfg.staffEmails;
+      saveConfig();
+    }
+  } catch(e) { console.warn('Could not refresh team list:', e); }
+
+  const email = user.email;
+  const role  = resolveRole(email);
+
+  // Bootstrap owner: no admins configured yet → save this user as the first admin
+  if (role === 'admin' && (!config.adminEmails || !config.adminEmails.length)) {
+    config.adminEmails = [normEmail(email)];
+    saveConfig();
+    try { await fbSetConfig({ adminEmails: config.adminEmails }); } catch(e) {}
+  }
+
+  currentUser = {
+    email: email,
+    name: user.displayName || email,
+    photo: user.photoURL || '',
+    role: role,
+    uid: user.uid,
+  };
+
+  if (!role) {
+    document.getElementById('no-access-email').textContent = email;
+    showScreen('no-access');
+    return;
+  }
+
+  // Subscribe to real-time collection updates now that the user is authorized.
+  subscribeLiveCollections();
+
+  // Authorized: render landing, but restrict admin button for staff role
+  showScreen('landing');
 }
 
 async function fbGetCollection(name) {
@@ -984,6 +1198,9 @@ async function fbSetConfig(partial) {
   }
 }
 
+// UPSERT: writes (or overwrites) a doc with a known/deterministic ID.
+// Use ONLY for collections where the same logical key should map to one doc
+// (attendance per day per staff, footfall per day, config/shop).
 async function fbAddDoc(coll, data) {
   if (!db) return false;
   showSync('syncing');
@@ -996,6 +1213,83 @@ async function fbAddDoc(coll, data) {
     console.error('addDoc failed:', coll, e);
     showSync('error');
     return false;
+  }
+}
+
+// APPEND: always creates a NEW document with a Firestore auto-ID.
+// Use for transactions, expenses, salaries — anything that is a log entry.
+// Adds `createdAt` (server time) + `createdAtMs` (client time) for ordering
+// even when offline. Returns the new doc id, or false on failure.
+// Includes one automatic retry on transient failures.
+async function fbAppendDoc(coll, data) {
+  if (!db) return false;
+  showSync('syncing');
+  const ref   = db.collection(coll).doc();
+  const docId = ref.id;
+  const payload = {
+    ...data,
+    id: docId,
+    createdAt:   firebase.firestore.FieldValue.serverTimestamp(),
+    createdAtMs: Date.now(),
+    createdBy:   currentUser ? currentUser.email : null,
+  };
+  try {
+    await ref.set(payload);
+    showSync('ok');
+    return docId;
+  } catch(e1) {
+    // One retry after a short backoff for transient errors.
+    if (isTransientFirestoreError(e1)) {
+      await sleep(800);
+      try {
+        await ref.set(payload);
+        showSync('ok');
+        return docId;
+      } catch(e2) {
+        console.error('appendDoc failed after retry:', coll, e2);
+      }
+    } else {
+      console.error('appendDoc failed:', coll, e1);
+    }
+    showSync('error');
+    return false;
+  }
+}
+
+function isTransientFirestoreError(e) {
+  if (!e || !e.code) return false;
+  return [
+    'unavailable', 'deadline-exceeded', 'aborted', 'internal', 'cancelled',
+    'resource-exhausted', 'network-error',
+  ].some(c => String(e.code).includes(c));
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ────────────────────────────────────────────────────
+   AUDIT LOG
+   Appends a record to the `audit` collection. Best-effort —
+   never blocks the main action. Reads include actor email,
+   action verb, target collection/id, and a small payload.
+──────────────────────────────────────────────────── */
+async function logAudit(action, target, extra) {
+  if (!db) return;
+  try {
+    const ref = db.collection(COL.AUDIT).doc();
+    await ref.set({
+      id:          ref.id,
+      action:      action,
+      target:      target || null,
+      extra:       extra || null,
+      actorEmail:  currentUser ? currentUser.email : null,
+      actorName:   currentUser ? currentUser.name  : null,
+      actorRole:   currentUser ? currentUser.role  : null,
+      createdAt:   firebase.firestore.FieldValue.serverTimestamp(),
+      createdAtMs: Date.now(),
+    });
+  } catch(e) {
+    // Audit must never break the user flow.
+    console.warn('audit write failed:', e && e.code);
   }
 }
 
@@ -1067,6 +1361,115 @@ async function fbIncrementEMIPaid(emiId) {
 }
 
 /* ────────────────────────────────────────────────────
+   REAL-TIME LISTENERS
+   Subscribes to small, config-style collections so changes
+   on any device propagate immediately to every other device.
+──────────────────────────────────────────────────── */
+const liveUnsubs = [];
+
+function subscribeLiveCollections() {
+  if (!db) return;
+  // Idempotent — clear any prior subscriptions before re-subscribing
+  while (liveUnsubs.length) { try { liveUnsubs.pop()(); } catch(e){} }
+
+  // Shop config doc
+  liveUnsubs.push(db.collection(COL.CONFIG).doc('shop').onSnapshot(
+    snap => {
+      const d = snap.exists ? snap.data() : null;
+      if (!d) return;
+      const before = JSON.stringify(config);
+      if (d.shopName)         config.shopName = d.shopName;
+      if (d.location)         config.location = d.location;
+      if (d.gstRate !== undefined) config.gstRate = parseFloat(d.gstRate) || 0;
+      if (d.upiId !== undefined)         config.upiId = d.upiId;
+      if (d.qrImage !== undefined)       config.qrImage = d.qrImage;
+      if (d.receiptFooter !== undefined) config.receiptFooter = d.receiptFooter;
+      if (d.adminPin)         config.adminPin = d.adminPin;
+      if (d.staffPin)         config.staffPin = d.staffPin;
+      if (d.discountRequiresPin !== undefined) config.discountRequiresPin = !!d.discountRequiresPin;
+      if (Array.isArray(d.adminEmails)) config.adminEmails = d.adminEmails;
+      if (Array.isArray(d.staffEmails)) config.staffEmails = d.staffEmails;
+      if (JSON.stringify(config) !== before) {
+        saveConfig();
+        rerenderActive();
+      }
+    },
+    err => console.warn('config snapshot error:', err && err.code)
+  ));
+
+  // Staff list
+  liveUnsubs.push(db.collection(COL.STAFF).onSnapshot(
+    snap => {
+      const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      config.staff = arr;
+      saveConfig();
+      rerenderActive();
+    },
+    err => console.warn('staff snapshot error:', err && err.code)
+  ));
+
+  // Services list
+  liveUnsubs.push(db.collection(COL.SERVICES).onSnapshot(
+    snap => {
+      const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (!arr.length) return;
+      const svcs = {};
+      arr.forEach(s => {
+        if (!svcs[s.category]) svcs[s.category] = [];
+        svcs[s.category].push({ name: s.name, price: parseFloat(s.price) || 0 });
+      });
+      if (Object.keys(svcs).length) {
+        config.services = svcs;
+        saveConfig();
+        rerenderActive();
+      }
+    },
+    err => console.warn('services snapshot error:', err && err.code)
+  ));
+
+  // Fixed expenses
+  liveUnsubs.push(db.collection(COL.FIXED).onSnapshot(
+    snap => {
+      config.fixedExpenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      saveConfig();
+      rerenderActive();
+    },
+    err => console.warn('fixed snapshot error:', err && err.code)
+  ));
+
+  // EMI list
+  liveUnsubs.push(db.collection(COL.EMI).onSnapshot(
+    snap => {
+      config.emi = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      saveConfig();
+      rerenderActive();
+    },
+    err => console.warn('emi snapshot error:', err && err.code)
+  ));
+}
+
+// Re-render whichever screen is currently active so live updates reflect.
+function rerenderActive() {
+  const s = state.screen;
+  if (s === 'home') renderHome();
+  else if (s === 'staff') renderStaffDashboard();
+  else if (s === 'landing') renderLanding();
+  else if (s === 'admin') {
+    if (state.adminTab === 'setup' || state.adminTab === 'team' || state.adminTab === 'security') {
+      // these are config-driven; safe to re-render
+      setAdminTab(state.adminTab);
+    } else if (state.adminTab === 'emi') {
+      renderAdminEMI();
+    } else if (state.adminTab === 'expenses') {
+      // refresh just the fixed expenses portion via full re-render
+      renderAdminExpenses();
+    } else if (state.adminTab === 'payroll') {
+      renderAdminPayroll();
+    }
+  }
+}
+
+/* ────────────────────────────────────────────────────
    SYNC INDICATOR
 ──────────────────────────────────────────────────── */
 let syncTimer;
@@ -1082,14 +1485,41 @@ function showSync(status) {
    SCREEN ROUTING
 ──────────────────────────────────────────────────── */
 function showScreen(name) {
+  // Guard sensitive screens — must be signed-in & authorized
+  const protectedScreens = ['landing','staff','home','cart','payment','receipt','confirm','admin'];
+  if (protectedScreens.includes(name)) {
+    if (!currentUser || !currentUser.role) {
+      name = currentUser ? 'no-access' : 'auth';
+    } else if (name === 'admin' && currentUser.role !== 'admin') {
+      toast('Admin access required');
+      name = 'staff';
+    }
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   state.screen = name;
+  if (name === 'auth') renderAuth();
   if (name === 'home') renderHome();
   if (name === 'cart') renderCart();
   if (name === 'payment') renderPayment();
+  if (name === 'receipt') renderReceipt();
   if (name === 'staff') renderStaffDashboard();
   if (name === 'landing') renderLanding();
+}
+
+function renderReceipt() {
+  const el = document.getElementById('receipt-total');
+  if (el) el.textContent = '₹' + grandTotal().toLocaleString('en-IN');
+}
+
+function renderAuth() {
+  document.getElementById('auth-shop-name').textContent = config.shopName;
+  document.getElementById('auth-shop-loc').textContent = config.location;
+  document.getElementById('auth-date').textContent =
+    new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long'});
+  clearAuthError();
+  const btn = document.getElementById('google-signin-btn');
+  if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
 }
 
 /* ────────────────────────────────────────────────────
@@ -1118,14 +1548,16 @@ async function init() {
     return;
   }
 
-  // Pull latest data from Firestore (Firestore handles offline cache automatically)
+  // Pull latest data from Firestore. Reads BEFORE Google sign-in will fail
+  // under strict rules, but the SDK serves cached data from IndexedDB so the
+  // app stays usable. We attempt the load and ignore individual failures.
   try {
     const [shopCfg, staff, services, fixed, emi] = await Promise.all([
-      fbGetConfigDoc(),
-      fbGetCollection(COL.STAFF),
-      fbGetCollection(COL.SERVICES),
-      fbGetCollection(COL.FIXED),
-      fbGetCollection(COL.EMI),
+      fbGetConfigDoc().catch(() => ({})),
+      fbGetCollection(COL.STAFF).catch(() => []),
+      fbGetCollection(COL.SERVICES).catch(() => []),
+      fbGetCollection(COL.FIXED).catch(() => []),
+      fbGetCollection(COL.EMI).catch(() => []),
     ]);
 
     if (shopCfg) {
@@ -1138,12 +1570,13 @@ async function init() {
       if (shopCfg.adminPin)         config.adminPin = shopCfg.adminPin;
       if (shopCfg.staffPin)         config.staffPin = shopCfg.staffPin;
       if (shopCfg.discountRequiresPin !== undefined) config.discountRequiresPin = !!shopCfg.discountRequiresPin;
+      if (Array.isArray(shopCfg.adminEmails)) config.adminEmails = shopCfg.adminEmails;
+      if (Array.isArray(shopCfg.staffEmails)) config.staffEmails = shopCfg.staffEmails;
     }
     if (staff && staff.length)         config.staff = staff;
     if (fixed && fixed.length)         config.fixedExpenses = fixed;
     if (emi && emi.length)             config.emi = emi;
     if (services && services.length) {
-      // Convert array of {category,name,price} back to object
       const svcs = {};
       services.forEach(s => {
         if (!svcs[s.category]) svcs[s.category] = [];
@@ -1159,7 +1592,13 @@ async function init() {
   // Set initial tab
   state.tab = Object.keys(config.services)[0];
 
-  showScreen('landing');
+  // Listen for auth state — Google Sign-In drives screen routing
+  fbAuth.onAuthStateChanged(handleAuthStateChange);
+
+  // If no user yet, show auth gate
+  if (!fbAuth.currentUser) {
+    showScreen('auth');
+  }
 }
 
 /* ────────────────────────────────────────────────────
@@ -1205,20 +1644,19 @@ async function testFirebaseConnection() {
     return;
   }
   try {
-    // Init a temp app for testing so we don't pollute the default
+    // Init a temp app to verify the config & auth domain are valid.
+    // We can't read Firestore without an authenticated session, so we just
+    // check that the SDK initializes and Auth resolves a session token.
     const tempName = 'oz_test_' + Date.now();
     const tApp = firebase.initializeApp(cfg, tempName);
-    const tDb  = firebase.firestore(tApp);
-    const tAuth = firebase.auth(tApp);
-    await tAuth.signInAnonymously();
-    // Try a tiny read — collection may be empty, that's fine
-    await tDb.collection(COL.CONFIG).limit(1).get();
+    firebase.firestore(tApp);            // throws if config is malformed
+    firebase.auth(tApp);                 // throws if auth domain is invalid
     await tApp.delete();
     res.className = 'setup-connect-result ok';
-    res.textContent = '✓ Connected to Firebase project "' + cfg.projectId + '"';
+    res.textContent = '✓ Config valid for project "' + cfg.projectId + '". Sign in with Google after setup completes.';
   } catch(e) {
     res.className = 'setup-connect-result err';
-    res.textContent = '⚠ Connection failed: ' + (e.message || e.code || 'check rules + Anonymous Auth is enabled');
+    res.textContent = '⚠ Invalid config: ' + (e.message || e.code || 'check apiKey, projectId & authDomain');
   }
 }
 
@@ -1290,16 +1728,39 @@ function flattenServices(svcsObj) {
 function renderLanding() {
   document.getElementById('landing-shop-name').textContent = config.shopName;
   document.getElementById('landing-location').textContent = config.location;
-  document.getElementById('landing-date').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('landing-date').textContent =
+    new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long'});
+
+  // User chip
+  if (currentUser) {
+    const photoEl = document.getElementById('user-chip-photo');
+    const initEl  = document.getElementById('user-chip-initial');
+    if (currentUser.photo) {
+      photoEl.src = currentUser.photo;
+      photoEl.style.display = '';
+      initEl.style.display = 'none';
+    } else {
+      photoEl.style.display = 'none';
+      initEl.style.display = '';
+      initEl.textContent = (currentUser.name || currentUser.email || 'O').charAt(0).toUpperCase();
+    }
+    document.getElementById('user-chip-name').textContent = currentUser.name || currentUser.email;
+    document.getElementById('user-chip-role').textContent =
+      currentUser.role === 'admin' ? 'Owner / Admin' : 'Staff';
+  }
+
+  // Hide admin button for staff role
+  const adminBtn = document.getElementById('btn-enter-admin');
+  if (adminBtn) {
+    adminBtn.style.display = (currentUser && currentUser.role === 'admin') ? '' : 'none';
+  }
 }
 
-function loginStaff() {
-  state.pinPurpose = 'staff';
-  openPin('Enter Staff PIN');
-}
-function loginAdmin() {
-  state.pinPurpose = 'admin';
-  openPin('Enter Admin PIN');
+// Direct entry — Google Auth already proved identity & role
+function enterStaff() { showScreen('staff'); }
+function enterAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') { toast('Admin access required'); return; }
+  showScreen('admin'); setAdminTab('dashboard');
 }
 
 /* ────────────────────────────────────────────────────
@@ -1366,6 +1827,17 @@ function changeFootfall(delta) {
 function renderHome() {
   document.getElementById('home-shop-name').textContent = config.shopName;
   const categories = Object.keys(config.services);
+  if (!categories.length) {
+    document.getElementById('service-tabs').innerHTML = '';
+    document.getElementById('service-list').innerHTML =
+      '<div class="muted-text center" style="padding:40px 20px;line-height:1.6">' +
+      'No services yet.<br>' +
+      (currentUser && currentUser.role === 'admin'
+        ? 'Add services from <strong>Admin → Setup → Services</strong>.'
+        : 'Ask your admin to add services in Setup.') +
+      '</div>';
+    return;
+  }
   if (!state.tab || !config.services[state.tab]) state.tab = categories[0];
 
   // Tabs
@@ -1537,6 +2009,12 @@ function applyDiscount() {
    PAYMENT
 ──────────────────────────────────────────────────── */
 function renderPayment() {
+  // Defensive: if user lands on payment without items, kick them back
+  if (!state.cart.length) {
+    toast('Cart is empty');
+    showScreen('home');
+    return;
+  }
   document.getElementById('payment-amount').textContent = grandTotal().toLocaleString('en-IN');
   const qrH = document.getElementById('qr-holder');
   if (config.qrImage) {
@@ -1560,6 +2038,16 @@ function sendWhatsAppReceipt() {
 }
 
 async function finaliseTransaction(phone) {
+  // Guard against double-submit: if already finalising, ignore subsequent taps.
+  if (state.txInFlight) return;
+  if (!state.cart.length) { toast('Cart is empty'); return; }
+  state.txInFlight = true;
+
+  // Disable both finish buttons while writing
+  const recScreen = document.getElementById('screen-receipt');
+  const buttons = recScreen ? recScreen.querySelectorAll('button') : [];
+  buttons.forEach(b => b.disabled = true);
+
   const staffName = document.getElementById('receipt-staff').value || 'Staff';
   const sub = subtotal();
   const disc = discountAmount();
@@ -1568,12 +2056,12 @@ async function finaliseTransaction(phone) {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
 
-  // Build transaction row
+  // Build transaction row. NOTE: no client `id` — fbAppendDoc generates one.
   const txRow = {
-    id: uid(),
     date: state.todayStr,
     time: timeStr,
     services: state.cart.map(i => `${i.name}${i.qty > 1 ? ' ×' + i.qty : ''}`).join(', '),
+    items: state.cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
     subtotal: sub,
     discount: disc,
     discountLabel: state.discount ? (state.discount.label || '') : '',
@@ -1583,8 +2071,15 @@ async function finaliseTransaction(phone) {
     staffName,
   };
 
-  // Log to Firestore (writes are queued automatically when offline)
-  fbAddDoc(COL.TRANSACTIONS, txRow);
+  // APPEND a brand new transaction document — never overwrites.
+  const newId = await fbAppendDoc(COL.TRANSACTIONS, txRow);
+  if (!newId) {
+    toast('⚠ Could not save transaction. Check connection.');
+    state.txInFlight = false;
+    buttons.forEach(b => b.disabled = false);
+    return;
+  }
+  logAudit('tx.create', `${COL.TRANSACTIONS}/${newId}`, { total, staffName, items: state.cart.length });
 
   // Send WhatsApp if phone provided
   if (phone) {
@@ -1606,12 +2101,23 @@ async function finaliseTransaction(phone) {
     window.open(waUrl, '_blank');
   }
 
+  // Show the saved doc id briefly so the staff can refer to it.
+  const sub2 = document.getElementById('confirm-sub');
+  if (sub2) {
+    sub2.textContent = `Bill ${newId.slice(-6).toUpperCase()} saved · ₹${total.toLocaleString('en-IN')} · Counter ready for next customer.`;
+  }
+
+  // Clear in-flight guard & re-enable buttons (in case user comes back)
+  state.txInFlight = false;
+  buttons.forEach(b => b.disabled = false);
+
   showScreen('confirm');
 }
 
 function resetAndGoHome() {
   state.cart = [];
   state.discount = null;
+  state.txInFlight = false;
   document.getElementById('customer-phone').value = '';
   document.getElementById('receipt-staff').value = '';
   showScreen('staff');
@@ -1625,8 +2131,9 @@ function exitAdmin() { showScreen('landing'); }
 function setAdminTab(t) {
   state.adminTab = t;
   document.querySelectorAll('.admin-tab').forEach(b => b.classList.toggle('active', b.dataset.atab === t));
-  ['dashboard','sales','expenses','payroll','emi','setup','security'].forEach(n => {
-    document.getElementById('admin-tab-' + n).style.display = (n === t) ? '' : 'none';
+  ['dashboard','sales','expenses','payroll','emi','setup','team','security'].forEach(n => {
+    const el = document.getElementById('admin-tab-' + n);
+    if (el) el.style.display = (n === t) ? '' : 'none';
   });
   if (t === 'dashboard') renderAdminDashboard();
   if (t === 'sales') renderAdminSales();
@@ -1634,6 +2141,7 @@ function setAdminTab(t) {
   if (t === 'payroll') renderAdminPayroll();
   if (t === 'emi') renderAdminEMI();
   if (t === 'setup') renderAdminSetup();
+  if (t === 'team') renderAdminTeam();
   if (t === 'security') renderAdminSecurity();
   document.getElementById('admin-top-date').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
 }
@@ -1648,7 +2156,7 @@ async function renderAdminDashboard() {
     <div class="admin-section-title">
       ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} — P&L
     </div>
-    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Loading from Sheets…</div>
+    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching numbers…</div>
   `;
 
   let txs, variable, fixed, salaries, emi, footfalls;
@@ -1749,10 +2257,13 @@ async function loadSales() {
   try { txs = await fbQueryByMonth(COL.TRANSACTIONS, ym); }
   catch(e) { host.innerHTML = '<div class="muted-text center">Could not load. Check connection.</div>'; return; }
   if (!txs.length) { host.innerHTML = '<div class="muted-text center" style="padding:24px">No transactions for this month.</div>'; return; }
-  // Sort newest first (by date+time string)
-  const sorted = [...txs].sort((a, b) =>
-    (b.date + ' ' + (b.time || '')).localeCompare(a.date + ' ' + (a.time || ''))
-  );
+  // Sort newest first. Prefer the server-side createdAtMs (set by fbAppendDoc),
+  // fall back to date+time string for older records that lack it.
+  const sorted = [...txs].sort((a, b) => {
+    const am = a.createdAtMs || 0, bm = b.createdAtMs || 0;
+    if (am !== bm) return bm - am;
+    return (b.date + ' ' + (b.time || '')).localeCompare(a.date + ' ' + (a.time || ''));
+  });
   let total = 0;
   let html = '';
   sorted.forEach(tx => {
@@ -1777,8 +2288,44 @@ async function loadSales() {
       <div class="erp-value gold">₹${fmt(total)}</div>
       <div class="erp-sub">${sorted.length} transactions</div>
     </div>
+    <button class="btn btn-secondary" style="width:100%;margin-bottom:12px;" onclick='exportSalesCsv(${JSON.stringify(ym)})'>⬇ Export ${ym} as CSV</button>
     ${html}
   `;
+  // Stash sorted on a window helper so the CSV exporter can read them.
+  window.__lastSalesRows = sorted;
+}
+
+function exportSalesCsv(ym) {
+  const rows = window.__lastSalesRows || [];
+  if (!rows.length) { toast('Nothing to export'); return; }
+  const headers = ['Date','Time','Services','Subtotal','Discount','DiscountLabel','GST','Total','PaymentMethod','Staff','CreatedBy','BillId'];
+  const csv = [headers.join(',')].concat(
+    rows.map(r => [
+      r.date || '',
+      r.time || '',
+      `"${String(r.services || '').replace(/"/g,'""')}"`,
+      r.subtotal || 0,
+      r.discount || 0,
+      `"${String(r.discountLabel || '').replace(/"/g,'""')}"`,
+      r.gst || 0,
+      r.total || 0,
+      r.paymentMethod || '',
+      `"${String(r.staffName || '').replace(/"/g,'""')}"`,
+      `"${String(r.createdBy || '').replace(/"/g,'""')}"`,
+      r.id || '',
+    ].join(','))
+  ).join('\n');
+  downloadFile(`ozone-sales-${ym}.csv`, csv, 'text/csv');
+  logAudit('export.salesCsv', null, { month: ym, count: rows.length });
+}
+
+function downloadFile(filename, contents, mime) {
+  const blob = new Blob([contents], { type: mime || 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
 }
 
 /* ────────────────────────────────────────────────────
@@ -1824,14 +2371,19 @@ function openAddExpense() {
 }
 
 async function saveExpense() {
+  if (state.expInFlight) return;
   const category = document.getElementById('exp-category').value;
   const desc     = document.getElementById('exp-desc').value.trim();
   const amount   = parseFloat(document.getElementById('exp-amount').value) || 0;
   const date     = document.getElementById('exp-date').value;
   if (!amount || !date) { toast('Fill in amount and date'); return; }
+  state.expInFlight = true;
   closeModal('modal-add-expense');
-  const row = { id: uid(), date, category, description: desc || category, amount };
-  await fbAddDoc(COL.EXPENSES, row);
+  const row = { date, category, description: desc || category, amount };
+  const newId = await fbAppendDoc(COL.EXPENSES, row);
+  state.expInFlight = false;
+  if (!newId) { toast('⚠ Could not save expense'); return; }
+  logAudit('expense.create', `${COL.EXPENSES}/${newId}`, { amount, category, date });
   toast('Expense saved ✓');
   loadExpenses();
 }
@@ -1863,8 +2415,28 @@ async function loadExpenses() {
       <div class="erp-label">Month Total</div>
       <div class="erp-value">₹${fmt(total)}</div>
     </div>
+    <button class="btn btn-secondary" style="width:100%;margin-bottom:12px;" onclick='exportExpensesCsv(${JSON.stringify(ym)})'>⬇ Export ${ym} as CSV</button>
     ${html}
   `;
+  window.__lastExpensesRows = exps;
+}
+
+function exportExpensesCsv(ym) {
+  const rows = window.__lastExpensesRows || [];
+  if (!rows.length) { toast('Nothing to export'); return; }
+  const headers = ['Date','Category','Description','Amount','CreatedBy','Id'];
+  const csv = [headers.join(',')].concat(
+    rows.map(r => [
+      r.date || '',
+      `"${String(r.category || '').replace(/"/g,'""')}"`,
+      `"${String(r.description || '').replace(/"/g,'""')}"`,
+      r.amount || 0,
+      `"${String(r.createdBy || '').replace(/"/g,'""')}"`,
+      r.id || '',
+    ].join(','))
+  ).join('\n');
+  downloadFile(`ozone-expenses-${ym}.csv`, csv, 'text/csv');
+  logAudit('export.expensesCsv', null, { month: ym, count: rows.length });
 }
 
 async function saveFixedExpense() {
@@ -1943,8 +2515,25 @@ async function renderAdminPayroll() {
 async function markSalaryPaid(name, staffId, amount, month, year) {
   if (!confirm(`Mark salary of ₹${fmt(amount)} paid to ${name}?`)) return;
   const today = state.todayStr;
-  const row = { id: uid(), staffId, staffName: name, month, year, amount, paidDate: today };
-  await fbAddDoc(COL.SALARIES, row);
+  // Idempotency: if a salary entry for the same staff/month/year already exists,
+  // do not create a duplicate. The list is small, so a client-side check is fine.
+  try {
+    const existing = await fbGetCollection(COL.SALARIES);
+    const dup = (existing || []).find(s =>
+      String(s.staffName) === String(name) &&
+      String(s.month) === String(month) &&
+      String(s.year) === String(year)
+    );
+    if (dup) {
+      toast(name + ' already paid for this month');
+      renderAdminPayroll();
+      return;
+    }
+  } catch(e) { /* network failure — proceed and let server enforce */ }
+  const row = { staffId, staffName: name, month, year, amount, paidDate: today };
+  const newId = await fbAppendDoc(COL.SALARIES, row);
+  if (!newId) { toast('⚠ Could not save salary'); return; }
+  logAudit('salary.paid', `${COL.SALARIES}/${newId}`, { staffName: name, month, year, amount });
   toast(name + ' salary marked paid ✓');
   renderAdminPayroll();
 }
@@ -2076,7 +2665,7 @@ function renderSetupStaff(host) {
   });
   html += `
     <button class="add-btn-row" onclick="addStaff()">+ Add Staff Member</button>
-    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveStaffToSheets()">Save Staff →</button>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveStaffList()">Save Staff →</button>
   `;
   host.innerHTML = html;
 }
@@ -2094,14 +2683,14 @@ function updateStaff(idx, field, val) {
 function deleteStaff(idx) {
   if (!confirm('Remove this staff member?')) return;
   config.staff.splice(idx, 1);
-  saveConfig(); saveStaffToSheets();
+  saveConfig(); saveStaffList();
   showSetupTab('staff');
 }
 
-async function saveStaffToSheets() {
+async function saveStaffList() {
   saveConfig();
-  await fbReplaceCollection(COL.STAFF, config.staff);
-  toast('Staff saved ✓');
+  const ok = await fbReplaceCollection(COL.STAFF, config.staff);
+  toast(ok ? 'Staff saved ✓' : '⚠ Could not save staff');
 }
 
 function renderSetupServices(host) {
@@ -2115,7 +2704,7 @@ function renderSetupServices(host) {
       </div>
     `;
   });
-  html += `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveServicesToSheets()">Save Services →</button>`;
+  html += `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveServicesList()">Save Services →</button>`;
   host.innerHTML = html;
   // Render rows
   Object.keys(config.services).forEach(cat => {
@@ -2148,10 +2737,10 @@ function addService(cat) {
   renderSetupServices(host);
 }
 
-async function saveServicesToSheets() {
+async function saveServicesList() {
   saveConfig();
-  await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
-  toast('Services saved ✓');
+  const ok = await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
+  toast(ok ? 'Services saved ✓' : '⚠ Could not save services');
 }
 
 function renderSetupShop(host) {
@@ -2220,6 +2809,129 @@ async function saveShopSettings() {
 }
 
 /* ────────────────────────────────────────────────────
+   ADMIN: TEAM (Google account access control)
+──────────────────────────────────────────────────── */
+function renderAdminTeam() {
+  const host = document.getElementById('admin-tab-team');
+  const admins = (config.adminEmails || []).slice();
+  const staff  = (config.staffEmails || []).slice();
+
+  let adminsHtml = '';
+  admins.forEach((em, i) => {
+    const isYou = currentUser && normEmail(em) === normEmail(currentUser.email);
+    adminsHtml += `
+      <div class="team-row">
+        <div class="team-row-info">
+          <div class="team-row-email">${esc(em)}${isYou ? ' <span style="color:var(--gold);font-size:11px">(you)</span>' : ''}</div>
+          <div class="team-row-role">Admin · Owner</div>
+        </div>
+        <span class="team-role-pill admin">Admin</span>
+        ${isYou ? '' : `<button class="del-btn" onclick="removeAdminEmail(${i})">×</button>`}
+      </div>
+    `;
+  });
+
+  let staffHtml = '';
+  staff.forEach((em, i) => {
+    staffHtml += `
+      <div class="team-row">
+        <div class="team-row-info">
+          <div class="team-row-email">${esc(em)}</div>
+          <div class="team-row-role">Counter staff</div>
+        </div>
+        <span class="team-role-pill staff">Staff</span>
+        <button class="del-btn" onclick="removeStaffEmail(${i})">×</button>
+      </div>
+    `;
+  });
+
+  host.innerHTML = `
+    <div class="admin-section-title">Team Access</div>
+    <div class="muted-text" style="margin-bottom:18px;line-height:1.6;">
+      Authorize Google accounts that can sign in. <strong>Admins</strong> see the full ERP; <strong>Staff</strong> see only the counter dashboard.
+    </div>
+
+    <div style="font-weight:500;font-size:14px;margin-bottom:8px;color:var(--charcoal);letter-spacing:.04em;">ADMINS · ${admins.length}</div>
+    ${adminsHtml || '<div class="muted-text" style="padding:8px 0;font-size:13px">No admins yet.</div>'}
+    <div style="display:flex;gap:8px;margin:8px 0 24px;">
+      <input type="email" id="new-admin-email" class="setup-input" placeholder="admin@example.com" style="flex:1">
+      <button class="btn btn-primary" style="flex:none;padding:0 16px;" onclick="addAdminEmail()">Add</button>
+    </div>
+
+    <div style="font-weight:500;font-size:14px;margin-bottom:8px;color:var(--charcoal);letter-spacing:.04em;">STAFF · ${staff.length}</div>
+    ${staffHtml || '<div class="muted-text" style="padding:8px 0;font-size:13px">No staff added yet.</div>'}
+    <div style="display:flex;gap:8px;margin:8px 0 24px;">
+      <input type="email" id="new-staff-email" class="setup-input" placeholder="staff@example.com" style="flex:1">
+      <button class="btn btn-primary" style="flex:none;padding:0 16px;" onclick="addStaffEmail()">Add</button>
+    </div>
+
+    <div class="muted-text" style="font-size:12px;line-height:1.6;padding:12px 14px;background:var(--offwhite);border:1px dashed var(--line);border-radius:10px;">
+      💡 Tip: Each user must sign in with the <em>same Google account</em> whose email is added here. Removing an email immediately revokes access on next sign-in.
+    </div>
+  `;
+}
+
+async function addAdminEmail() {
+  const inp = document.getElementById('new-admin-email');
+  const em  = normEmail(inp.value);
+  if (!em || !em.includes('@')) { toast('Enter a valid email'); return; }
+  if (!config.adminEmails) config.adminEmails = [];
+  if (config.adminEmails.map(normEmail).includes(em)) { toast('Already added'); return; }
+  config.adminEmails.push(em);
+  // Promote: also remove from staff list if present
+  config.staffEmails = (config.staffEmails || []).filter(e => normEmail(e) !== em);
+  saveConfig();
+  await fbSetConfig({ adminEmails: config.adminEmails, staffEmails: config.staffEmails });
+  logAudit('team.addAdmin', null, { email: em });
+  inp.value = '';
+  toast('Admin added ✓');
+  renderAdminTeam();
+}
+
+async function removeAdminEmail(idx) {
+  const em = config.adminEmails[idx];
+  if (currentUser && normEmail(em) === normEmail(currentUser.email)) {
+    toast('You cannot remove yourself');
+    return;
+  }
+  if (!confirm('Remove ' + em + ' as admin?')) return;
+  config.adminEmails.splice(idx, 1);
+  saveConfig();
+  await fbSetConfig({ adminEmails: config.adminEmails });
+  logAudit('team.removeAdmin', null, { email: em });
+  renderAdminTeam();
+}
+
+async function addStaffEmail() {
+  const inp = document.getElementById('new-staff-email');
+  const em  = normEmail(inp.value);
+  if (!em || !em.includes('@')) { toast('Enter a valid email'); return; }
+  if (!config.staffEmails) config.staffEmails = [];
+  if (config.staffEmails.map(normEmail).includes(em)) { toast('Already added'); return; }
+  // If they're already an admin, ignore
+  if ((config.adminEmails || []).map(normEmail).includes(em)) {
+    toast('Already an admin'); return;
+  }
+  config.staffEmails.push(em);
+  saveConfig();
+  await fbSetConfig({ staffEmails: config.staffEmails });
+  logAudit('team.addStaff', null, { email: em });
+  inp.value = '';
+  toast('Staff added ✓');
+  renderAdminTeam();
+}
+
+async function removeStaffEmail(idx) {
+  const em = config.staffEmails[idx];
+  if (!confirm('Remove ' + em + ' from staff?')) return;
+  config.staffEmails.splice(idx, 1);
+  saveConfig();
+  await fbSetConfig({ staffEmails: config.staffEmails });
+  logAudit('team.removeStaff', null, { email: em });
+  renderAdminTeam();
+}
+
+/* ────────────────────────────────────────────────────
    ADMIN: SECURITY
 ──────────────────────────────────────────────────── */
 function renderAdminSecurity() {
@@ -2260,7 +2972,7 @@ async function changeStaffPin() {
   if (p.length !== 4) { toast('PIN must be 4 digits'); return; }
   config.staffPin = p;
   saveConfig();
-  await fbSetConfig({ staffPin: p });
+  logAudit('security.staffPinChanged');
   toast('Staff PIN updated ✓');
 }
 
@@ -2269,6 +2981,8 @@ async function changeAdminPin() {
   if (p.length !== 4) { toast('PIN must be 4 digits'); return; }
   config.adminPin = p;
   saveConfig();
+  await fbSetConfig({ adminPin: p });
+  logAudit('security.adminPinChanged'
   await fbSetConfig({ adminPin: p });
   toast('Admin PIN updated ✓');
 }
@@ -2382,9 +3096,45 @@ function escAttr(s) { return esc(s); }
    Firestore SDK handles offline persistence + write
    queue automatically (via IndexedDB). No manual sync.
 ──────────────────────────────────────────────────── */
+// Activate the waiting SW (called from the in-app update banner).
+function applyAppUpdate() {
+  if (window.__pendingWorker) {
+    window.__pendingWorker.postMessage({ type: 'SKIP_WAITING' });
+  }
+}
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    navigator.serviceWorker.register('service-worker.js').then(reg => {
+      function showUpdateBanner(worker) {
+        const t = document.getElementById('save-toast');
+        if (!t) return;
+        window.__pendingWorker = worker;
+        t.innerHTML =
+          '<span style="margin-right:10px">⤴ New version ready</span>' +
+          '<button type="button" onclick="applyAppUpdate()" style="background:white;color:var(--success);border:none;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">UPDATE</button>';
+        t.classList.add('visible');
+        // Persist banner — do NOT auto-hide.
+        clearTimeout(toastTimer);
+      }
+      if (reg.waiting) showUpdateBanner(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        if (!w) return;
+        w.addEventListener('statechange', () => {
+          if (w.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateBanner(w);
+          }
+        });
+      });
+      // Reload once the new SW activates and takes control.
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    }).catch(() => {});
   });
 }
 
