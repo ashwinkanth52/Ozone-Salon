@@ -4125,6 +4125,11 @@ async function renderAdminDashboard() {
   const todayTxs = txs.filter(t => String(t.date) === state.todayStr);
   const todayRevenue = sumOf(todayTxs, 'total');
   const todayCount   = todayTxs.length;
+  const paymentToday = { UPI: 0, Cash: 0, Card: 0 };
+  todayTxs.forEach(t => {
+    const method = normalizePaymentMethod(t.paymentMethod);
+    paymentToday[method] += parseFloat(t.total) || 0;
+  });
   // Count UNIQUE customers today (those who provided phone #)
   const todayCustomers = new Set(todayTxs.filter(t => t.customerId).map(t => t.customerId)).size;
 
