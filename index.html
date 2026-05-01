@@ -4633,6 +4633,81 @@ function deleteFixedExpense(id) {
 /* ────────────────────────────────────────────────────
    ADMIN: PAYROLL
 ──────────────────────────────────────────────────── */
+function getPayrollPeriodDays(year, month) {
+  const y = parseInt(year, 10);
+  const m = parseInt(month, 10);
+  if (!y || !m) return 0;
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const now = new Date();
+  if (now.getFullYear() === y && (now.getMonth() + 1) === m) {
+    return Math.min(now.getDate(), daysInMonth);
+  }
+  return daysInMonth;
+}
+
+function getStaffAttendanceMetrics(staffRec, ym, payrollDays) {
+  const attendance = (staffRec && staffRec.attendance) || [];
+  const monthRows = attendance.filter(a => String(a.date || '').startsWith(ym));
+  const dayUnits = new Map();
+  monthRows.forEach(a => {
+    const dateKey = String(a.date || '');
+    if (!dateKey) return;
+    const unit = a.isHalfDay ? 0.5 : ((a.checkInTime || a.checkOutTime) ? 1 : 0);
+    dayUnits.set(dateKey, Math.max(dayUnits.get(dateKey) || 0, unit));
+  });
+  let presentUnits = 0;
+  let fullDays = 0;
+  let halfDays = 0;
+  dayUnits.forEach(unit => {
+    presentUnits += unit;
+    if (unit >= 1) fullDays += 1;
+    else if (unit > 0) halfDays += 1;
+  });
+  return {
+    presentUnits,
+    fullDays,
+    halfDays,
+    leaveDays: Math.max(0, payrollDays - presentUnits),
+  };
+}
+
+function downloadSalarySlip(payrollKey) {
+  const details = (window.__lastPayrollByStaff || {})[payrollKey];
+  if (!details) { toast('Salary slip data not ready'); return; }
+  const rows = [
+    { Item: 'Staff', Value: details.staffName },
+    { Item: 'Month', Value: details.monthName },
+    { Item: 'Revenue Generated', Value: '₹' + fmtPlain(details.revenueGenerated || 0) },
+    { Item: 'Payroll Days', Value: details.payrollDays },
+    { Item: 'Present Units', Value: details.presentUnits },
+    { Item: 'Full Days', Value: details.fullDays },
+    { Item: 'Half Days', Value: details.halfDays },
+    { Item: 'Leave Days', Value: details.leaveDays },
+    { Item: 'Paid Leave Allowance', Value: details.paidLeaves },
+    { Item: 'Excess Leaves', Value: details.excessLeaveDays },
+    { Item: 'Base Salary', Value: '₹' + fmtPlain(details.base || 0) },
+    { Item: 'Leave Deduction', Value: '₹' + fmtPlain(details.leaveDeduction || 0) },
+    { Item: 'Salary After Leave Cut', Value: '₹' + fmtPlain(details.baseAfterLeave || 0) },
+    { Item: 'Commission', Value: '₹' + fmtPlain(details.commission || 0) },
+    { Item: 'Advances Deducted', Value: '₹' + fmtPlain(details.advance || 0) },
+    { Item: 'Net Payable', Value: '₹' + fmtPlain(details.netPayable || 0) },
+    { Item: 'Status', Value: details.isPaid ? 'Paid' : 'Pending' },
+  ];
+  const summary = [
+    `Sales handled: ₹${fmtPlain(details.revenueGenerated || 0)}`,
+    `Net payable: ₹${fmtPlain(details.netPayable || 0)}`,
+    `Leave cut applied on ${details.excessLeaveDays || 0} excess leave day(s)`,
+  ];
+  exportPDF(
+    `salary-slip-${(details.ym || state.todayStr.slice(0,7))}-${details.staffName.replace(/[^a-z0-9]+/gi,'-').toLowerCase()}.pdf`,
+    `Salary Slip — ${details.staffName}`,
+    details.monthName,
+    rows,
+    null,
+    summary
+  );
+}
+
 async function renderAdminPayroll() {
   const host = document.getElementById('admin-tab-payroll');
   const now = new Date();
@@ -4648,29 +4723,30 @@ async function renderAdminPayroll() {
 
   host.innerHTML = `
     <div class="admin-section-title">Payroll · ${monthName}</div>
-    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Calculating commissions, advances, attendance…</div>
+    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Calculating commissions, leaves, salary slips…</div>
   `;
 
-  // Pull this month's transactions, salaries, advances, attendance in parallel
-  let txs = [], salariesAll = [], advances = [], attendance = [];
+  let txs = [], salariesAll = [], advances = [], variable = [], fixed = [], emi = [];
   try {
-    [txs, salariesAll, advances, attendance] = await Promise.all([
+    [txs, salariesAll, advances, variable, fixed, emi] = await Promise.all([
       fbQueryByMonth(COL.TRANSACTIONS, ym),
       fbGetCollection(COL.SALARIES),
       fbQueryByMonth(COL.ADVANCES, ym),
-      fbQueryByMonth(COL.ATTENDANCE, ym),
+      fbQueryByMonth(COL.EXPENSES, ym),
+      fbGetCollection(COL.FIXED),
+      fbGetCollection(COL.EMI),
     ]);
   } catch(e) { console.warn('payroll load failed:', e); }
 
-  // Index transactions by staff for commission tally
   const commByStaff = {};
+  const salesByStaff = {};
   txs.forEach(t => {
     const k = String(t.staffName || '');
     if (!k) return;
     commByStaff[k] = (commByStaff[k] || 0) + (parseFloat(t.commissionAmount) || 0);
+    salesByStaff[k] = (salesByStaff[k] || 0) + (parseFloat(t.total) || 0);
   });
 
-  // Index advances by staff for this month
   const advByStaff = {};
   advances.forEach(a => {
     const k = String(a.staffName || '');
@@ -4678,55 +4754,116 @@ async function renderAdminPayroll() {
     advByStaff[k] = (advByStaff[k] || 0) + (parseFloat(a.amount) || 0);
   });
 
-  // Index attendance days by staff (this month) — count unique dates checked-in
-  const attByStaff = {};
-  attendance.forEach(a => {
-    const k = String(a.staffName || '');
-    if (!k) return;
-    if (!attByStaff[k]) attByStaff[k] = new Set();
-    attByStaff[k].add(String(a.date));
-  });
-
   const paid = new Set();
   salariesAll.forEach(s => {
     if (String(s.month) === month && String(s.year) === year) paid.add(String(s.staffName));
   });
 
+  const payrollDays = getPayrollPeriodDays(year, month);
+  const totalSales = (txs || []).reduce((a, r) => a + (parseFloat(r.total) || 0), 0);
+  const variableTotal = (variable || []).reduce((a, r) => a + (parseFloat(r.amount) || 0), 0);
+  const fixedTotal = (fixed || []).reduce((a, r) => a + (parseFloat(r.amount) || 0), 0);
+  const emiTotal = (emi || []).reduce((a, r) => a + (parseFloat(r.monthlyEMI) || 0), 0);
+  const operatingBeforePayroll = variableTotal + fixedTotal + emiTotal;
+
   let html = `<div class="admin-section-title">Payroll · ${monthName}</div>`;
-  let totalNet = 0, totalBase = 0, totalCom = 0, totalAdv = 0;
+  html += `
+    <div class="erp-grid" style="margin-bottom:14px;">
+      <div class="erp-card gold">
+        <div class="erp-label">Sales This Month</div>
+        <div class="erp-value gold">₹${fmt(totalSales)}</div>
+        <div class="erp-sub">Use this with payroll to see profit in one click</div>
+      </div>
+      <div class="erp-card">
+        <div class="erp-label">Operating Cost Before Payroll</div>
+        <div class="erp-value">₹${fmt(operatingBeforePayroll)}</div>
+        <div class="erp-sub">Variable + fixed + EMI</div>
+      </div>
+    </div>
+    <div class="muted-text" style="margin:-4px 0 14px;font-size:12px;line-height:1.55">Payroll uses attendance saved against each staff member. One full day = 1, half day = 0.5. Salary deduction starts only after the paid-leave quota set in Setup → Staff is exhausted.</div>
+  `;
+
+  let totalNet = 0, totalBase = 0, totalCom = 0, totalAdv = 0, totalLeaveDeduction = 0, totalRevenueHandled = 0;
   const payrollRowsForExport = [];
+  window.__lastPayrollByStaff = {};
+
   config.staff.forEach(s => {
-    const base    = parseFloat(s.salary) || 0;
+    const base = parseFloat(s.salary) || 0;
     const commPct = parseFloat(s.commissionPct) || 0;
-    const com     = parseFloat(commByStaff[s.name] || 0);
-    const adv     = parseFloat(advByStaff[s.name] || 0);
-    const days    = attByStaff[s.name] ? attByStaff[s.name].size : 0;
-    const net     = Math.max(0, base + com - adv);
-    totalBase += base; totalCom += com; totalAdv += adv; totalNet += net;
+    const paidLeaves = parseFloat(s.paidLeaves) || 0;
+    const commission = parseFloat(commByStaff[s.name] || 0);
+    const advance = parseFloat(advByStaff[s.name] || 0);
+    const revenueHandled = parseFloat(salesByStaff[s.name] || 0);
+    const attendance = getStaffAttendanceMetrics(s, ym, payrollDays);
+    const excessLeaveDays = Math.max(0, attendance.leaveDays - paidLeaves);
+    const perDaySalary = payrollDays > 0 ? (base / payrollDays) : 0;
+    const leaveDeduction = Math.round(perDaySalary * excessLeaveDays);
+    const baseAfterLeave = Math.max(0, base - leaveDeduction);
+    const netPayable = Math.max(0, baseAfterLeave + commission - advance);
+    const isPaid = paid.has(s.name);
+    const payrollKey = String(s.id || s.name);
+
+    totalBase += base;
+    totalCom += commission;
+    totalAdv += advance;
+    totalNet += netPayable;
+    totalLeaveDeduction += leaveDeduction;
+    totalRevenueHandled += revenueHandled;
+
+    window.__lastPayrollByStaff[payrollKey] = {
+      staffKey: payrollKey,
+      staffId: s.id || '',
+      staffName: s.name,
+      ym,
+      month,
+      year,
+      monthName,
+      base,
+      commissionPct: commPct,
+      commission,
+      advance,
+      revenueGenerated: revenueHandled,
+      payrollDays,
+      presentUnits: attendance.presentUnits,
+      fullDays: attendance.fullDays,
+      halfDays: attendance.halfDays,
+      leaveDays: attendance.leaveDays,
+      paidLeaves,
+      excessLeaveDays,
+      leaveDeduction,
+      baseAfterLeave,
+      netPayable,
+      isPaid,
+    };
+
     payrollRowsForExport.push({
       Staff: s.name,
-      'Days Present': days,
-      'Base Salary': base,
+      'Payroll Days': payrollDays,
+      'Present Units': attendance.presentUnits,
+      'Leave Days': attendance.leaveDays,
+      'Paid Leaves': paidLeaves,
+      'Excess Leaves': excessLeaveDays,
+      'Revenue ₹': revenueHandled,
+      'Base Salary ₹': base,
+      'Leave Deduction ₹': leaveDeduction,
+      'Base After Leave ₹': baseAfterLeave,
       'Commission %': commPct,
-      'Commission ₹': com,
-      'Advances ₹': adv,
-      'Net Payable ₹': net,
-      'Status': paid.has(s.name) ? 'Paid' : 'Pending',
+      'Commission ₹': commission,
+      'Advances ₹': advance,
+      'Net Payable ₹': netPayable,
+      'Status': isPaid ? 'Paid' : 'Pending',
     });
-    const isPaid = paid.has(s.name);
+
     html += `
       <div class="payroll-row" style="padding:16px;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
           <div>
             <div class="payroll-name">${esc(s.name)}</div>
             <div class="muted-text" style="font-size:12px;margin-top:4px">
-              ${commPct ? commPct + '% commission · ' : ''}${days} days present
+              ${commPct ? commPct + '% commission · ' : ''}${attendance.presentUnits} present units · ${attendance.leaveDays} leave day${attendance.leaveDays !== 1 ? 's' : ''}
             </div>
           </div>
-          ${isPaid
-            ? `<div class="paid-badge">✓ Paid</div>`
-            : ''
-          }
+          ${isPaid ? `<div class="paid-badge">✓ Paid</div>` : ''}
         </div>
         <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <div style="background:var(--ivory);border-radius:8px;padding:8px 10px;">
@@ -4735,31 +4872,64 @@ async function renderAdminPayroll() {
           </div>
           <div style="background:rgba(122,152,118,.12);border-radius:8px;padding:8px 10px;">
             <div style="font-size:10px;color:var(--success);letter-spacing:.1em;text-transform:uppercase;">+ Comm</div>
-            <div style="font-family:var(--serif);font-size:15px;color:var(--success);">₹${fmt(com)}</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--success);">₹${fmt(commission)}</div>
           </div>
           <div style="background:rgba(197,106,106,.10);border-radius:8px;padding:8px 10px;">
             <div style="font-size:10px;color:var(--danger);letter-spacing:.1em;text-transform:uppercase;">− Adv</div>
-            <div style="font-family:var(--serif);font-size:15px;color:var(--danger);">₹${fmt(adv)}</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--danger);">₹${fmt(advance)}</div>
           </div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);">
+        <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="background:rgba(184,149,106,.08);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">Sales</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--charcoal);">₹${fmt(revenueHandled)}</div>
+          </div>
+          <div style="background:rgba(197,106,106,.10);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:10px;color:var(--danger);letter-spacing:.1em;text-transform:uppercase;">− Leave Cut</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--danger);">₹${fmt(leaveDeduction)}</div>
+          </div>
+          <div style="background:rgba(122,152,118,.12);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:10px;color:var(--success);letter-spacing:.1em;text-transform:uppercase;">Paid Leaves</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--success);">${paidLeaves}</div>
+          </div>
+        </div>
+        <div class="muted-text" style="font-size:11.5px;margin-top:10px;line-height:1.5;">
+          ${attendance.fullDays} full day${attendance.fullDays !== 1 ? 's' : ''} · ${attendance.halfDays} half day${attendance.halfDays !== 1 ? 's' : ''} · ${excessLeaveDays} excess leave day${excessLeaveDays !== 1 ? 's' : ''}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);gap:12px;">
           <div>
             <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">Net Payable</div>
-            <div style="font-family:var(--serif);font-size:22px;color:var(--gold);">₹${fmt(net)}</div>
+            <div style="font-family:var(--serif);font-size:22px;color:var(--gold);">₹${fmt(netPayable)}</div>
           </div>
-          ${isPaid
-            ? `<div class="paid-badge">✓ Paid this month</div>`
-            : `<button class="pay-btn" onclick="markSalaryPaid('${escAttr(s.name)}','${escAttr(s.id || '')}',${net},'${month}','${year}',${base},${com},${adv})">Mark Paid ₹${fmt(net)}</button>`
-          }
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+            <button class="btn btn-secondary" style="padding:10px 12px" onclick="downloadSalarySlip('${escAttr(payrollKey)}')">Slip PDF</button>
+            ${isPaid
+              ? `<div class="paid-badge">✓ Paid this month</div>`
+              : `<button class="pay-btn" onclick="markSalaryPaid('${escAttr(payrollKey)}')">Mark Paid ₹${fmt(netPayable)}</button>`
+            }
+          </div>
         </div>
       </div>
     `;
   });
+
+  const projectedProfit = totalSales - operatingBeforePayroll - totalNet;
   html += `
     <div class="erp-card gold full" style="margin-top:14px">
       <div class="erp-label">Total Net Payout · ${monthName}</div>
       <div class="erp-value gold">₹${fmt(totalNet)}</div>
-      <div class="erp-sub">Base ₹${fmt(totalBase)} + Commission ₹${fmt(totalCom)} − Advances ₹${fmt(totalAdv)}</div>
+      <div class="erp-sub">Base ₹${fmt(totalBase)} − Leave Cut ₹${fmt(totalLeaveDeduction)} + Commission ₹${fmt(totalCom)} − Advances ₹${fmt(totalAdv)}</div>
+    </div>
+    <div class="erp-grid" style="margin-top:14px;">
+      <div class="erp-card ${projectedProfit >= 0 ? 'green' : 'red'}">
+        <div class="erp-label">Projected Profit After Payroll</div>
+        <div class="erp-value ${projectedProfit >= 0 ? 'green' : 'red'}">₹${fmt(Math.abs(projectedProfit))}</div>
+        <div class="erp-sub">Sales ₹${fmt(totalSales)} − operating costs ₹${fmt(operatingBeforePayroll)} − payroll ₹${fmt(totalNet)}</div>
+      </div>
+      <div class="erp-card full">
+        <div class="erp-label">Payroll Snapshot</div>
+        <div class="erp-sub">Team sales ₹${fmt(totalRevenueHandled)} · Leave cut ₹${fmt(totalLeaveDeduction)} · Use “Slip PDF” for an individual salary slip and “Mark Paid” to lock the payout record.</div>
+      </div>
     </div>
     <div class="export-row" style="margin-top:14px">
       <button class="btn btn-primary" onclick='exportPayrollAs("pdf")'>📄 PDF</button>
@@ -4767,9 +4937,10 @@ async function renderAdminPayroll() {
       <button class="btn btn-secondary" onclick='exportPayrollAs("csv")'>📋 CSV</button>
     </div>
   `;
+
   window.__lastPayrollRows  = payrollRowsForExport;
   window.__lastPayrollMonth = ym;
-  window.__lastPayrollTotals = { totalNet, totalBase, totalCom, totalAdv };
+  window.__lastPayrollTotals = { totalNet, totalBase, totalCom, totalAdv, totalLeaveDeduction, projectedProfit };
   host.innerHTML = html;
 }
 
@@ -4781,8 +4952,10 @@ function exportPayrollAs(fmt) {
   const summary = [
     `Total Net Payout: ₹${fmtPlain(t.totalNet||0)}`,
     `Base: ₹${fmtPlain(t.totalBase||0)}`,
+    `Leave Deduction: ₹${fmtPlain(t.totalLeaveDeduction||0)}`,
     `Commission: ₹${fmtPlain(t.totalCom||0)}`,
     `Advances Deducted: ₹${fmtPlain(t.totalAdv||0)}`,
+    `Projected Profit After Payroll: ₹${fmtPlain(t.projectedProfit||0)}`,
   ];
   const base = `ozone-payroll-${ym}`;
   if (fmt === 'csv')  exportCSV(`${base}.csv`, rows);
@@ -4791,34 +4964,48 @@ function exportPayrollAs(fmt) {
   logAudit('export.payroll.' + fmt, null, { month: ym, count: rows.length });
 }
 
-async function markSalaryPaid(name, staffId, amount, month, year, base, com, adv) {
-  if (!confirm(`Pay ${name} ₹${fmt(amount)} now?\n\nBase ₹${fmt(base)} + Commission ₹${fmt(com)} − Advances ₹${fmt(adv)}`)) return;
+async function markSalaryPaid(payrollKey) {
+  const details = (window.__lastPayrollByStaff || {})[payrollKey];
+  if (!details) { toast('Payroll data not ready'); return; }
+  const { staffName, staffId, netPayable, month, year, base, baseAfterLeave, commission, advance, leaveDeduction, leaveDays, paidLeaves, excessLeaveDays, payrollDays, presentUnits, revenueGenerated } = details;
+  if (!confirm(`Pay ${staffName} ₹${fmt(netPayable)} now?\n\nBase ₹${fmt(base)} − Leave Cut ₹${fmt(leaveDeduction)} + Commission ₹${fmt(commission)} − Advances ₹${fmt(advance)}`)) return;
   const today = state.todayStr;
-  // Idempotency: if a salary entry for the same staff/month/year already exists,
-  // do not create a duplicate.
   try {
     const existing = await fbGetCollection(COL.SALARIES);
     const dup = (existing || []).find(s =>
-      String(s.staffName) === String(name) &&
+      String(s.staffName) === String(staffName) &&
       String(s.month) === String(month) &&
       String(s.year) === String(year)
     );
     if (dup) {
-      toast(name + ' already paid for this month');
+      toast(staffName + ' already paid for this month');
       renderAdminPayroll();
       return;
     }
-  } catch(e) { /* network failure — proceed and let server enforce */ }
+  } catch(e) { }
   const row = {
-    staffId, staffName: name, month, year,
-    amount,            // net paid
-    base, commission: com, advance: adv,
+    staffId,
+    staffName,
+    month,
+    year,
+    amount: netPayable,
+    base,
+    baseAfterLeave,
+    commission,
+    advance,
+    leaveDeduction,
+    leaveDays,
+    paidLeaves,
+    excessLeaveDays,
+    payrollDays,
+    presentUnits,
+    revenueGenerated,
     paidDate: today,
   };
   const newId = await fbAppendDoc(COL.SALARIES, row);
   if (!newId) { toast('⚠️  Could not save salary'); return; }
-  logAudit('salary.paid', `${COL.SALARIES}/${newId}`, { staffName: name, month, year, amount, base, com, adv });
-  toast(name + ' salary marked paid ✓');
+  logAudit('salary.paid', `${COL.SALARIES}/${newId}`, { staffName, month, year, amount: netPayable, base, baseAfterLeave, commission, advance, leaveDeduction, leaveDays, paidLeaves, excessLeaveDays, revenueGenerated });
+  toast(staffName + ' salary marked paid ✓');
   renderAdminPayroll();
 }
 
@@ -5498,7 +5685,7 @@ function showSetupTab(t) {
 
 function renderSetupStaff(host) {
   let html = '<div class="admin-section-title">Staff Members</div>';
-  html += '<div class="muted-text" style="margin-bottom:12px;font-size:12px;line-height:1.6">Salary is the fixed monthly amount. Commission % applies to each transaction this staff serves (post-discount, pre-GST).</div>';
+  html += '<div class="muted-text" style="margin-bottom:12px;font-size:12px;line-height:1.6">Salary is the fixed monthly amount. Commission % applies to each transaction this staff serves (post-discount, pre-GST). Paid leaves are the monthly leave quota allowed before salary deduction starts.</div>';
   (config.staff || []).forEach((s, i) => {
     html += `
       <div class="staff-setup-row" style="flex-wrap:wrap;">
@@ -5506,6 +5693,7 @@ function renderSetupStaff(host) {
         <div style="display:flex;gap:8px;width:100%;">
           <input type="number" placeholder="Salary ₹" value="${s.salary||''}" onchange="updateStaff(${i},'salary',this.value)" style="flex:2;">
           <input type="number" placeholder="Comm %" value="${s.commissionPct||''}" min="0" max="100" step="0.5" onchange="updateStaff(${i},'commissionPct',this.value)" style="flex:1;">
+          <input type="number" placeholder="Paid Leaves" value="${s.paidLeaves||''}" min="0" max="31" step="0.5" onchange="updateStaff(${i},'paidLeaves',this.value)" style="flex:1;">
           <button class="del-btn" onclick="deleteStaff(${i})">×</button>
         </div>
       </div>
@@ -5520,13 +5708,13 @@ function renderSetupStaff(host) {
 
 function addStaff() {
   if (!config.staff) config.staff = [];
-  config.staff.push({ id: uid(), name: '', salary: 0, commissionPct: 0 });
+  config.staff.push({ id: uid(), name: '', salary: 0, commissionPct: 0, paidLeaves: 0, attendance: [] });
   showSetupTab('staff');
 }
 
 function updateStaff(idx, field, val) {
   if (!config.staff[idx]) return;
-  if (field === 'salary' || field === 'commissionPct') {
+  if (field === 'salary' || field === 'commissionPct' || field === 'paidLeaves') {
     config.staff[idx][field] = parseFloat(val) || 0;
   } else {
     config.staff[idx][field] = val;
