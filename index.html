@@ -221,6 +221,22 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
   .admin-hero-title{font-size:21px;}
 }
 
+/* CUSTOMER DIRECTORY */
+.customer-row{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px;margin-bottom:8px;align-items:flex-start;}
+.customer-avatar{position:relative;width:46px;height:46px;border-radius:50%;background:var(--surface-2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:18px;font-weight:600;flex-shrink:0;border:1px solid var(--line);}
+.customer-avatar.vip{background:linear-gradient(135deg,var(--champagne) 0%,var(--champagne-deep) 100%);color:#FFF;border-color:var(--champagne-deep);box-shadow:0 2px 8px rgba(184,148,106,.3);}
+.customer-avatar .vip-badge{position:absolute;top:-2px;right:-2px;background:#FFF;color:var(--champagne-deep);border:1px solid var(--champagne);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--sans);}
+.customer-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
+.customer-row-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.customer-name{font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.005em;}
+.customer-id{font-size:10px;letter-spacing:.1em;color:var(--champagne);font-weight:700;background:var(--champagne-bg);padding:3px 8px;border-radius:20px;border:1px solid rgba(184,148,106,.2);font-family:var(--sans);}
+.customer-phone{font-size:12.5px;color:var(--muted);font-family:'SF Mono','Menlo',monospace;letter-spacing:.02em;}
+.customer-stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;}
+.customer-stat{font-size:11.5px;color:var(--muted);}
+.customer-stat strong{color:var(--ink);font-weight:600;}
+.customer-last{margin-left:auto;}
+.customer-last-svc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;font-style:italic;border-top:1px dashed var(--line-soft);padding-top:6px;}
+
 /* Image-decorated section banners inside admin tabs */
 .admin-section-banner{position:relative;height:90px;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:18px;background:#241a13;background-size:cover;background-position:center;box-shadow:var(--shadow-card);}
 .admin-section-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,12,10,.7) 0%,rgba(15,12,10,.25) 60%,rgba(0,0,0,0) 100%);}
@@ -425,6 +441,16 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 .admin-service-row input[type=text]{flex:1;}
 .admin-service-row input[type=number]{width:90px;text-align:right;}
 .admin-service-row input:focus{border-color:var(--champagne);}
+
+.admin-service-row-v2{background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px;}
+.admin-service-row-v2 .svc-row-line1{display:flex;gap:6px;align-items:center;}
+.admin-service-row-v2 input,.admin-service-row-v2 textarea{padding:10px 12px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:8px;font-size:13.5px;outline:none;color:var(--ink);font-family:inherit;}
+.admin-service-row-v2 input:focus,.admin-service-row-v2 textarea:focus{border-color:var(--champagne);background:#fff;}
+.admin-service-row-v2 .svc-name{flex:1;min-width:0;}
+.admin-service-row-v2 .svc-price{width:80px;text-align:right;}
+.admin-service-row-v2 .svc-mins{width:66px;text-align:right;}
+.admin-service-row-v2 .svc-desc{width:100%;resize:vertical;min-height:44px;line-height:1.5;}
+.admin-service-row-v2 .del-btn{flex-shrink:0;}
 .del-btn{width:36px;height:36px;border-radius:8px;background:transparent;color:var(--terracotta);flex-shrink:0;font-size:18px;border:1px solid rgba(166,85,85,.2);font-weight:300;}
 .del-btn:active{background:rgba(166,85,85,.08);}
 .add-service-btn{width:100%;padding:10px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:11px;margin-top:6px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;}
@@ -935,9 +961,15 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <label class="form-label">Customer WhatsApp Number</label>
     <div class="input-group">
       <span class="input-prefix">+91</span>
-      <input type="tel" class="input with-prefix" id="customer-phone" maxlength="10" placeholder="10-digit mobile" inputmode="numeric">
+      <input type="tel" class="input with-prefix" id="customer-phone" maxlength="10" placeholder="10-digit mobile" inputmode="numeric" oninput="onPhoneInput(this.value)">
     </div>
-    <div class="hint">Number not saved. Only used to send receipt.</div>
+    <div class="hint" id="phone-hint">Last 5 digits become the customer ID. We'll greet returning customers.</div>
+
+    <label class="form-label">Customer Name <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+    <div class="input-group">
+      <input type="text" class="input" id="customer-name" placeholder="e.g. Aarav Sharma" maxlength="60">
+    </div>
+    <div class="hint">Saved with the customer ID for repeat-visit greeting.</div>
 
     <button class="btn btn-rose" style="width:100%;margin-top:8px" onclick="sendWhatsAppReceipt()">
       Open WhatsApp &amp; Send Receipt
@@ -988,6 +1020,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <button class="admin-tab active" data-atab="dashboard" onclick="setAdminTab('dashboard')">📊 Dashboard</button>
     <button class="admin-tab" data-atab="analytics" onclick="setAdminTab('analytics')">📈 Analytics</button>
     <button class="admin-tab" data-atab="sales" onclick="setAdminTab('sales')">🧾 Sales</button>
+    <button class="admin-tab" data-atab="customers" onclick="setAdminTab('customers')">🙋 Customers</button>
     <button class="admin-tab" data-atab="expenses" onclick="setAdminTab('expenses')">💸 Expenses</button>
     <button class="admin-tab" data-atab="payroll" onclick="setAdminTab('payroll')">👥 Payroll</button>
     <button class="admin-tab" data-atab="advances" onclick="setAdminTab('advances')">💵 Advances</button>
@@ -1000,6 +1033,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   <div class="admin-body">
     <div id="admin-tab-dashboard"></div>
     <div id="admin-tab-analytics" style="display:none"></div>
+    <div id="admin-tab-customers" style="display:none"></div>
     <div id="admin-tab-sales" style="display:none"></div>
     <div id="admin-tab-expenses" style="display:none"></div>
     <div id="admin-tab-payroll" style="display:none"></div>
@@ -1227,6 +1261,7 @@ const COL = {
   FOOTFALL:      'footfall',
   ADVANCES:      'advances',       // staff cash advances (deducted from salary)
   AUDIT:         'audit',          // append-only audit log of admin actions
+  CUSTOMERS:     'customers',      // customer DB keyed by last-5-digits of phone
 };
 
 const DEFAULTS = {
@@ -1397,6 +1432,29 @@ const CATEGORY_IMG = {
 };
 
 function getServiceMeta(name, category) {
+  // 1. Admin-edited mins/desc on the actual service record beats the static catalogue.
+  const tryRecord = (cat) => {
+    if (!cat || !config.services || !config.services[cat]) return null;
+    const f = config.services[cat].find(s => s.name === name);
+    if (f && (f.mins || f.desc)) {
+      const stat = SERVICE_META[name] || {};
+      return {
+        mins: f.mins || stat.mins || 0,
+        desc: f.desc || stat.desc || '',
+        img:  stat.img || CATEGORY_IMG[cat] || CATEGORY_IMG['Hair Essentials'],
+      };
+    }
+    return null;
+  };
+  if (category) {
+    const hit = tryRecord(category);
+    if (hit) return hit;
+  } else if (config && config.services) {
+    for (const cat of Object.keys(config.services)) {
+      const hit = tryRecord(cat);
+      if (hit) return hit;
+    }
+  }
   if (SERVICE_META[name]) return SERVICE_META[name];
   // keyword fallback so custom service names still get reasonable info
   const n = (name || '').toLowerCase();
@@ -1860,7 +1918,12 @@ function subscribeLiveCollections() {
       const svcs = {};
       arr.forEach(s => {
         if (!svcs[s.category]) svcs[s.category] = [];
-        svcs[s.category].push({ name: s.name, price: parseFloat(s.price) || 0 });
+        svcs[s.category].push({
+          name: s.name,
+          price: parseFloat(s.price) || 0,
+          mins:  parseInt(s.mins) || 0,
+          desc:  s.desc || '',
+        });
       });
       if (Object.keys(svcs).length) {
         config.services = svcs;
@@ -2074,7 +2137,12 @@ async function init() {
       const svcs = {};
       services.forEach(s => {
         if (!svcs[s.category]) svcs[s.category] = [];
-        svcs[s.category].push({ name: s.name, price: parseFloat(s.price) || 0 });
+        svcs[s.category].push({
+          name: s.name,
+          price: parseFloat(s.price) || 0,
+          mins:  parseInt(s.mins) || 0,
+          desc:  s.desc || '',
+        });
       });
       if (Object.keys(svcs).length) config.services = svcs;
     }
@@ -2202,7 +2270,13 @@ async function completeSetup() {
 function flattenServices(svcsObj) {
   const arr = [];
   Object.entries(svcsObj).forEach(([cat, items]) => {
-    items.forEach(item => arr.push({ category: cat, name: item.name, price: item.price }));
+    items.forEach(item => arr.push({
+      category: cat,
+      name: item.name,
+      price: item.price,
+      mins: item.mins || 0,
+      desc: item.desc || '',
+    }));
   });
   return arr;
 }
@@ -2613,6 +2687,13 @@ async function finaliseTransaction(phone) {
   const taxable = sub - disc;
   const commissionAmount = commissionPct > 0 ? Math.round(taxable * commissionPct / 100) : 0;
 
+  // Customer info — name from form, ID = last 5 digits of phone (10-digit Indian #).
+  const _custNameEl = document.getElementById('customer-name');
+  const customerName = _custNameEl ? _custNameEl.value.trim() : '';
+  const phoneClean   = String(phone || '').replace(/\D/g, '');
+  const customerId   = phoneClean.length >= 5 ? phoneClean.slice(-5) : '';
+  const totalDurMins = state.cart.reduce((s, i) => s + ((getServiceMeta(i.name).mins || 0) * i.qty), 0);
+
   // Build transaction row. NOTE: no client `id` — fbAppendDoc generates one.
   const txRow = {
     date: state.todayStr,
@@ -2629,6 +2710,10 @@ async function finaliseTransaction(phone) {
     staffName: staffName,
     commissionPct,
     commissionAmount,
+    durationMins:   totalDurMins,
+    customerId:     customerId,
+    customerName:   customerName,
+    customerPhone:  phoneClean,
   };
 
   // APPEND a brand new transaction document — never overwrites.
@@ -2640,6 +2725,18 @@ async function finaliseTransaction(phone) {
     return;
   }
   logAudit('tx.create', `${COL.TRANSACTIONS}/${newId}`, { total, staffName, items: state.cart.length });
+
+  // Upsert customer record (keyed on last-5-digits) for repeat-visit recognition.
+  if (customerId) {
+    upsertCustomer({
+      id: customerId,
+      phone: phoneClean,
+      name: customerName,
+      lastVisit: state.todayStr,
+      lastTotal: total,
+      lastServices: txRow.services,
+    }).catch(e => console.warn('customer upsert failed:', e));
+  }
 
   // Send WhatsApp if phone provided
   if (phone) {
@@ -2678,8 +2775,14 @@ function resetAndGoHome() {
   state.cart = [];
   state.discount = null;
   state.txInFlight = false;
-  document.getElementById('customer-phone').value = '';
-  document.getElementById('receipt-staff').value = '';
+  const phEl = document.getElementById('customer-phone'); if (phEl) phEl.value = '';
+  const nmEl = document.getElementById('customer-name');  if (nmEl) nmEl.value = '';
+  const stEl = document.getElementById('receipt-staff');  if (stEl) stEl.value = '';
+  const hint = document.getElementById('phone-hint');
+  if (hint) {
+    hint.textContent = "Last 5 digits become the customer ID. We'll greet returning customers.";
+    hint.style.color = '';
+  }
   showScreen('staff');
 }
 
@@ -2687,6 +2790,147 @@ function resetAndGoHome() {
    ADMIN: ENTRY
 ──────────────────────────────────────────────────── */
 function exitAdmin() { showScreen('landing'); }
+
+/* ────────────────────────────────────────────────────
+   CUSTOMER DATABASE
+   Doc id = last 5 digits of phone. Stores name, phone,
+   total visits, total spend, last visit date/time.
+──────────────────────────────────────────────────── */
+async function upsertCustomer({ id, phone, name, lastVisit, lastTotal, lastServices }) {
+  if (!id || !db) return null;
+  const ref = db.collection(COL.CUSTOMERS).doc(id);
+  try {
+    const snap = await ref.get();
+    const existing = snap.exists ? snap.data() : null;
+    const visits = (existing && existing.visits ? existing.visits : 0) + 1;
+    const totalSpend = (parseFloat(existing && existing.totalSpend) || 0) + (parseFloat(lastTotal) || 0);
+    const data = {
+      id,
+      phone: phone || (existing && existing.phone) || '',
+      name: (name || (existing && existing.name) || '').trim(),
+      visits,
+      totalSpend,
+      firstVisit: (existing && existing.firstVisit) || lastVisit,
+      lastVisit,
+      lastTotal: parseFloat(lastTotal) || 0,
+      lastServices: lastServices || '',
+      updatedAt: new Date().toISOString(),
+    };
+    await ref.set(data, { merge: true });
+    logAudit('customer.upsert', COL.CUSTOMERS + '/' + id, { visits: data.visits, name: data.name });
+    return data;
+  } catch (e) {
+    console.warn('upsertCustomer failed:', e);
+    return null;
+  }
+}
+
+async function lookupCustomer(id) {
+  if (!id || !db) return null;
+  try {
+    const snap = await db.collection(COL.CUSTOMERS).doc(id).get();
+    return snap.exists ? snap.data() : null;
+  } catch (e) { return null; }
+}
+
+let _phoneLookupTimer = null;
+function onPhoneInput(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  const hint = document.getElementById('phone-hint');
+  const nameEl = document.getElementById('customer-name');
+  if (digits.length < 5) {
+    if (hint) {
+      hint.textContent = "Last 5 digits become the customer ID. We'll greet returning customers.";
+      hint.style.color = '';
+    }
+    return;
+  }
+  const id = digits.slice(-5);
+  if (hint) {
+    hint.textContent = 'Customer ID: #' + id + ' \u00b7 looking up\u2026';
+    hint.style.color = 'var(--muted)';
+  }
+  clearTimeout(_phoneLookupTimer);
+  _phoneLookupTimer = setTimeout(async () => {
+    const c = await lookupCustomer(id);
+    if (!hint) return;
+    if (c) {
+      hint.textContent = '\ud83d\udc4b Welcome back, ' + (c.name || 'guest') + '! ' + c.visits + ' previous visit' + (c.visits === 1 ? '' : 's') + ' \u00b7 ID #' + id;
+      hint.style.color = 'var(--sage)';
+      if (nameEl && !nameEl.value && c.name) nameEl.value = c.name;
+    } else {
+      hint.textContent = 'New customer \u00b7 ID #' + id + ' will be saved with the bill.';
+      hint.style.color = 'var(--champagne-deep)';
+    }
+  }, 350);
+}
+
+async function renderAdminCustomers() {
+  const host = document.getElementById('admin-tab-customers');
+  host.innerHTML =
+    '<div class="admin-section-title">Customer Directory</div>' +
+    '<div class="muted-text" style="margin-bottom:14px;font-size:12.5px;line-height:1.55">Every billed customer is saved here automatically. The last 5 digits of the phone number become the unique ID. Search by name or phone.</div>' +
+    '<input type="text" id="cust-search" class="setup-input" placeholder="\ud83d\udd0d Search by name, phone, or 5-digit ID" oninput="filterCustomers()" style="margin-bottom:14px;">' +
+    '<div id="cust-summary" class="muted-text center" style="padding:18px;font-size:13px;"><div class="spinner" style="margin:0 auto 8px"></div>Loading customers\u2026</div>' +
+    '<div id="cust-list"></div>';
+  try {
+    const list = await fbGetCollection(COL.CUSTOMERS);
+    state._customers = (list || []).sort((a, b) => (b.lastVisit || '').localeCompare(a.lastVisit || ''));
+    const visitsTotal = state._customers.reduce((s, c) => s + (c.visits || 0), 0);
+    const spendTotal  = state._customers.reduce((s, c) => s + (parseFloat(c.totalSpend) || 0), 0);
+    document.getElementById('cust-summary').innerHTML =
+      '<strong style="color:var(--ink);font-size:14px;">' + state._customers.length + '</strong> customers \u00b7 ' +
+      '<strong style="color:var(--ink);font-size:14px;">' + visitsTotal + '</strong> total visits \u00b7 ' +
+      '<strong style="color:var(--ink);font-size:14px;">\u20b9' + spendTotal.toLocaleString('en-IN') + '</strong> total spend';
+    renderCustomerList(state._customers);
+  } catch (e) {
+    document.getElementById('cust-summary').textContent = '\u26a0 Could not load. Check internet connection.';
+  }
+}
+
+function filterCustomers() {
+  const q = (document.getElementById('cust-search').value || '').trim().toLowerCase();
+  const all = state._customers || [];
+  const filtered = !q ? all : all.filter(c =>
+    (c.name || '').toLowerCase().includes(q) ||
+    (c.phone || '').includes(q) ||
+    (c.id || '').includes(q)
+  );
+  renderCustomerList(filtered);
+}
+
+function renderCustomerList(list) {
+  const host = document.getElementById('cust-list');
+  if (!list.length) {
+    host.innerHTML = '<div class="muted-text center" style="padding:24px">No matching customers.</div>';
+    return;
+  }
+  host.innerHTML = list.map(c => {
+    const phoneDisp = c.phone ? '+91 ' + c.phone.slice(0, 5) + ' ' + c.phone.slice(5) : '\u2014';
+    const last = c.lastVisit ? new Date(c.lastVisit + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014';
+    const initial = (c.name || '?').charAt(0).toUpperCase();
+    const visits = c.visits || 0;
+    const isVip = visits >= 5;
+    return (
+      '<div class="customer-row">' +
+        '<div class="customer-avatar' + (isVip ? ' vip' : '') + '">' + esc(initial) + (isVip ? '<span class="vip-badge">\u2605</span>' : '') + '</div>' +
+        '<div class="customer-meta">' +
+          '<div class="customer-row-top">' +
+            '<div class="customer-name">' + esc(c.name || 'Unnamed') + '</div>' +
+            '<div class="customer-id">#' + esc(c.id) + '</div>' +
+          '</div>' +
+          '<div class="customer-phone">' + phoneDisp + '</div>' +
+          '<div class="customer-stats">' +
+            '<span class="customer-stat"><strong>' + visits + '</strong> visit' + (visits === 1 ? '' : 's') + '</span>' +
+            '<span class="customer-stat"><strong>\u20b9' + (parseFloat(c.totalSpend) || 0).toLocaleString('en-IN') + '</strong> spent</span>' +
+            '<span class="customer-stat customer-last">Last: ' + last + '</span>' +
+          '</div>' +
+          (c.lastServices ? '<div class="customer-last-svc">\u21b3 ' + esc(c.lastServices) + '</div>' : '') +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+}
 
 function setAdminTab(t) {
   // Tabs visible to each role
@@ -2710,13 +2954,14 @@ function setAdminTab(t) {
   });
 
   state.adminTab = t;
-  ['dashboard','analytics','sales','expenses','payroll','advances','emi','setup','team','security'].forEach(n => {
+  ['dashboard','analytics','sales','customers','expenses','payroll','advances','emi','setup','team','security'].forEach(n => {
     const el = document.getElementById('admin-tab-' + n);
     if (el) el.style.display = (n === t) ? '' : 'none';
   });
   if (t === 'dashboard') renderAdminDashboard();
   if (t === 'analytics') renderAdminAnalytics();
   if (t === 'sales') renderAdminSales();
+  if (t === 'customers') renderAdminCustomers();
   if (t === 'expenses') renderAdminExpenses();
   if (t === 'payroll') renderAdminPayroll();
   if (t === 'advances') renderAdminAdvances();
@@ -2735,6 +2980,8 @@ const ADMIN_HERO_META = {
   analytics: { eyebrow:'Analytics',  title:'Deep performance insights',  sub:'Trends, top services & busiest hours',
                img:'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   sales:     { eyebrow:'Sales',      title:'Every bill, every day',      sub:'Filter, export, audit transactions',
+  customers: { eyebrow:'Customers',  title:'Your loyal regulars',        sub:'Search by phone or name · visits & spend',
+               img:'https://images.pexels.com/photos/3993210/pexels-photo-3993210.jpeg?auto=compress&cs=tinysrgb&w=1280' },
                img:'https://images.pexels.com/photos/3962285/pexels-photo-3962285.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   expenses:  { eyebrow:'Expenses',   title:'Where the money goes',       sub:'Fixed costs & variable spending',
                img:'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=1280' },
@@ -4209,6 +4456,7 @@ async function saveStaffList() {
 
 function renderSetupServices(host) {
   let html = '<div class="admin-section-title">Service Menu</div>';
+  html += '<div class="muted-text" style="margin:-6px 0 16px;font-size:12.5px;line-height:1.5">Add a short description and the typical duration (in minutes) for each service. These show up on the staff billing screen so the team can explain it to customers.</div>';
   Object.keys(config.services).forEach(cat => {
     html += `
       <div class="admin-category">
@@ -4220,22 +4468,36 @@ function renderSetupServices(host) {
   });
   html += `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveServicesList()">Save Services →</button>`;
   host.innerHTML = html;
-  // Render rows
   Object.keys(config.services).forEach(cat => {
     const rowsHost = document.getElementById('svc-rows-' + btoa(cat).replace(/=/g,''));
     if (!rowsHost) return;
     (config.services[cat] || []).forEach((svc, idx) => {
+      // Pre-fill defaults from the static catalogue so the user can just save.
+      if ((!svc.mins || !svc.desc) && SERVICE_META[svc.name]) {
+        if (!svc.mins) svc.mins = SERVICE_META[svc.name].mins;
+        if (!svc.desc) svc.desc = SERVICE_META[svc.name].desc;
+      }
       const r = document.createElement('div');
-      r.className = 'admin-service-row';
+      r.className = 'admin-service-row-v2';
       r.innerHTML = `
-        <input type="text" value="${escAttr(svc.name)}" placeholder="Service name">
-        <input type="number" value="${svc.price}" placeholder="Price">
-        <button class="del-btn">×</button>
+        <div class="svc-row-line1">
+          <input type="text"   class="svc-name"  value="${escAttr(svc.name)}"           placeholder="Service name">
+          <input type="number" class="svc-price" value="${svc.price}"                   placeholder="₹" min="0">
+          <input type="number" class="svc-mins"  value="${svc.mins || ''}"              placeholder="Min" min="0" max="600">
+          <button class="del-btn" title="Delete">×</button>
+        </div>
+        <textarea class="svc-desc" rows="2" placeholder="What's done in this service…">${esc(svc.desc || '')}</textarea>
       `;
-      const [ni, pi, db] = r.children;
+      const ni = r.querySelector('.svc-name');
+      const pi = r.querySelector('.svc-price');
+      const mi = r.querySelector('.svc-mins');
+      const di = r.querySelector('.svc-desc');
+      const xb = r.querySelector('.del-btn');
       ni.onchange = () => { svc.name = ni.value.trim() || svc.name; };
       pi.onchange = () => { svc.price = parseFloat(pi.value) || 0; };
-      db.onclick  = () => {
+      mi.onchange = () => { svc.mins  = parseInt(mi.value) || 0; };
+      di.onchange = () => { svc.desc  = di.value.trim(); };
+      xb.onclick  = () => {
         if (!confirm('Delete?')) return;
         config.services[cat].splice(idx, 1);
         renderSetupServices(host);
@@ -4246,7 +4508,7 @@ function renderSetupServices(host) {
 }
 
 function addService(cat) {
-  config.services[cat].push({ name: 'New Service', price: 0 });
+  config.services[cat].push({ name: 'New Service', price: 0, mins: 0, desc: '' });
   const host = document.getElementById('setup-sub-content');
   renderSetupServices(host);
 }
