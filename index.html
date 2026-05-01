@@ -269,10 +269,7 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .billing-hero-eyebrow{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:6px;}
 .billing-hero-title{font-family:var(--serif);font-size:22px;font-weight:500;letter-spacing:-.005em;text-shadow:0 1px 6px rgba(0,0,0,.3);}
 
-/* Premium service item with subtle gradient hover */
-#screen-home .service-item{position:relative;overflow:hidden;}
-#screen-home .service-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--champagne) 0%,var(--champagne-soft) 100%);opacity:0;transition:opacity .2s;}
-#screen-home .service-item:active::before{opacity:1;}
+
 
 @media (max-width:380px){
   .staff-hero{height:170px;margin:14px 12px 0;}
@@ -299,19 +296,57 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{flex-shrink:0;padding:15px 14px;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.12em;border-bottom:1.5px solid transparent;transition:all .18s;white-space:nowrap;text-transform:uppercase;scroll-snap-align:start;}
 .tab.active{color:var(--ink);border-bottom-color:var(--champagne);font-weight:600;}
-.service-list{padding:14px 16px;}
-.service-item{display:flex;align-items:center;justify-content:space-between;padding:14px 14px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);margin-bottom:10px;transition:all .18s;gap:12px;}
-.service-item:active{background:var(--surface-2);}
-.service-item.premium{align-items:stretch;}
-.service-thumb{width:74px;min-width:74px;height:74px;border-radius:12px;background-size:cover;background-position:center;background-color:var(--surface-2);flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);}
-.service-info{flex:1;min-width:0;padding-right:4px;display:flex;flex-direction:column;justify-content:center;gap:4px;}
-.service-name{font-size:14.5px;color:var(--ink);font-weight:600;letter-spacing:-.005em;line-height:1.25;}
-.service-desc{font-size:11.5px;color:var(--muted);line-height:1.45;letter-spacing:.005em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.service-meta-row{display:flex;align-items:center;gap:10px;margin-top:4px;flex-wrap:wrap;}
-.service-price{font-size:14px;color:var(--champagne);font-family:var(--serif);font-weight:600;letter-spacing:.01em;}
-.service-dur{font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:500;background:var(--surface-2);padding:3px 8px;border-radius:20px;border:1px solid var(--line-soft);}
-.add-btn{width:38px;height:38px;border-radius:50%;background:var(--ink);color:#FFF;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:300;}
-.add-btn:active{transform:scale(.92);background:var(--champagne);}
+/* SERVICE GRID */
+.service-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px;}
+.service-item{
+  position:relative;border-radius:16px;overflow:hidden;
+  background:var(--surface-2);box-shadow:0 2px 12px rgba(0,0,0,.07);
+  aspect-ratio:3/4;display:flex;flex-direction:column;
+  border:1px solid var(--line-soft);transition:transform .15s;
+}
+.service-item:active{transform:scale(.97);}
+.service-thumb{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  background-color:var(--surface-2);
+  border-radius:16px;
+}
+.service-thumb::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,.72) 100%);
+  border-radius:16px;
+}
+.service-info{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:12px 10px 50px;
+  z-index:1;
+}
+.service-name{font-size:13px;color:#fff;font-weight:700;letter-spacing:-.005em;line-height:1.25;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+.service-desc{display:none;}
+.service-meta-row{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;}
+.service-price{font-size:13px;color:var(--champagne);font-family:var(--serif);font-weight:700;letter-spacing:.01em;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+.service-dur{font-size:9.5px;color:rgba(255,255,255,.75);letter-spacing:.06em;text-transform:uppercase;font-weight:500;}
+.svc-ctrl{
+  position:absolute;bottom:8px;left:8px;right:8px;z-index:2;
+  display:flex;align-items:center;justify-content:flex-end;
+}
+.svc-ctrl.active{
+  background:rgba(0,0,0,.58);border-radius:50px;padding:3px 4px;
+  justify-content:space-between;
+}
+.svc-plus-only{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ink);color:#FFF;font-size:20px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);font-weight:300;
+}
+.svc-plus-only:active{transform:scale(.88);background:var(--champagne);}
+.svc-minus,.svc-plus{
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,.18);color:#fff;font-size:17px;
+  display:flex;align-items:center;justify-content:center;font-weight:400;
+}
+.svc-minus:active,.svc-plus:active{background:var(--champagne);transform:scale(.9);}
+.svc-qty-num{color:#fff;font-size:14px;font-weight:700;min-width:22px;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.6);}
 .cart-float{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:488px;background:var(--ink);color:#FFF;padding:14px 20px;border-radius:50px;display:none;align-items:center;justify-content:space-between;box-shadow:var(--shadow-float);z-index:20;animation:slideUp .3s ease;}
 .cart-float.visible{display:flex;}
 @keyframes slideUp{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
@@ -1484,6 +1519,7 @@ const DEFAULTS = {
     'Miscellaneous',
   ],
   codOpeningBalances: {},
+  dayCloseLocks: {},
   staff: [],
   fixedExpenses: [],
   emi: [],
@@ -2206,6 +2242,17 @@ function saveConfig() {
   localStorage.setItem(SK.CONFIG, JSON.stringify(config));
 }
 
+function getDayCloseEntry(dateStr) {
+  const map = config.dayCloseLocks || {};
+  const row = map[dateStr];
+  return row && typeof row === 'object' ? row : null;
+}
+
+function isDayCloseLocked(dateStr) {
+  const row = getDayCloseEntry(dateStr);
+  return !!(row && row.lockTimestamp && !row.unlockTimestamp);
+}
+
 /* ────────────────────────────────────────────────────
    FIREBASE LAYER
    Firestore SDK loaded above (compat). We use offline
@@ -2335,6 +2382,7 @@ async function handleAuthStateChange(user) {
       if (shopCfg.adminWhatsappNumber !== undefined)    config.adminWhatsappNumber  = shopCfg.adminWhatsappNumber;
       if (Array.isArray(shopCfg.expenseCategories))     config.expenseCategories     = shopCfg.expenseCategories;
       if (shopCfg.codOpeningBalances && typeof shopCfg.codOpeningBalances === 'object') config.codOpeningBalances = shopCfg.codOpeningBalances;
+      if (shopCfg.dayCloseLocks && typeof shopCfg.dayCloseLocks === 'object') config.dayCloseLocks = shopCfg.dayCloseLocks;
       saveConfig();
     }
   } catch(e) { console.warn('Could not refresh team list:', e); }
@@ -2623,6 +2671,7 @@ function subscribeLiveCollections() {
       if (d.receiptFooter !== undefined) config.receiptFooter = d.receiptFooter;
       if (Array.isArray(d.expenseCategories)) config.expenseCategories = d.expenseCategories;
       if (d.codOpeningBalances && typeof d.codOpeningBalances === 'object') config.codOpeningBalances = d.codOpeningBalances;
+      if (d.dayCloseLocks && typeof d.dayCloseLocks === 'object') config.dayCloseLocks = d.dayCloseLocks;
       if (d.adminPin)         config.adminPin = d.adminPin;
       if (d.staffPin)         config.staffPin = d.staffPin;
       if (d.discountRequiresPin !== undefined) config.discountRequiresPin = !!d.discountRequiresPin;
@@ -2738,7 +2787,7 @@ function showScreen(name) {
   if (protectedScreens.includes(name)) {
     if (!currentUser || !currentUser.role) {
       name = currentUser ? 'no-access' : 'auth';
-    } else if (name === 'admin' && currentUser.role !== 'admin') {
+    } else if (name === 'admin' && !canAccessAdminPanel()) {
       toast('Admin access required');
       name = 'staff';
     }
@@ -3083,12 +3132,19 @@ function renderLanding() {
 // Direct entry — Google Auth already proved identity & role
 function enterStaff() { showScreen('staff'); }
 function enterAdmin() {
-  if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'supervisor')) {
+  if (!canAccessAdminPanel()) {
     toast('Access restricted'); return;
   }
   showScreen('admin');
-  // Supervisors land on Team tab; admins on Dashboard
-  setAdminTab(currentUser.role === 'supervisor' ? 'team' : 'dashboard');
+  // Supervisors land on their first allowed tab; admins on Dashboard
+  if (hasRoleSupervisor()) {
+    const allowedTabs = config.supervisorPermissions && config.supervisorPermissions.length
+      ? config.supervisorPermissions
+      : ['team'];
+    setAdminTab(allowedTabs[0]);
+  } else {
+    setAdminTab('dashboard');
+  }
   // Install scroll-to-end detector for admin tabs mobile fade mask
   requestAnimationFrame(() => {
     const tabBar = document.getElementById('admin-tab-bar');
@@ -3340,19 +3396,28 @@ function renderHome() {
   (config.services[state.tab] || []).forEach((svc, idx) => {
     const meta = getServiceMeta(svc.name, state.tab);
     const dur  = fmtDur(meta.mins);
+    const qty  = state.cart.reduce((s, i) => s + (i.name === svc.name ? i.qty : 0), 0);
     const div  = document.createElement('div');
-    div.className = 'service-item premium';
+    div.className = 'service-item';
     div.innerHTML = `
       <div class="service-thumb" style="background-image:url('${meta.img}')"></div>
       <div class="service-info">
         <div class="service-name">${esc(svc.name)}</div>
-        ${meta.desc ? `<div class="service-desc">${esc(meta.desc)}</div>` : ''}
         <div class="service-meta-row">
           <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
-          ${dur ? `<span class="service-dur">⏱ ${dur}</span>` : ''}
+          ${dur ? `<span class="service-dur">${dur}</span>` : ''}
         </div>
       </div>
-      <button class="add-btn" onclick="addToCart('${esc(state.tab)}',${idx})">+</button>
+      ${qty > 0
+        ? `<div class="svc-ctrl active" data-cat="${escAttr(state.tab)}" data-idx="${idx}">
+             <button class="svc-minus" onclick="decrementService('${escAttr(state.tab)}',${idx})">&#x2212;</button>
+             <span class="svc-qty-num">${qty}</span>
+             <button class="svc-plus" onclick="addToCart('${escAttr(state.tab)}',${idx})">+</button>
+           </div>`
+        : `<div class="svc-ctrl" data-cat="${escAttr(state.tab)}" data-idx="${idx}">
+             <button class="svc-plus-only" onclick="addToCart('${escAttr(state.tab)}',${idx})">+</button>
+           </div>`
+      }
     `;
     listEl.appendChild(div);
   });
@@ -3363,12 +3428,45 @@ function renderHome() {
 /* ────────────────────────────────────────────────────
    CART
 ──────────────────────────────────────────────────── */
+function getServiceQtyInCart(serviceName) {
+  return state.cart.reduce((s, i) => s + (i.name === serviceName ? i.qty : 0), 0);
+}
+
+function refreshServiceAddIndicators() {
+  document.querySelectorAll('#service-list .svc-ctrl').forEach(ctrl => {
+    const cat = ctrl.getAttribute('data-cat') || '';
+    const idx = parseInt(ctrl.getAttribute('data-idx'), 10);
+    const svc = (config.services[cat] || [])[idx];
+    if (!svc) return;
+    const qty = getServiceQtyInCart(svc.name);
+    if (qty > 0) {
+      ctrl.className = 'svc-ctrl active';
+      ctrl.innerHTML = `<button class="svc-minus" onclick="decrementService('${escAttr(cat)}',${idx})">&#x2212;</button><span class="svc-qty-num">${qty}</span><button class="svc-plus" onclick="addToCart('${escAttr(cat)}',${idx})">+</button>`;
+    } else {
+      ctrl.className = 'svc-ctrl';
+      ctrl.innerHTML = `<button class="svc-plus-only" onclick="addToCart('${escAttr(cat)}',${idx})">+</button>`;
+    }
+  });
+}
+
+function decrementService(cat, idx) {
+  const svc = (config.services[cat] || [])[idx];
+  if (!svc) return;
+  const item = state.cart.find(i => i.name === svc.name);
+  if (!item) return;
+  if (item.qty <= 1) state.cart = state.cart.filter(i => i.name !== svc.name);
+  else item.qty--;
+  updateCartFloat();
+  refreshServiceAddIndicators();
+}
+
 function addToCart(cat, idx) {
   const svc = config.services[cat][idx];
   const existing = state.cart.find(i => i.name === svc.name);
   if (existing) existing.qty++;
   else state.cart.push({ id: uid(), name: svc.name, price: svc.price, qty: 1 });
   updateCartFloat();
+  refreshServiceAddIndicators();
 }
 
 function updateCartFloat() {
@@ -3481,12 +3579,12 @@ function changeQty(id, delta) {
   const i = state.cart.find(x => x.id === id);
   if (!i) return;
   i.qty = Math.max(1, i.qty + delta);
-  renderCart(); updateCartFloat();
+  renderCart(); updateCartFloat(); refreshServiceAddIndicators();
 }
 
 function removeItem(id) {
   state.cart = state.cart.filter(x => x.id !== id);
-  renderCart(); updateCartFloat();
+  renderCart(); updateCartFloat(); refreshServiceAddIndicators();
   if (!state.cart.length) showScreen('home');
 }
 
@@ -3604,6 +3702,10 @@ function skipReceiptAndFinish() {
 async function finaliseTransaction(phone) {
   // Guard against double-submit: if already finalising, ignore subsequent taps.
   if (state.txInFlight) return;
+  if (isDayCloseLocked(state.todayStr)) {
+    toast('Day is closed and locked. Unlock to post new transactions.');
+    return;
+  }
   if (!state.cart.length) { toast('Cart is empty'); return; }
 
   // MANDATORY: which staff served this customer (for commission/payroll).
@@ -4028,11 +4130,11 @@ function setAdminTab(t) {
   const SUPERVISOR_TABS = config.supervisorPermissions && config.supervisorPermissions.length
     ? config.supervisorPermissions
     : ['dashboard', 'sales', 'attendance', 'team'];
-  const isSupervisor = currentUser && currentUser.role === 'supervisor';
+  const isSupervisor = hasRoleSupervisor();
 
-  // If supervisor tries to access a restricted tab, redirect to team
+  // If supervisor tries to access a restricted tab, redirect to first allowed tab
   if (isSupervisor && !SUPERVISOR_TABS.includes(t)) {
-    t = 'team';
+    t = SUPERVISOR_TABS[0] || 'team';
   }
 
   // Show/hide tab buttons based on role
@@ -4168,17 +4270,18 @@ async function renderAdminDashboard() {
     if (expenseMode[pm] === undefined) expenseMode[pm] = 0;
     expenseMode[pm] += parseFloat(v.amount) || 0;
   });
-  const fixedTotal  = sumOf(fixed, 'amount');
-  const salaryPaid = (salaries || [])
-    .filter(s => String(s.month) === mm && String(s.year) === yy)
-    .reduce((a, s) => a + (parseFloat(s.amount) || 0), 0);
-  // Projected total payroll if not yet paid: base + commissions − advances
-  const baseTotal = (config.staff || []).reduce((a,s) => a + (parseFloat(s.salary)||0), 0);
-  const commTotal = sumOf(txs, 'commissionAmount');
-  const advTotal  = sumOf(advances, 'amount');
-  const salaryProjected = Math.max(0, baseTotal + commTotal - advTotal);
-  const salaryTotal = salaryPaid > 0 ? salaryPaid : salaryProjected;
-  const emiTotal    = sumOf(emi, 'monthlyEMI');
+  const fixedTotal  = sumOf((fixed || []).filter(r => r.active !== false), 'amount');
+  const payrollAccrual = buildMonthlyPayrollAccrual({
+    ym,
+    txs,
+    advances,
+    salariesAll: salaries,
+    staffList: config.staff || [],
+  });
+  const salaryPaid = payrollAccrual.paidTotal;
+  const salaryPending = payrollAccrual.pendingTotal;
+  const salaryTotal = payrollAccrual.payrollExpense;
+  const emiTotal    = sumOf((emi || []).filter(r => r.active !== false), 'monthlyEMI');
   const totalExpenses = varExpenses + fixedTotal + salaryTotal + emiTotal;
   const netPL       = revenue - totalExpenses;
   const txCount     = txs.length;
@@ -4237,9 +4340,9 @@ async function renderAdminDashboard() {
         <div class="erp-sub">UPI ₹${fmt(paymentMonth.UPI)} · Cash ₹${fmt(paymentMonth.Cash)} · Card ₹${fmt(paymentMonth.Card)}</div>
       </div>
       <div class="erp-card">
-        <div class="erp-label">${salaryPaid > 0 ? 'Salaries Paid' : 'Payroll (proj.)'}</div>
+        <div class="erp-label">Payroll Expense (Accrual)</div>
         <div class="erp-value">₹${fmt(salaryTotal)}</div>
-        <div class="erp-sub">${salaryPaid > 0 ? '' : 'Base + Comm − Adv'}</div>
+        <div class="erp-sub">Paid ₹${fmt(salaryPaid)} · Pending ₹${fmt(salaryPending)}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Fixed Expenses</div>
@@ -4576,6 +4679,8 @@ function onExpenseCategoryChange() {
   if (!catEl || !wrap) return;
   const isInv = isInventoryCategory(catEl.value);
   wrap.style.display = isInv ? '' : 'none';
+  const amountEl = document.getElementById('exp-amount');
+  if (amountEl) amountEl.readOnly = isInv;
   if (!isInv) {
     ['exp-product-name','exp-vendor','exp-invoice-no','exp-qty','exp-unit-cost'].forEach(id => {
       const el = document.getElementById(id);
@@ -4583,16 +4688,25 @@ function onExpenseCategoryChange() {
     });
     const sign = document.getElementById('exp-stock-impact-sign');
     if (sign) sign.value = '+';
+    if (amountEl) amountEl.value = '';
+  } else {
+    onExpenseQtyCostChange();
   }
 }
 
 function onExpenseQtyCostChange() {
+  const catEl = document.getElementById('exp-category');
+  const isInv = catEl ? isInventoryCategory(catEl.value) : false;
   const qty = parseFloat((document.getElementById('exp-qty') || {}).value) || 0;
   const unitCost = parseFloat((document.getElementById('exp-unit-cost') || {}).value) || 0;
   const amountEl = document.getElementById('exp-amount');
   if (!amountEl) return;
-  if (qty > 0 && unitCost > 0) {
-    amountEl.value = Math.round(qty * unitCost * 100) / 100;
+  if (isInv) {
+    if (qty > 0 && unitCost > 0) {
+      amountEl.value = Math.round(qty * unitCost * 100) / 100;
+    } else {
+      amountEl.value = '';
+    }
   }
 }
 
@@ -4635,8 +4749,8 @@ async function getMonthlyLifecycle(ym, monthExpenses) {
   const salesTotal = salesSplit.UPI + salesSplit.Cash + salesSplit.Card;
   const variableTotal = (monthExpenses || []).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
   const inventoryPurchaseTotal = (monthExpenses || []).filter(r => isInventoryCategory(r.category)).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
-  const fixedTotal = (fixed || []).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
-  const emiTotal = (emi || []).reduce((s, r) => s + (parseFloat(r.monthlyEMI) || 0), 0);
+  const fixedTotal = (fixed || []).filter(r => r.active !== false).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const emiTotal = (emi || []).filter(r => r.active !== false).reduce((s, r) => s + (parseFloat(r.monthlyEMI) || 0), 0);
   const advancesTotal = (advances || []).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
   const payrollPaid = (salaries || []).filter(s => String(s.month) === mm && String(s.year) === yy).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
   const totalOut = variableTotal + fixedTotal + emiTotal + advancesTotal + payrollPaid;
@@ -4672,6 +4786,13 @@ async function saveCODOpeningBalance() {
   const dateStr = (document.getElementById('cod-date') || {}).value;
   const opening = parseFloat((document.getElementById('cod-opening') || {}).value) || 0;
   if (!dateStr) { toast('Select date first'); return; }
+  if (opening < 0) { toast('Opening cash cannot be negative'); return; }
+  if (isDayCloseLocked(dateStr)) { toast('Day is locked. Unlock before changing opening.'); return; }
+  if (dateStr < state.todayStr) {
+    const approval = askHighRiskApproval(`Change historical opening cash (${dateStr})`);
+    if (!approval) return;
+    logAudit('cod.opening.edit.approved', null, { date: dateStr, opening, approval });
+  }
   if (!config.codOpeningBalances) config.codOpeningBalances = {};
   config.codOpeningBalances[dateStr] = opening;
   saveConfig();
@@ -4718,6 +4839,10 @@ async function refreshCODPanel() {
   const opening = getCashbookOpening(dateStr);
   const closingExpected = opening + salesSplit.Cash - cashExpenseTotal;
   const totalSales = salesSplit.UPI + salesSplit.Cash + salesSplit.Card;
+  const lockRow = getDayCloseEntry(dateStr);
+  const countedClosing = lockRow ? (parseFloat(lockRow.countedClosing) || 0) : 0;
+  const variance = lockRow ? (parseFloat(lockRow.variance) || 0) : 0;
+  const isLocked = isDayCloseLocked(dateStr);
 
   host.innerHTML = `
     <div class="erp-grid" style="margin:0;">
@@ -4725,7 +4850,10 @@ async function refreshCODPanel() {
       <div class="erp-card"><div class="erp-label">Cash Sales</div><div class="erp-value">₹${fmt(salesSplit.Cash)}</div></div>
       <div class="erp-card"><div class="erp-label">Cash Expenses</div><div class="erp-value">₹${fmt(cashExpenseTotal)}</div></div>
       <div class="erp-card gold"><div class="erp-label">Expected COD Closing</div><div class="erp-value gold">₹${fmt(closingExpected)}</div></div>
+      <div class="erp-card"><div class="erp-label">Counted Closing</div><div class="erp-value">₹${fmt(countedClosing)}</div></div>
+      <div class="erp-card ${variance === 0 ? '' : (variance > 0 ? 'green' : 'red')}"><div class="erp-label">Variance</div><div class="erp-value ${variance === 0 ? '' : (variance > 0 ? 'green' : 'red')}">₹${fmt(Math.abs(variance))}${variance === 0 ? '' : (variance > 0 ? ' (Excess)' : ' (Short)')}</div></div>
       <div class="erp-card full"><div class="erp-sub">Sales split: UPI ₹${fmt(salesSplit.UPI)} · Cash ₹${fmt(salesSplit.Cash)} · Card ₹${fmt(salesSplit.Card)} | Total sales: ₹${fmt(totalSales)} | Total expenses: ₹${fmt(expenseTotal)}</div></div>
+      <div class="erp-card full"><div class="erp-sub">Day Close: ${isLocked ? ('Locked at ' + new Date(lockRow.lockTimestamp || Date.now()).toLocaleString('en-IN') + (lockRow.approver ? (' · by ' + esc(lockRow.approver)) : '')) : 'Not locked'}</div></div>
     </div>
   `;
 
@@ -4737,9 +4865,27 @@ async function refreshCODPanel() {
     expenseTotal,
     cashExpenseTotal,
     closingExpected,
+    countedClosing,
+    variance,
+    varianceReason: lockRow ? (lockRow.varianceReason || '') : '',
+    lockTimestamp: lockRow ? (lockRow.lockTimestamp || null) : null,
+    unlockTimestamp: lockRow ? (lockRow.unlockTimestamp || null) : null,
     txCount: txs.length,
     expenseCount: exps.length,
   };
+
+  const openingEl = document.getElementById('cod-opening');
+  if (openingEl) openingEl.disabled = isLocked;
+  const countedEl = document.getElementById('cod-counted-closing');
+  if (countedEl) {
+    countedEl.value = lockRow && lockRow.countedClosing != null ? lockRow.countedClosing : '';
+    countedEl.disabled = isLocked;
+  }
+  const reasonEl = document.getElementById('cod-variance-reason');
+  if (reasonEl) {
+    reasonEl.value = lockRow ? (lockRow.varianceReason || '') : '';
+    reasonEl.disabled = isLocked;
+  }
 }
 
 function onCODDateChange() {
@@ -4767,6 +4913,9 @@ async function sendCODReportWhatsApp() {
     `Cash Sales: INR ${fmtPlain(report.salesSplit.Cash)}`,
     `Cash Expenses: INR ${fmtPlain(report.cashExpenseTotal)}`,
     `*Expected COD Closing: INR ${fmtPlain(report.closingExpected)}*`,
+    `Counted Closing: INR ${fmtPlain(report.countedClosing || 0)}`,
+    `Variance: INR ${fmtPlain(Math.abs(report.variance || 0))}${report.variance === 0 ? '' : (report.variance > 0 ? ' (Excess)' : ' (Short)')}`,
+    report.varianceReason ? `Variance Reason: ${report.varianceReason}` : '',
     '------------------------------',
     `UPI Sales: INR ${fmtPlain(report.salesSplit.UPI)}`,
     `Card Sales: INR ${fmtPlain(report.salesSplit.Card)}`,
@@ -4788,13 +4937,13 @@ async function renderAdminExpenses() {
 
   // Fixed expenses section
   let fixedHtml = '<div class="admin-section-title">Fixed Monthly Expenses</div>';
-  (config.fixedExpenses || []).forEach((fe, i) => {
+  (config.fixedExpenses || []).filter(fe => fe.active !== false).forEach((fe, i) => {
     fixedHtml += `
       <div class="exp-row">
         <div class="exp-left"><div class="exp-name">${esc(fe.name)}</div><div class="exp-meta">Monthly</div></div>
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="exp-amount">₹${fmt(parseFloat(fe.amount)||0)}</div>
-          <button class="del-btn" onclick="deleteFixedExpense('${fe.id}')">×</button>
+          <button class="del-btn" onclick="deleteFixedExpense('${fe.id}')">↺</button>
         </div>
       </div>
     `;
@@ -4811,6 +4960,14 @@ async function renderAdminExpenses() {
       <button class="btn btn-primary" style="flex:none;padding:12px 14px" onclick="saveCODOpeningBalance()">Save Opening</button>
     </div>
     <div id="cod-summary" style="margin-bottom:10px;"><div class="muted-text center" style="padding:10px">Load COD summary...</div></div>
+    <div class="month-picker" style="margin-bottom:10px;align-items:flex-end;">
+      <input type="number" id="cod-counted-closing" class="setup-input" placeholder="Counted closing cash" style="flex:1;max-width:220px;">
+      <input type="text" id="cod-variance-reason" class="setup-input" placeholder="Variance reason (required if not zero)" style="flex:1;">
+    </div>
+    <div class="export-row" style="margin-bottom:12px">
+      <button class="btn btn-primary" onclick="lockCODDayClose()">Lock Day Close</button>
+      <button class="btn btn-secondary" onclick="unlockCODDayClose()">Unlock Day</button>
+    </div>
     <button class="btn btn-gold" style="width:100%;margin-bottom:12px" onclick="sendCODReportWhatsApp()">Send COD Report to Admin WhatsApp</button>
 
     <div class="separator"></div>
@@ -4843,19 +5000,45 @@ function openAddExpense() {
 async function saveExpense() {
   if (state.expInFlight) return;
   const category = document.getElementById('exp-category').value;
+  const isInvCategory = isInventoryCategory(category);
   const desc     = document.getElementById('exp-desc').value.trim();
   const paymentMode = document.getElementById('exp-payment-mode').value || 'Cash';
   const qty      = parseFloat((document.getElementById('exp-qty') || {}).value) || 0;
   const unitCost = parseFloat((document.getElementById('exp-unit-cost') || {}).value) || 0;
-  const amountInput = parseFloat(document.getElementById('exp-amount').value) || 0;
-  const amount   = amountInput || (qty > 0 && unitCost > 0 ? Math.round(qty * unitCost * 100) / 100 : 0);
+  const amountInput = parseFloat(document.getElementById('exp-amount').value);
+  const inventoryComputed = qty > 0 && unitCost > 0 ? Math.round(qty * unitCost * 100) / 100 : 0;
+  const amount   = isInvCategory ? inventoryComputed : (parseFloat(amountInput) || 0);
   const date     = document.getElementById('exp-date').value;
-  if (!amount || !date) { toast('Fill in amount and date'); return; }
-  state.expInFlight = true;
-  closeModal('modal-add-expense');
+  if (!date) { toast('Fill in date'); return; }
+  if (!(amount > 0)) { toast('Amount must be greater than 0'); return; }
+  if (isDayCloseLocked(date)) { toast('Day is locked. Unlock before adding/editing expenses.'); return; }
   const productName = ((document.getElementById('exp-product-name') || {}).value || '').trim();
   const vendor = ((document.getElementById('exp-vendor') || {}).value || '').trim();
   const invoiceNo = ((document.getElementById('exp-invoice-no') || {}).value || '').trim();
+  if (isInvCategory) {
+    if (!productName || !vendor || !invoiceNo) {
+      toast('Inventory expense needs product, vendor, and invoice number');
+      return;
+    }
+    if (!(qty > 0) || !(unitCost > 0)) {
+      toast('Inventory expense needs valid quantity and unit cost');
+      return;
+    }
+    const ym = String(date).slice(0, 7);
+    const sameMonthRows = await fbQueryByMonth(COL.EXPENSES, ym);
+    const dup = (sameMonthRows || []).find(r =>
+      normText(r.vendor) === normText(vendor) &&
+      normText(r.invoiceNo) === normText(invoiceNo) &&
+      Math.abs((parseFloat(r.amount) || 0) - amount) < 0.01 &&
+      String(r.date || '') !== ''
+    );
+    if (dup) {
+      toast('Duplicate invoice detected in this month. Entry blocked.');
+      return;
+    }
+  }
+  state.expInFlight = true;
+  closeModal('modal-add-expense');
   const stockImpactSign = ((document.getElementById('exp-stock-impact-sign') || {}).value || '+') === '-' ? '-' : '+';
   const inventory = {
     productName,
@@ -4871,8 +5054,9 @@ async function saveExpense() {
     category,
     description: desc || productName || category,
     amount,
+    immutable: true,
     paymentMode,
-    isInventory: isInventoryCategory(category) || !!productName,
+    isInventory: isInvCategory || !!productName,
     ...inventory,
   };
   const newId = await fbAppendDoc(COL.EXPENSES, row);
@@ -4881,6 +5065,59 @@ async function saveExpense() {
   logAudit('expense.create', `${COL.EXPENSES}/${newId}`, { amount, category, date });
   toast('Expense saved ✓');
   loadExpenses();
+}
+
+async function lockCODDayClose() {
+  const report = window.__lastCODReport;
+  if (!report) { toast('Load COD first'); return; }
+  const dateStr = report.date;
+  if (isDayCloseLocked(dateStr)) { toast('Day already locked'); return; }
+  const countedClosing = parseFloat((document.getElementById('cod-counted-closing') || {}).value);
+  if (!(countedClosing >= 0)) { toast('Enter counted closing cash'); return; }
+  const variance = Math.round((countedClosing - report.closingExpected) * 100) / 100;
+  const varianceReason = ((document.getElementById('cod-variance-reason') || {}).value || '').trim();
+  if (Math.abs(variance) > 0.001 && !varianceReason) {
+    toast('Variance reason is required when counted cash differs');
+    return;
+  }
+  if (!config.dayCloseLocks) config.dayCloseLocks = {};
+  const approval = askHighRiskApproval(`Lock day close for ${dateStr}`);
+  if (!approval) return;
+  config.dayCloseLocks[dateStr] = {
+    date: dateStr,
+    expectedClosing: report.closingExpected,
+    countedClosing,
+    variance,
+    varianceReason,
+    approver: currentUser ? currentUser.email : '',
+    lockTimestamp: Date.now(),
+    unlockTimestamp: null,
+    unlockReason: '',
+    lockApprovalReason: approval.reason,
+  };
+  saveConfig();
+  await fbSetConfig({ dayCloseLocks: config.dayCloseLocks });
+  logAudit('cod.dayClose.lock', null, { date: dateStr, expectedClosing: report.closingExpected, countedClosing, variance, varianceReason, approval });
+  toast('Day close locked ✓');
+  refreshCODPanel();
+}
+
+async function unlockCODDayClose() {
+  const dateStr = (document.getElementById('cod-date') || {}).value;
+  if (!dateStr) { toast('Pick date first'); return; }
+  const row = getDayCloseEntry(dateStr);
+  if (!row || !row.lockTimestamp || row.unlockTimestamp) { toast('Day is not locked'); return; }
+  const approval = askHighRiskApproval(`Unlock day close for ${dateStr}`);
+  if (!approval) return;
+  row.unlockTimestamp = Date.now();
+  row.unlockReason = approval.reason;
+  row.unlockedBy = currentUser ? currentUser.email : '';
+  config.dayCloseLocks[dateStr] = row;
+  saveConfig();
+  await fbSetConfig({ dayCloseLocks: config.dayCloseLocks });
+  logAudit('cod.dayClose.unlock', null, { date: dateStr, approval, priorLock: row.lockTimestamp });
+  toast('Day unlocked');
+  refreshCODPanel();
 }
 
 async function loadExpenses() {
@@ -5003,7 +5240,15 @@ async function saveFixedExpense() {
   const amount = parseFloat(document.getElementById('fe-amount').value) || 0;
   if (!name || !amount) { toast('Fill in name and amount'); return; }
   if (!config.fixedExpenses) config.fixedExpenses = [];
-  config.fixedExpenses.push({ id: uid(), name, amount });
+  config.fixedExpenses.push({
+    id: uid(),
+    name,
+    amount,
+    active: true,
+    immutable: true,
+    createdBy: currentUser ? currentUser.email : '',
+    createdAtMs: Date.now(),
+  });
   saveConfig();
   await fbReplaceCollection(COL.FIXED, config.fixedExpenses);
   closeModal('modal-add-fixed');
@@ -5012,10 +5257,22 @@ async function saveFixedExpense() {
 }
 
 function deleteFixedExpense(id) {
-  if (!confirm('Delete this fixed expense?')) return;
-  config.fixedExpenses = (config.fixedExpenses || []).filter(e => e.id !== id);
+  const row = (config.fixedExpenses || []).find(e => e.id === id);
+  if (!row) return;
+  const approval = askHighRiskApproval(`Reverse fixed expense: ${row.name}`);
+  if (!approval) return;
+  if (!confirm(`Reverse fixed expense ${row.name} (₹${fmt(row.amount)})?`)) return;
+  row.active = false;
+  row.reversal = {
+    reason: approval.reason,
+    actor: currentUser ? currentUser.email : '',
+    atMs: Date.now(),
+    originalId: id,
+  };
   saveConfig();
   fbReplaceCollection(COL.FIXED, config.fixedExpenses);
+  logAudit('fixed.reversed', `${COL.FIXED}/${id}`, { amount: row.amount, approval });
+  toast('Fixed expense reversed');
   renderAdminExpenses();
 }
 
@@ -5143,16 +5400,24 @@ async function renderAdminPayroll() {
     advByStaff[k] = (advByStaff[k] || 0) + (parseFloat(a.amount) || 0);
   });
 
-  const paid = new Set();
-  salariesAll.forEach(s => {
-    if (String(s.month) === month && String(s.year) === year) paid.add(String(s.staffName));
+  const monthSalaries = (salariesAll || []).filter(s => String(s.month) === month && String(s.year) === year);
+  const paidSalaryByStaff = {};
+  const salaryAdjustmentsByStaff = {};
+  monthSalaries.forEach(s => {
+    const key = String(s.staffName || '');
+    if (!key) return;
+    if (String(s.type || 'payment') === 'adjustment') {
+      salaryAdjustmentsByStaff[key] = (salaryAdjustmentsByStaff[key] || 0) + (parseFloat(s.amount) || 0);
+      return;
+    }
+    paidSalaryByStaff[key] = s;
   });
 
   const payrollDays = getPayrollPeriodDays(year, month);
   const totalSales = (txs || []).reduce((a, r) => a + (parseFloat(r.total) || 0), 0);
   const variableTotal = (variable || []).reduce((a, r) => a + (parseFloat(r.amount) || 0), 0);
-  const fixedTotal = (fixed || []).reduce((a, r) => a + (parseFloat(r.amount) || 0), 0);
-  const emiTotal = (emi || []).reduce((a, r) => a + (parseFloat(r.monthlyEMI) || 0), 0);
+  const fixedTotal = (fixed || []).filter(r => r.active !== false).reduce((a, r) => a + (parseFloat(r.amount) || 0), 0);
+  const emiTotal = (emi || []).filter(r => r.active !== false).reduce((a, r) => a + (parseFloat(r.monthlyEMI) || 0), 0);
   const operatingBeforePayroll = variableTotal + fixedTotal + emiTotal;
 
   let html = `
@@ -5195,7 +5460,10 @@ async function renderAdminPayroll() {
     const leaveDeduction = Math.round(perDaySalary * excessLeaveDays);
     const baseAfterLeave = Math.max(0, base - leaveDeduction);
     const netPayable = Math.max(0, baseAfterLeave + commission - advance);
-    const isPaid = paid.has(s.name);
+    const paidRow = paidSalaryByStaff[s.name] || null;
+    const salaryAdjustment = parseFloat(salaryAdjustmentsByStaff[s.name] || 0);
+    const paidAmount = paidRow ? (parseFloat(paidRow.amount) || 0) + salaryAdjustment : 0;
+    const isPaid = !!paidRow;
     const payrollKey = String(s.id || s.name);
 
     totalBase += base;
@@ -5229,6 +5497,9 @@ async function renderAdminPayroll() {
       baseAfterLeave,
       netPayable,
       isPaid,
+      paidAmount,
+      paidSalaryId: paidRow ? (paidRow.id || '') : '',
+      salaryAdjustment,
     };
 
     payrollRowsForExport.push({
@@ -5247,6 +5518,8 @@ async function renderAdminPayroll() {
       'Advances ₹': advance,
       'Net Payable ₹': netPayable,
       'Status': isPaid ? 'Paid' : 'Pending',
+      'Paid Amount ₹': paidAmount,
+      'Adjustments ₹': salaryAdjustment,
     });
 
     html += `
@@ -5258,7 +5531,7 @@ async function renderAdminPayroll() {
               ${commPct ? commPct + '% commission · ' : ''}${attendance.presentUnits} present units · ${attendance.leaveDays} leave day${attendance.leaveDays !== 1 ? 's' : ''}
             </div>
           </div>
-          ${isPaid ? `<div class="paid-badge">✓ Paid</div>` : ''}
+          ${isPaid ? `<div class="paid-badge">✓ Paid · ₹${fmt(paidAmount)}</div>` : ''}
         </div>
         <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <div style="background:var(--ivory);border-radius:8px;padding:8px 10px;">
@@ -5299,7 +5572,7 @@ async function renderAdminPayroll() {
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
             <button class="btn btn-secondary" style="padding:10px 12px" onclick="downloadSalarySlip('${escAttr(payrollKey)}')">Slip PDF</button>
             ${isPaid
-              ? `<div class="paid-badge">✓ Paid this month</div>`
+              ? `<button class="btn btn-secondary" style="padding:10px 12px" onclick="adjustPaidSalary('${escAttr(payrollKey)}')">Adjust Paid Salary</button>`
               : `<button class="pay-btn" onclick="markSalaryPaid('${escAttr(payrollKey)}')">Mark Paid ₹${fmt(netPayable)}</button>`
             }
           </div>
@@ -5377,7 +5650,8 @@ async function markSalaryPaid(payrollKey) {
     const dup = (existing || []).find(s =>
       String(s.staffName) === String(staffName) &&
       String(s.month) === String(month) &&
-      String(s.year) === String(year)
+      String(s.year) === String(year) &&
+      String(s.type || 'payment') === 'payment'
     );
     if (dup) {
       toast(staffName + ' already paid for this month');
@@ -5390,6 +5664,8 @@ async function markSalaryPaid(payrollKey) {
     staffName,
     month,
     year,
+    type: 'payment',
+    immutable: true,
     amount: netPayable,
     base,
     baseAfterLeave,
@@ -5408,6 +5684,35 @@ async function markSalaryPaid(payrollKey) {
   if (!newId) { toast('⚠️  Could not save salary'); return; }
   logAudit('salary.paid', `${COL.SALARIES}/${newId}`, { staffName, month, year, amount: netPayable, base, baseAfterLeave, commission, advance, leaveDeduction, leaveDays, paidLeaves, excessLeaveDays, revenueGenerated });
   toast(staffName + ' salary marked paid ✓');
+  renderAdminPayroll();
+}
+
+async function adjustPaidSalary(payrollKey) {
+  const details = (window.__lastPayrollByStaff || {})[payrollKey];
+  if (!details || !details.isPaid) { toast('Paid salary record not found'); return; }
+  const approval = askHighRiskApproval(`Adjust paid salary for ${details.staffName}`);
+  if (!approval) return;
+  const deltaRaw = prompt('Adjustment amount (use negative to reduce payout, positive to increase):') || '';
+  const delta = parseFloat(deltaRaw);
+  if (!delta || !isFinite(delta)) { toast('Enter a non-zero numeric adjustment'); return; }
+  const row = {
+    staffId: details.staffId,
+    staffName: details.staffName,
+    month: details.month,
+    year: details.year,
+    type: 'adjustment',
+    immutable: true,
+    amount: delta,
+    reason: approval.reason,
+    paidSalaryId: details.paidSalaryId || '',
+    approvedBy: currentUser ? currentUser.email : '',
+    approvedAtMs: Date.now(),
+    adjustedDate: state.todayStr,
+  };
+  const newId = await fbAppendDoc(COL.SALARIES, row);
+  if (!newId) { toast('⚠️  Could not save adjustment'); return; }
+  logAudit('salary.adjusted', `${COL.SALARIES}/${newId}`, { payrollKey, delta, approval, paidSalaryId: details.paidSalaryId || '' });
+  toast('Salary adjustment saved ✓');
   renderAdminPayroll();
 }
 
@@ -5465,10 +5770,13 @@ async function saveAdvance() {
   if (!staffName) { toast('Select staff'); return; }
   if (!amount || amount <= 0) { toast('Enter amount'); return; }
   if (!date) { toast('Pick a date'); return; }
+  if (isDayCloseLocked(date)) { toast('Day is locked. Unlock before adding advances.'); return; }
   const staffRec = (config.staff || []).find(s => String(s.name) === staffName);
   closeModal('modal-add-advance');
   const newId = await fbAppendDoc(COL.ADVANCES, {
     date, amount, note,
+    immutable: true,
+    type: 'advance',
     staffId:   staffRec ? (staffRec.id || '') : '',
     staffName,
   });
@@ -5520,13 +5828,14 @@ async function loadAdvances() {
       </div>
     `;
     grp.items.forEach(r => {
+      const canReverse = String(r.type || 'advance') !== 'reversal' && (parseFloat(r.amount) || 0) > 0;
       html += `
         <div class="exp-row">
           <div class="exp-left">
             <div class="exp-name">₹${fmt(parseFloat(r.amount)||0)}${r.note ? ' · ' + esc(r.note) : ''}</div>
             <div class="exp-meta">${esc(r.date)}${r.createdBy ? ' · by ' + esc(r.createdBy) : ''}</div>
           </div>
-          <button class="del-btn" onclick="deleteAdvance('${r.id}','${escAttr(r.staffName||'')}',${r.amount||0})">×</button>
+          ${canReverse ? `<button class="del-btn" onclick="deleteAdvance('${r.id}','${escAttr(r.staffName||'')}',${r.amount||0})">↺</button>` : `<span class="muted-text" style="font-size:11px">locked</span>`}
         </div>
       `;
     });
@@ -5554,15 +5863,36 @@ function exportAdvancesAs(ym, fmt) {
 }
 
 async function deleteAdvance(id, staffName, amount) {
-  if (!confirm(`Delete ₹${fmt(amount)} advance for ${staffName}?`)) return;
+  const approval = askHighRiskApproval(`Reverse advance for ${staffName}`);
+  if (!approval) return;
+  if (!confirm(`Reverse ₹${fmt(amount)} advance for ${staffName}?`)) return;
   if (!db) return;
   try {
-    await db.collection(COL.ADVANCES).doc(id).delete();
-    logAudit('advance.delete', `${COL.ADVANCES}/${id}`, { staffName, amount });
-    toast('Advance removed');
+    const originalDoc = await db.collection(COL.ADVANCES).doc(id).get();
+    if (!originalDoc.exists) {
+      toast('Original advance not found');
+      return;
+    }
+    const original = originalDoc.data();
+    const reversal = {
+      date: state.todayStr,
+      amount: -Math.abs(parseFloat(amount) || 0),
+      note: `REVERSAL of ${id}: ${approval.reason}`,
+      staffId: original.staffId || '',
+      staffName: original.staffName || staffName,
+      type: 'reversal',
+      originalId: id,
+      reason: approval.reason,
+      approvedBy: currentUser ? currentUser.email : '',
+      immutable: true,
+    };
+    const revId = await fbAppendDoc(COL.ADVANCES, reversal);
+    if (!revId) { toast('⚠️  Could not save reversal'); return; }
+    logAudit('advance.reversed', `${COL.ADVANCES}/${id}`, { staffName, amount, revId, approval });
+    toast('Advance reversed');
     loadAdvances();
   } catch(e) {
-    toast('⚠️  Could not delete');
+    toast('⚠️  Could not reverse');
   }
 }
 
@@ -5977,7 +6307,7 @@ function exportAnalyticsAs(fmt) {
 ──────────────────────────────────────────────────── */
 function renderAdminEMI() {
   const host = document.getElementById('admin-tab-emi');
-  const emiList = config.emi || [];
+  const emiList = (config.emi || []).filter(e => e.active !== false);
 
   let html = '<div class="admin-section-title">Loan & EMI Tracker</div>';
   if (!emiList.length) {
@@ -6009,7 +6339,7 @@ function renderAdminEMI() {
             <div class="emi-bar"><div class="emi-bar-fill" style="width:${pct}%"></div></div>
           </div>
           <div class="emi-actions">
-            <button class="del-btn" onclick="deleteEMI('${e.id}')">×</button>
+            <button class="del-btn" onclick="deleteEMI('${e.id}')">↺</button>
             <button class="btn btn-primary" style="padding:10px 16px;font-size:13px" onclick="markEMIPaid('${e.id}','${esc(e.name)}')">Mark Month Paid</button>
           </div>
         </div>
@@ -6034,7 +6364,18 @@ async function saveEMI() {
   const paid    = parseInt(document.getElementById('emi-paid').value) || 0;
   if (!name || !monthly) { toast('Name and EMI amount required'); return; }
   if (!config.emi) config.emi = [];
-  config.emi.push({ id: uid(), name, totalAmount: total, monthlyEMI: monthly, startDate: start, monthsPaid: paid });
+  config.emi.push({
+    id: uid(),
+    name,
+    totalAmount: total,
+    monthlyEMI: monthly,
+    startDate: start,
+    monthsPaid: paid,
+    active: true,
+    immutable: true,
+    createdBy: currentUser ? currentUser.email : '',
+    createdAtMs: Date.now(),
+  });
   saveConfig();
   await fbReplaceCollection(COL.EMI, config.emi);
   closeModal('modal-add-emi');
@@ -6052,10 +6393,22 @@ async function markEMIPaid(emiId, name) {
 }
 
 function deleteEMI(id) {
-  if (!confirm('Delete this EMI record?')) return;
-  config.emi = (config.emi || []).filter(e => e.id !== id);
+  const row = (config.emi || []).find(e => e.id === id);
+  if (!row) return;
+  const approval = askHighRiskApproval(`Reverse EMI: ${row.name}`);
+  if (!approval) return;
+  if (!confirm(`Reverse EMI ${row.name}?`)) return;
+  row.active = false;
+  row.reversal = {
+    reason: approval.reason,
+    actor: currentUser ? currentUser.email : '',
+    atMs: Date.now(),
+    originalId: id,
+  };
   saveConfig();
   fbReplaceCollection(COL.EMI, config.emi);
+  logAudit('emi.reversed', `${COL.EMI}/${id}`, { name: row.name, approval });
+  toast('EMI reversed');
   renderAdminEMI();
 }
 
@@ -6854,6 +7207,143 @@ function todayISO() { return new Date().toISOString().slice(0,10); }
 function fmt(n) { return Math.round(n).toLocaleString('en-IN'); }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escAttr(s) { return esc(s); }
+
+function normText(v) { return String(v || '').trim().toLowerCase(); }
+
+function currentRole() {
+  return normText(currentUser && currentUser.role);
+}
+
+function hasRoleSupervisor() {
+  return currentRole() === 'supervisor';
+}
+
+function canAccessAdminPanel() {
+  const role = currentRole();
+  return role === 'admin' || role === 'supervisor';
+}
+
+function hasRoleAdmin() {
+  return currentRole() === 'admin';
+}
+
+function askHighRiskApproval(actionLabel) {
+  if (!hasRoleAdmin()) {
+    toast('Only admin can perform this action');
+    return null;
+  }
+  const pin = prompt(`High-risk action: ${actionLabel}\n\nEnter Admin PIN to approve:`) || '';
+  if (pin !== String(config.adminPin || '')) {
+    toast('Approval failed: incorrect admin PIN');
+    return null;
+  }
+  const reason = (prompt(`Approval reason for: ${actionLabel}`) || '').trim();
+  if (!reason) {
+    toast('Approval reason is required');
+    return null;
+  }
+  return {
+    approvedByEmail: currentUser ? currentUser.email : '',
+    approvedByName: currentUser ? currentUser.name : '',
+    approvedAtMs: Date.now(),
+    reason,
+  };
+}
+
+function nowStamp() {
+  return {
+    actorEmail: currentUser ? currentUser.email : '',
+    actorName: currentUser ? currentUser.name : '',
+    atMs: Date.now(),
+  };
+}
+
+function toMonthName(ym) {
+  const [year, month] = String(ym || '').split('-');
+  return new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1)
+    .toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+}
+
+function getPayrollPeriodDaysByYM(ym) {
+  const [year, month] = String(ym || '').split('-');
+  return getPayrollPeriodDays(year, month);
+}
+
+function computeNetPayableForStaffMonth(staffRec, ym, txs, advances) {
+  const payrollDays = getPayrollPeriodDaysByYM(ym);
+  const base = parseFloat(staffRec.salary) || 0;
+  const paidLeaves = parseFloat(staffRec.paidLeaves) || 0;
+  const commByStaff = (txs || []).reduce((acc, t) => {
+    const k = String(t.staffName || '');
+    if (!k) return acc;
+    acc[k] = (acc[k] || 0) + (parseFloat(t.commissionAmount) || 0);
+    return acc;
+  }, {});
+  const advByStaff = (advances || []).reduce((acc, a) => {
+    const k = String(a.staffName || '');
+    if (!k) return acc;
+    acc[k] = (acc[k] || 0) + (parseFloat(a.amount) || 0);
+    return acc;
+  }, {});
+
+  const attendance = getStaffAttendanceMetrics(staffRec, ym, payrollDays);
+  const excessLeaveDays = Math.max(0, attendance.leaveDays - paidLeaves);
+  const perDaySalary = payrollDays > 0 ? (base / payrollDays) : 0;
+  const leaveDeduction = Math.round(perDaySalary * excessLeaveDays);
+  const baseAfterLeave = Math.max(0, base - leaveDeduction);
+  const commission = parseFloat(commByStaff[staffRec.name] || 0);
+  const advance = parseFloat(advByStaff[staffRec.name] || 0);
+  const netPayable = Math.max(0, baseAfterLeave + commission - advance);
+  return {
+    netPayable,
+    commission,
+    advance,
+    leaveDeduction,
+    baseAfterLeave,
+    attendance,
+    payrollDays,
+  };
+}
+
+function buildMonthlyPayrollAccrual(opts) {
+  const ym = opts.ym;
+  const staffList = opts.staffList || [];
+  const txs = opts.txs || [];
+  const advances = opts.advances || [];
+  const salariesAll = opts.salariesAll || [];
+  const [yy, mm] = String(ym || '').split('-');
+  const monthRows = (salariesAll || []).filter(s => String(s.month) === mm && String(s.year) === yy);
+  const paymentsByStaff = {};
+  const adjustmentsByStaff = {};
+  monthRows.forEach(s => {
+    if (String(s.type || 'payment') === 'adjustment') {
+      const k = String(s.staffName || '');
+      adjustmentsByStaff[k] = (adjustmentsByStaff[k] || 0) + (parseFloat(s.amount) || 0);
+      return;
+    }
+    if (!s.staffName) return;
+    paymentsByStaff[String(s.staffName)] = s;
+  });
+
+  let paidTotal = 0;
+  let pendingTotal = 0;
+  staffList.forEach(staffRec => {
+    const key = String(staffRec.name || '');
+    const payment = paymentsByStaff[key];
+    const adjustments = parseFloat(adjustmentsByStaff[key] || 0);
+    if (payment) {
+      paidTotal += (parseFloat(payment.amount) || 0) + adjustments;
+      return;
+    }
+    const calc = computeNetPayableForStaffMonth(staffRec, ym, txs, advances);
+    pendingTotal += calc.netPayable + adjustments;
+  });
+  return {
+    paidTotal,
+    pendingTotal,
+    payrollExpense: Math.max(0, paidTotal + pendingTotal),
+  };
+}
 
 /* ────────────────────────────────────────────────────
    PWA
