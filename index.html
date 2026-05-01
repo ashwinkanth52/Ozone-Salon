@@ -312,10 +312,10 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .service-item{
   position:relative;border-radius:12px;overflow:hidden;
   background:var(--surface);box-shadow:0 1px 7px rgba(0,0,0,.05);
-  min-height:76px;
-  display:grid;grid-template-columns:52px minmax(0,1fr) auto;
-  align-items:center;column-gap:10px;
-  padding:8px;
+  min-height:62px;
+  display:grid;grid-template-columns:44px minmax(0,1fr) auto;
+  align-items:center;column-gap:12px;
+  padding:8px 10px;
   border:1px solid var(--line-soft);transition:transform .15s,box-shadow .15s;
 }
 .service-item:active{transform:scale(.96);box-shadow:0 1px 6px rgba(0,0,0,.07);}
@@ -323,8 +323,8 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .service-thumb{
   position:relative;inset:auto;background-size:cover;background-position:center;background-repeat:no-repeat;
   background-color:var(--surface-2);
-  width:52px;height:52px;
-  border-radius:10px;
+  width:44px;height:44px;
+  border-radius:8px;
   animation:shimmerBg 1.8s ease infinite;
 }
 .service-thumb.loaded{animation:none;}
@@ -334,8 +334,8 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 }
 .service-thumb::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(to bottom,rgba(255,255,255,.03),rgba(0,0,0,.12));
-  border-radius:10px;
+  background:linear-gradient(to bottom,rgba(255,255,255,.03),rgba(0,0,0,.10));
+  border-radius:8px;
 }
 .service-info{
   position:relative;
