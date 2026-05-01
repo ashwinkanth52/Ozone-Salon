@@ -173,6 +173,12 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .brand-strip-user-name{font-size:11.5px;color:var(--ink);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;}
 .brand-strip-user-role{font-size:8.5px;color:var(--champagne);letter-spacing:.16em;text-transform:uppercase;font-weight:500;margin-top:1px;}
 .brand-strip.visible + .screen .top-bar{top:49px;}
+/* Brand-strip (49px) + top-bar (73px) = 122px for stickies below top-bar */
+.brand-strip.visible + .screen .segment-row{top:122px;}
+/* Brand-strip + top-bar + segment-row (62px) = 184px for tabs */
+.brand-strip.visible + .screen .tabs-wrap{top:184px;}
+.brand-strip.visible + .screen .tabs-wrap.no-segment{top:122px;}
+.brand-strip.visible + .screen .admin-tabs{top:122px;}
 
 /* USER CHIP */
 .user-chip{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:50px;padding:5px;margin-bottom:32px;width:100%;max-width:340px;}
@@ -208,6 +214,8 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .att-btn{padding:9px 16px;border-radius:8px;font-size:11.5px;font-weight:600;letter-spacing:.08em;background:var(--ink);color:#FFF;text-transform:uppercase;}
 .att-btn:active{background:#000;}
 .att-btn.checked{background:transparent;color:var(--sage);border:1px solid var(--sage);pointer-events:none;font-weight:500;letter-spacing:.06em;}
+.att-btn.half-day-active{background:var(--sage);color:#FFF;}
+.att-btn.half-day-active:active{background:var(--sage-dark);}
 .new-bill-cta{width:100%;padding:18px;border-radius:14px;background:var(--ink);color:#FFF;font-size:13px;font-weight:600;text-align:center;letter-spacing:.16em;text-transform:uppercase;margin-top:8px;box-shadow:var(--shadow-card);}
 .new-bill-cta:active{background:#000;}
 
@@ -274,12 +282,22 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 }
 
 /* BILLING: SEGMENT (Men / Women / Combo) + TABS + SERVICES */
-.segment-row{display:flex;gap:8px;padding:14px 16px 8px;background:var(--surface);}
-.segment-btn{flex:1;padding:11px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--muted);}
+/* segment-row is sticky so users always see Men/Women/Combos even when scrolled */
+.segment-row{display:flex;gap:8px;padding:14px 16px 8px;background:var(--surface);position:sticky;top:73px;z-index:8;border-bottom:1px solid var(--line-soft);}
+.segment-btn{flex:1;padding:11px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--muted);transition:all .18s;}
+.segment-btn:active{transform:scale(.97);}
 .segment-btn.active{background:var(--ink);border-color:var(--ink);color:#FFF;}
-.tabs{display:flex;background:var(--surface);padding:0 16px;border-bottom:1px solid var(--line-soft);position:sticky;top:73px;z-index:9;overflow-x:auto;}
+/* Tabs wrapper: sticky below segment-row (73 top-bar + 62 segment = 135) */
+/* If segment row is hidden (single segment), use .no-segment class → top:73px */
+.tabs-wrap{position:sticky;top:135px;z-index:9;background:var(--surface);border-bottom:1px solid var(--line-soft);}
+.tabs-wrap.no-segment{top:73px;}
+.tabs-wrap::after{content:'';position:absolute;top:0;right:0;bottom:0;width:40px;background:linear-gradient(to right, rgba(248,245,240,0), var(--surface) 75%);pointer-events:none;}
+.tabs-wrap .tabs-chev{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:300;pointer-events:none;z-index:2;opacity:.55;animation:tabsHint 1.6s ease-in-out infinite;}
+@keyframes tabsHint{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(3px)}}
+.tabs-wrap.tabs-end::after,.tabs-wrap.tabs-end .tabs-chev{opacity:0;}
+.tabs{display:flex;padding:0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
-.tab{flex-shrink:0;padding:15px 14px;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.12em;border-bottom:1.5px solid transparent;transition:all .18s;white-space:nowrap;text-transform:uppercase;}
+.tab{flex-shrink:0;padding:15px 14px;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.12em;border-bottom:1.5px solid transparent;transition:all .18s;white-space:nowrap;text-transform:uppercase;scroll-snap-align:start;}
 .tab.active{color:var(--ink);border-bottom-color:var(--champagne);font-weight:600;}
 .service-list{padding:14px 16px;}
 .service-item{display:flex;align-items:center;justify-content:space-between;padding:14px 14px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);margin-bottom:10px;transition:all .18s;gap:12px;}
@@ -402,7 +420,13 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 .admin-tab{flex:1 1 auto;min-width:0;padding:11px 8px;font-size:10.5px;color:var(--muted);text-align:center;border-bottom:1.5px solid transparent;letter-spacing:.04em;white-space:nowrap;text-transform:uppercase;font-weight:500;border-radius:6px;}
 .admin-tab.active{color:var(--ink);border-bottom-color:var(--champagne);font-weight:600;background:var(--surface-2);}
 @media (max-width:480px){
-  .admin-tabs{flex-wrap:nowrap;overflow-x:auto;padding:0 8px;}
+  /* Mobile: admin tabs scroll horizontally with a right-fade indicator */
+  .admin-tabs{flex-wrap:nowrap;overflow-x:auto;padding:0 8px;
+    -webkit-mask-image:linear-gradient(to right, black 75%, transparent 100%);
+    mask-image:linear-gradient(to right, black 75%, transparent 100%);}
+  .admin-tabs.tabs-scrolled-end{
+    -webkit-mask-image:none;
+    mask-image:none;}
   .admin-tab{flex:0 0 auto;padding:14px 14px;font-size:11.5px;border-radius:0;}
   .admin-tab.active{background:transparent;}
 }
@@ -471,6 +495,12 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 .admin-service-row-v2 .svc-mins{width:66px;text-align:right;}
 .admin-service-row-v2 .svc-desc{width:100%;resize:vertical;min-height:44px;line-height:1.5;}
 .admin-service-row-v2 .del-btn{flex-shrink:0;}
+
+/* SETUP — sub-tabs (Staff / Services / Shop) — segmented pill row */
+.setup-sub-pills{display:flex;gap:6px;margin:0 0 18px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:4px;}
+.setup-pill{flex:1;padding:11px 8px;border-radius:9px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted);background:transparent;border:none;text-align:center;transition:all .18s;white-space:nowrap;}
+.setup-pill:active{transform:scale(.97);}
+.setup-pill.active{background:var(--ink);color:#FFF;box-shadow:0 4px 12px rgba(17,17,17,.18);}
 
 /* SETUP — SERVICES (redesigned admin Setup → Services UI) */
 .svc-toolbar{display:flex;gap:8px;margin:0 0 10px;align-items:stretch;}
@@ -926,7 +956,10 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     </div>
   </div>
   <div class="segment-row" id="segment-row"></div>
-  <div class="tabs" id="service-tabs"></div>
+  <div class="tabs-wrap" id="service-tabs-wrap">
+    <div class="tabs" id="service-tabs"></div>
+    <div class="tabs-chev" aria-hidden="true">›</div>
+  </div>
   <div class="service-list" id="service-list"></div>
   <div class="cart-float" id="cart-float" onclick="showScreen('cart')">
     <div style="display:flex;align-items:center;gap:12px;">
@@ -1084,6 +1117,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <button class="admin-tab" data-atab="analytics" onclick="setAdminTab('analytics')">📈 Analytics</button>
     <button class="admin-tab" data-atab="sales" onclick="setAdminTab('sales')">🧾 Sales</button>
     <button class="admin-tab" data-atab="customers" onclick="setAdminTab('customers')">🙋 Customers</button>
+    <button class="admin-tab" data-atab="attendance" onclick="setAdminTab('attendance')">📋 Attendance</button>
     <button class="admin-tab" data-atab="expenses" onclick="setAdminTab('expenses')">💸 Expenses</button>
     <button class="admin-tab" data-atab="payroll" onclick="setAdminTab('payroll')">👥 Payroll</button>
     <button class="admin-tab" data-atab="advances" onclick="setAdminTab('advances')">💵 Advances</button>
@@ -1097,6 +1131,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div id="admin-tab-dashboard"></div>
     <div id="admin-tab-analytics" style="display:none"></div>
     <div id="admin-tab-customers" style="display:none"></div>
+    <div id="admin-tab-attendance" style="display:none"></div>
     <div id="admin-tab-sales" style="display:none"></div>
     <div id="admin-tab-expenses" style="display:none"></div>
     <div id="admin-tab-payroll" style="display:none"></div>
@@ -1733,7 +1768,8 @@ function pickServiceImage(name, category) {
     if (n.includes('massage'))   return _IMG.men_massage;
     if (n.includes('scrub'))     return _IMG.men_back_massage;
     if (n.includes('underarm'))  return _IMG.men_detan;
-    return _IMG.cat_men;
+    // No fallback — return gender-specific default for unmatched men's services
+    return _IMG.men_haircut;
   }
 
   // WOMEN bucket
@@ -1771,7 +1807,8 @@ function pickServiceImage(name, category) {
   if (n.includes('foot massage'))          return _IMG.women_foot_massage;
   if (n.includes('massage'))               return _IMG.women_massage;
   if (n.includes('scrub'))                 return _IMG.women_scrub;
-  return _IMG.cat_women;
+  // No fallback — return gender-specific default for unmatched women's services
+  return _IMG.women_facial;
 }
 
 const SERVICE_META = {
@@ -2398,6 +2435,32 @@ async function fbUpsertAttendance(row) {
   return fbAddDoc(COL.ATTENDANCE, { ...row, id: docId });
 }
 
+async function fbUpsertStaffAttendance(staffName, attData) {
+  // Save attendance as part of staff member's record (in STAFF collection)
+  if (!db) return false;
+  try {
+    const staffDoc = await db.collection(COL.STAFF).where('name', '==', staffName).limit(1).get();
+    if (staffDoc.empty) return false;
+    const staffId = staffDoc.docs[0].id;
+    const staffData = staffDoc.docs[0].data();
+    
+    // Update staff attendance array
+    if (!staffData.attendance) staffData.attendance = [];
+    const idx = staffData.attendance.findIndex(a => a.date === attData.date);
+    if (idx >= 0) {
+      staffData.attendance[idx] = attData;
+    } else {
+      staffData.attendance.push(attData);
+    }
+    
+    await db.collection(COL.STAFF).doc(staffId).update({ attendance: staffData.attendance });
+    return true;
+  } catch(e) { 
+    console.error('fbUpsertStaffAttendance error:', e);
+    return false; 
+  }
+}
+
 async function fbUpsertFootfall(date, count) {
   if (!db) return false;
   showSync('syncing');
@@ -2907,6 +2970,18 @@ function enterAdmin() {
   showScreen('admin');
   // Supervisors land on Team tab; admins on Dashboard
   setAdminTab(currentUser.role === 'supervisor' ? 'team' : 'dashboard');
+  // Install scroll-to-end detector for admin tabs mobile fade mask
+  requestAnimationFrame(() => {
+    const tabBar = document.getElementById('admin-tab-bar');
+    if (!tabBar) return;
+    const update = () => {
+      const overflow  = tabBar.scrollWidth - tabBar.clientWidth;
+      const remaining = overflow - tabBar.scrollLeft;
+      tabBar.classList.toggle('tabs-scrolled-end', remaining <= 4 || overflow <= 0);
+    };
+    tabBar.onscroll = update;
+    update();
+  });
 }
 
 /* ────────────────────────────────────────────────────
@@ -2929,18 +3004,29 @@ function renderStaffDashboard() {
     return;
   }
   host.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   config.staff.forEach(s => {
-    const checked = !!state.attendanceCache[s.name];
+    const att = (s.attendance || []).find(a => a.date === today) || {};
+    const hasCheckedIn = !!att.checkInTime;
+    const hasCheckedOut = !!att.checkOutTime;
+    const isHalfDay = !!att.isHalfDay;
+    
     const div = document.createElement('div');
     div.className = 'attendance-row';
     div.innerHTML = `
-      <div>
+      <div style="flex:1">
         <div class="att-name">${esc(s.name)}</div>
-        ${checked ? `<div class="att-time">✓ Checked in at ${state.attendanceCache[s.name]}</div>` : ''}
+        <div class="att-time">
+          ${hasCheckedIn ? `✓ In: ${att.checkInTime}` : 'Not checked in'}
+          ${hasCheckedOut ? ` · Out: ${att.checkOutTime}` : ''}
+          ${isHalfDay ? ' · Half Day' : ''}
+        </div>
       </div>
-      <button class="att-btn ${checked ? 'checked' : ''}" onclick="checkIn('${esc(s.name)}')">
-        ${checked ? 'Present ✓' : 'Check In'}
-      </button>
+      <div style="display:flex;gap:8px">
+        ${!hasCheckedIn ? `<button class="att-btn" onclick="staffCheckIn('${esc(s.name)}')">Check In</button>` : ''}
+        ${hasCheckedIn && !hasCheckedOut ? `<button class="att-btn" onclick="staffCheckOut('${esc(s.name)}')">Check Out</button>` : ''}
+        <button class="att-btn ${isHalfDay ? 'half-day-active' : ''}" onclick="toggleHalfDay('${esc(s.name)}')" title="Mark as half-day">⏰</button>
+      </div>
     `;
     host.appendChild(div);
   });
@@ -2955,15 +3041,72 @@ function renderStaffDashboard() {
   });
 }
 
-async function checkIn(staffName) {
+async function staffCheckIn(staffName) {
+  if (!config.staff) return;
+  const staffIdx = config.staff.findIndex(s => s.name === staffName);
+  if (staffIdx === -1) return;
+  
+  const today = new Date().toISOString().split('T')[0];
   const now = new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
-  state.attendanceCache[staffName] = now;
-  // Persist locally
-  localStorage.setItem(SK.ATT + state.todayStr, JSON.stringify(state.attendanceCache));
+  
+  if (!config.staff[staffIdx].attendance) config.staff[staffIdx].attendance = [];
+  let todayAtt = config.staff[staffIdx].attendance.find(a => a.date === today);
+  if (!todayAtt) {
+    todayAtt = { date: today, checkInTime: now, checkOutTime: null, isHalfDay: false };
+    config.staff[staffIdx].attendance.push(todayAtt);
+  } else {
+    todayAtt.checkInTime = now;
+  }
+  
+  saveConfig();
+  await fbUpsertStaffAttendance(staffName, { date: today, checkInTime: now, checkOutTime: todayAtt.checkOutTime || null, isHalfDay: todayAtt.isHalfDay });
   renderStaffDashboard();
-  // Sync to Firestore (upserts on date+staffName composite id)
-  await fbUpsertAttendance({ date: state.todayStr, staffName, checkIn: now });
   toast(staffName + ' checked in ✓');
+}
+
+async function staffCheckOut(staffName) {
+  if (!config.staff) return;
+  const staffIdx = config.staff.findIndex(s => s.name === staffName);
+  if (staffIdx === -1) return;
+  
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+  
+  if (!config.staff[staffIdx].attendance) config.staff[staffIdx].attendance = [];
+  let todayAtt = config.staff[staffIdx].attendance.find(a => a.date === today);
+  if (todayAtt) {
+    todayAtt.checkOutTime = now;
+  } else {
+    todayAtt = { date: today, checkInTime: null, checkOutTime: now, isHalfDay: false };
+    config.staff[staffIdx].attendance.push(todayAtt);
+  }
+  
+  saveConfig();
+  await fbUpsertStaffAttendance(staffName, { date: today, checkInTime: todayAtt.checkInTime || null, checkOutTime: now, isHalfDay: todayAtt.isHalfDay });
+  renderStaffDashboard();
+  toast(staffName + ' checked out ✓');
+}
+
+async function toggleHalfDay(staffName) {
+  if (!config.staff) return;
+  const staffIdx = config.staff.findIndex(s => s.name === staffName);
+  if (staffIdx === -1) return;
+  
+  const today = new Date().toISOString().split('T')[0];
+  if (!config.staff[staffIdx].attendance) config.staff[staffIdx].attendance = [];
+  
+  let todayAtt = config.staff[staffIdx].attendance.find(a => a.date === today);
+  if (!todayAtt) {
+    todayAtt = { date: today, checkInTime: null, checkOutTime: null, isHalfDay: true };
+    config.staff[staffIdx].attendance.push(todayAtt);
+  } else {
+    todayAtt.isHalfDay = !todayAtt.isHalfDay;
+  }
+  
+  saveConfig();
+  await fbUpsertStaffAttendance(staffName, { date: today, checkInTime: todayAtt.checkInTime || null, checkOutTime: todayAtt.checkOutTime || null, isHalfDay: todayAtt.isHalfDay });
+  renderStaffDashboard();
+  toast(staffName + (todayAtt.isHalfDay ? ' marked as half-day' : ' full day'));
 }
 
 function changeFootfall(delta) {
@@ -3019,8 +3162,14 @@ function renderHome() {
         btn.onclick = () => { state.segment = seg; state.tab = null; renderHome(); };
         segRow.appendChild(btn);
       });
+      // Tabs wrap must sit below the segment row — remove no-segment class
+      const tw = document.getElementById('service-tabs-wrap');
+      if (tw) tw.classList.remove('no-segment');
     } else {
       segRow.style.display = 'none';
+      // No segment row visible — tabs sit directly below top-bar
+      const tw = document.getElementById('service-tabs-wrap');
+      if (tw) tw.classList.add('no-segment');
     }
   }
 
@@ -3034,14 +3183,37 @@ function renderHome() {
     return parts.length > 1 ? parts.slice(1).join(' · ') : cat;
   };
   const tabsEl = document.getElementById('service-tabs');
+  const tabsWrap = document.getElementById('service-tabs-wrap');
   tabsEl.innerHTML = '';
+  let activeBtn = null;
   categories.forEach(cat => {
     const b = document.createElement('button');
     b.className = 'tab' + (cat === state.tab ? ' active' : '');
     b.textContent = shortLabel(cat);
     b.onclick = () => { state.tab = cat; renderHome(); };
     tabsEl.appendChild(b);
+    if (cat === state.tab) activeBtn = b;
   });
+
+  // Update fade chevron based on scroll position; hide when scrolled to end.
+  const updateTabsChev = () => {
+    if (!tabsWrap) return;
+    const overflow  = tabsEl.scrollWidth - tabsEl.clientWidth;
+    const remaining = overflow - tabsEl.scrollLeft;
+    tabsWrap.classList.toggle('tabs-end', remaining <= 4 || overflow <= 0);
+  };
+  tabsEl.onscroll = updateTabsChev;
+  // Scroll the active tab into view so the user knows where they are.
+  if (activeBtn) {
+    requestAnimationFrame(() => {
+      try {
+        activeBtn.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      } catch (e) { activeBtn.scrollIntoView(); }
+      setTimeout(updateTabsChev, 350);
+    });
+  } else {
+    requestAnimationFrame(updateTabsChev);
+  }
 
   // Services
   const listEl = document.getElementById('service-list');
@@ -3583,14 +3755,130 @@ function renderCustomerList(list) {
           '<div class="customer-phone">' + phoneDisp + '</div>' +
           '<div class="customer-stats">' +
             '<span class="customer-stat"><strong>' + visits + '</strong> visit' + (visits === 1 ? '' : 's') + '</span>' +
-            '<span class="customer-stat"><strong>\u20b9' + (parseFloat(c.totalSpend) || 0).toLocaleString('en-IN') + '</strong> spent</span>' +
+            '<span class="customer-stat"><strong>₹' + (parseFloat(c.totalSpend) || 0).toLocaleString('en-IN') + '</strong> spent</span>' +
             '<span class="customer-stat customer-last">Last: ' + last + '</span>' +
           '</div>' +
-          (c.lastServices ? '<div class="customer-last-svc">\u21b3 ' + esc(c.lastServices) + '</div>' : '') +
+          (c.lastServices ? '<div class="customer-last-svc">↳ ' + esc(c.lastServices) + '</div>' : '') +
         '</div>' +
       '</div>'
     );
   }).join('');
+}
+
+async function renderAdminAttendance() {
+  const host = document.getElementById('admin-tab-attendance');
+  host.innerHTML =
+    '<div class="admin-section-title">Staff Attendance Report</div>' +
+    '<div class="muted-text" style="margin-bottom:16px;font-size:12.5px;line-height:1.55">Daily check-in and check-out times for each staff member. Half-day marks indicate reduced shift.</div>' +
+    '<div style="display:flex;gap:8px;margin-bottom:16px">' +
+      '<input type="date" id="att-date" class="setup-input" style="flex:1;padding:9px 12px" onchange="refreshAttendanceReport()">' +
+      '<button class="btn btn-outline" onclick="attDownloadCSV()" title="Export as CSV">📥 CSV</button>' +
+    '</div>' +
+    '<div id="att-summary" class="muted-text center" style="padding:18px;font-size:13px"><div class="spinner" style="margin:0 auto 8px"></div>Loading\u2026</div>' +
+    '<div id="att-table" style="margin-top:16px"></div>';
+  
+  // Default to today
+  document.getElementById('att-date').valueAsDate = new Date();
+  refreshAttendanceReport();
+}
+
+async function refreshAttendanceReport() {
+  const dateStr = document.getElementById('att-date').value;
+  if (!dateStr) return;
+  
+  const host = document.getElementById('att-summary');
+  host.innerHTML = '<div class="spinner" style="margin:0 auto 8px"></div>Loading\u2026';
+  
+  try {
+    const allStaff = config.staff || [];
+    const rows = [];
+    let checkInCount = 0, checkOutCount = 0, halfDayCount = 0;
+    
+    allStaff.forEach(s => {
+      const att = (s.attendance || []).find(a => a.date === dateStr) || {};
+      const checkInTime = att.checkInTime || '—';
+      const checkOutTime = att.checkOutTime || '—';
+      const isHalfDay = !!att.isHalfDay;
+      
+      if (att.checkInTime) checkInCount++;
+      if (att.checkOutTime) checkOutCount++;
+      if (isHalfDay) halfDayCount++;
+      
+      rows.push({
+        name: s.name,
+        checkInTime,
+        checkOutTime,
+        isHalfDay,
+        status: !att.checkInTime ? 'Absent' : (isHalfDay ? 'Half Day' : 'Full Day')
+      });
+    });
+    
+    host.innerHTML = 
+      '<strong style="color:var(--ink);font-size:14px">' + checkInCount + '</strong> checked in · ' +
+      '<strong style="color:var(--ink);font-size:14px">' + checkOutCount + '</strong> checked out · ' +
+      '<strong style="color:var(--ink);font-size:14px">' + halfDayCount + '</strong> half days';
+    
+    const tableHost = document.getElementById('att-table');
+    if (!rows.length) {
+      tableHost.innerHTML = '<div class="muted-text center" style="padding:24px">No staff configured.</div>';
+      return;
+    }
+    
+    let html = '<table class="att-table" style="width:100%;border-collapse:collapse;font-size:13px">' +
+      '<thead><tr style="border-bottom:2px solid var(--line)">' +
+        '<th style="text-align:left;padding:8px;font-weight:600;color:var(--ink)">Staff Name</th>' +
+        '<th style="text-align:center;padding:8px;font-weight:600;color:var(--ink)">Check In</th>' +
+        '<th style="text-align:center;padding:8px;font-weight:600;color:var(--ink)">Check Out</th>' +
+        '<th style="text-align:center;padding:8px;font-weight:600;color:var(--ink)">Status</th>' +
+      '</tr></thead><tbody>';
+    
+    rows.forEach(r => {
+      const statusColor = r.status === 'Absent' ? 'var(--red)' : (r.status === 'Half Day' ? 'var(--sage)' : 'var(--green)');
+      html += '<tr style="border-bottom:1px solid var(--line-soft)">' +
+        '<td style="padding:10px 8px;color:var(--ink)">' + esc(r.name) + '</td>' +
+        '<td style="padding:10px 8px;text-align:center;color:var(--muted)">' + r.checkInTime + '</td>' +
+        '<td style="padding:10px 8px;text-align:center;color:var(--muted)">' + r.checkOutTime + '</td>' +
+        '<td style="padding:10px 8px;text-align:center"><span style="color:' + statusColor + ';font-weight:600">' + r.status + '</span></td>' +
+      '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    tableHost.innerHTML = html;
+  } catch (e) {
+    host.innerHTML = '⚠ Could not load. Check internet connection.';
+  }
+}
+
+function attDownloadCSV() {
+  const dateStr = document.getElementById('att-date').value;
+  if (!dateStr) {
+    toast('Please select a date first');
+    return;
+  }
+  
+  const rows = [];
+  rows.push(['Date', dateStr]);
+  rows.push(['']);
+  rows.push(['Staff Name', 'Check In', 'Check Out', 'Status']);
+  
+  const allStaff = config.staff || [];
+  allStaff.forEach(s => {
+    const att = (s.attendance || []).find(a => a.date === dateStr) || {};
+    const checkInTime = att.checkInTime || '—';
+    const checkOutTime = att.checkOutTime || '—';
+    const status = !att.checkInTime ? 'Absent' : (att.isHalfDay ? 'Half Day' : 'Full Day');
+    rows.push([s.name, checkInTime, checkOutTime, status]);
+  });
+  
+  const csv = rows.map(r => r.map(c => '"' + (c || '') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'attendance-' + dateStr + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Attendance exported ✓');
 }
 
 function setAdminTab(t) {
@@ -3614,14 +3902,15 @@ function setAdminTab(t) {
     b.classList.toggle('active', tabId === t);
   });
 
-  state.adminTab = t;
-  ['dashboard','analytics','sales','customers','expenses','payroll','advances','emi','setup','team','security'].forEach(n => {
+  state.adminTab = t;attendance','expenses','payroll','advances','emi','setup','team','security'].forEach(n => {
     const el = document.getElementById('admin-tab-' + n);
     if (el) el.style.display = (n === t) ? '' : 'none';
   });
   if (t === 'dashboard') renderAdminDashboard();
   if (t === 'analytics') renderAdminAnalytics();
   if (t === 'sales') renderAdminSales();
+  if (t === 'customers') renderAdminCustomers();
+  if (t === 'attendance') renderAdminAttendance
   if (t === 'customers') renderAdminCustomers();
   if (t === 'expenses') renderAdminExpenses();
   if (t === 'payroll') renderAdminPayroll();
@@ -3632,6 +3921,19 @@ function setAdminTab(t) {
   if (t === 'security') renderAdminSecurity();
   document.getElementById('admin-top-date').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
   updateAdminHero(t);
+  // Scroll active admin tab into view + update mask fade
+  requestAnimationFrame(() => {
+    const tabBar = document.getElementById('admin-tab-bar');
+    const activeTab = tabBar && tabBar.querySelector('.admin-tab.active');
+    if (activeTab) {
+      try { activeTab.scrollIntoView({ block:'nearest', inline:'center', behavior:'smooth' }); } catch(e) { activeTab.scrollIntoView(); }
+    }
+    if (tabBar) {
+      const overflow  = tabBar.scrollWidth - tabBar.clientWidth;
+      const remaining = overflow - tabBar.scrollLeft;
+      tabBar.classList.toggle('tabs-scrolled-end', remaining <= 4 || overflow <= 0);
+    }
+  });
 }
 
 // Premium imagery + tagline for each admin tab. Pexels images verified 200 OK.
@@ -3642,6 +3944,8 @@ const ADMIN_HERO_META = {
                img:'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   sales:     { eyebrow:'Sales',      title:'Every bill, every day',      sub:'Filter, export, audit transactions',
                img:'https://images.pexels.com/photos/3962285/pexels-photo-3962285.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  attendance:{ eyebrow:'Attendance', title:'Staff check-in & check-out', sub:'Daily logins, logouts & half-day marks',
+               img:'https://images.pexels.com/photos/3943723/pexels-photo-3943723.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   customers: { eyebrow:'Customers',  title:'Your loyal regulars',        sub:'Search by phone or name · visits & spend',
                img:'https://images.pexels.com/photos/3993210/pexels-photo-3993210.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   expenses:  { eyebrow:'Expenses',   title:'Where the money goes',       sub:'Fixed costs & variable spending',
@@ -5080,10 +5384,10 @@ function deleteEMI(id) {
 function renderAdminSetup() {
   const host = document.getElementById('admin-tab-setup');
   host.innerHTML = `
-    <div style="display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;" id="setup-sub-tabs">
-      <button class="btn btn-primary" style="flex-shrink:0;padding:10px 16px;font-size:13px" onclick="showSetupTab('staff')">Staff</button>
-      <button class="btn btn-secondary" style="flex-shrink:0;padding:10px 16px;font-size:13px" onclick="showSetupTab('services')">Services</button>
-      <button class="btn btn-secondary" style="flex-shrink:0;padding:10px 16px;font-size:13px" onclick="showSetupTab('shop')">Shop</button>
+    <div class="setup-sub-pills" id="setup-sub-tabs">
+      <button class="setup-pill active" data-stab="staff"    onclick="showSetupTab('staff')">👥 Staff</button>
+      <button class="setup-pill"        data-stab="services" onclick="showSetupTab('services')">✂️ Services</button>
+      <button class="setup-pill"        data-stab="shop"     onclick="showSetupTab('shop')">🏪 Shop</button>
     </div>
     <div id="setup-sub-content"></div>
   `;
@@ -5091,9 +5395,8 @@ function renderAdminSetup() {
 }
 
 function showSetupTab(t) {
-  document.querySelectorAll('#setup-sub-tabs button').forEach((b,i) => {
-    b.className = ['staff','services','shop'][i] === t ? 'btn btn-primary' : 'btn btn-secondary';
-    b.style.cssText = 'flex-shrink:0;padding:10px 16px;font-size:13px';
+  document.querySelectorAll('#setup-sub-tabs .setup-pill').forEach(b => {
+    b.classList.toggle('active', b.dataset.stab === t);
   });
   const host = document.getElementById('setup-sub-content');
   if (t === 'staff') renderSetupStaff(host);
