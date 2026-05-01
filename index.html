@@ -3924,7 +3924,8 @@ function setAdminTab(t) {
     b.classList.toggle('active', tabId === t);
   });
 
-  state.adminTab = t;attendance','expenses','payroll','advances','emi','setup','team','security'].forEach(n => {
+  state.adminTab = t;
+  ['dashboard','analytics','sales','customers','attendance','expenses','payroll','advances','emi','setup','team','security'].forEach(n => {
     const el = document.getElementById('admin-tab-' + n);
     if (el) el.style.display = (n === t) ? '' : 'none';
   });
@@ -3932,8 +3933,7 @@ function setAdminTab(t) {
   if (t === 'analytics') renderAdminAnalytics();
   if (t === 'sales') renderAdminSales();
   if (t === 'customers') renderAdminCustomers();
-  if (t === 'attendance') renderAdminAttendance
-  if (t === 'customers') renderAdminCustomers();
+  if (t === 'attendance') renderAdminAttendance();
   if (t === 'expenses') renderAdminExpenses();
   if (t === 'payroll') renderAdminPayroll();
   if (t === 'advances') renderAdminAdvances();
