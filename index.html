@@ -312,7 +312,7 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .service-item{
   position:relative;border-radius:14px;overflow:hidden;
   background:var(--surface-2);box-shadow:0 2px 10px rgba(0,0,0,.08);
-  height:148px;display:flex;flex-direction:column;
+  height:126px;display:flex;flex-direction:column;
   border:1px solid var(--line-soft);transition:transform .15s,box-shadow .15s;
 }
 .service-item:active{transform:scale(.96);box-shadow:0 1px 6px rgba(0,0,0,.07);}
@@ -330,15 +330,15 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 }
 .service-thumb::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(to bottom,transparent 25%,rgba(0,0,0,.78) 100%);
+  background:linear-gradient(to bottom,transparent 6%,rgba(0,0,0,.84) 100%);
   border-radius:16px;
 }
 .service-info{
   position:absolute;bottom:0;left:0;right:0;
-  padding:10px 10px 44px;
+  padding:8px 8px 40px;
   z-index:1;
 }
-.service-name{font-size:13px;color:#fff;font-weight:700;letter-spacing:-.005em;line-height:1.25;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+.service-name{display:inline-block;max-width:100%;font-size:13.5px;color:#fff;font-weight:800;letter-spacing:-.005em;line-height:1.24;text-shadow:0 1px 4px rgba(0,0,0,.5);background:rgba(10,10,10,.44);padding:2px 7px;border-radius:8px;}
 .service-desc{display:none;}
 .service-meta-row{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;}
 .service-price{font-size:13px;color:var(--champagne);font-family:var(--serif);font-weight:700;letter-spacing:.01em;text-shadow:0 1px 3px rgba(0,0,0,.5);}
