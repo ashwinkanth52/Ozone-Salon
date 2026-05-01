@@ -231,11 +231,16 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .tab{flex-shrink:0;padding:15px 14px;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.12em;border-bottom:1.5px solid transparent;transition:all .18s;white-space:nowrap;text-transform:uppercase;}
 .tab.active{color:var(--ink);border-bottom-color:var(--champagne);font-weight:600;}
 .service-list{padding:14px 16px;}
-.service-item{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);margin-bottom:8px;transition:all .18s;}
+.service-item{display:flex;align-items:center;justify-content:space-between;padding:14px 14px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);margin-bottom:10px;transition:all .18s;gap:12px;}
 .service-item:active{background:var(--surface-2);}
-.service-info{flex:1;min-width:0;padding-right:12px;}
-.service-name{font-size:14.5px;color:var(--ink);font-weight:500;letter-spacing:-.005em;}
-.service-price{font-size:13px;color:var(--champagne);font-family:var(--serif);margin-top:4px;font-weight:500;letter-spacing:.01em;}
+.service-item.premium{align-items:stretch;}
+.service-thumb{width:74px;min-width:74px;height:74px;border-radius:12px;background-size:cover;background-position:center;background-color:var(--surface-2);flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);}
+.service-info{flex:1;min-width:0;padding-right:4px;display:flex;flex-direction:column;justify-content:center;gap:4px;}
+.service-name{font-size:14.5px;color:var(--ink);font-weight:600;letter-spacing:-.005em;line-height:1.25;}
+.service-desc{font-size:11.5px;color:var(--muted);line-height:1.45;letter-spacing:.005em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.service-meta-row{display:flex;align-items:center;gap:10px;margin-top:4px;flex-wrap:wrap;}
+.service-price{font-size:14px;color:var(--champagne);font-family:var(--serif);font-weight:600;letter-spacing:.01em;}
+.service-dur{font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:500;background:var(--surface-2);padding:3px 8px;border-radius:20px;border:1px solid var(--line-soft);}
 .add-btn{width:38px;height:38px;border-radius:50%;background:var(--ink);color:#FFF;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:300;}
 .add-btn:active{transform:scale(.92);background:var(--champagne);}
 .cart-float{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:488px;background:var(--ink);color:#FFF;padding:14px 20px;border-radius:50px;display:none;align-items:center;justify-content:space-between;box-shadow:var(--shadow-float);z-index:20;animation:slideUp .3s ease;}
@@ -248,11 +253,26 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 
 /* CART */
 .cart-list{padding:4px 16px 0;}
-.cart-item{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;}
+.cart-item{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+.cart-item.premium{display:flex;gap:12px;padding:12px;align-items:stretch;}
+.cart-item-thumb{width:78px;min-width:78px;height:auto;border-radius:10px;background-size:cover;background-position:center;background-color:var(--surface-2);box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);}
+.cart-item-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
 .cart-item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-.cart-item-name{font-weight:500;font-size:14.5px;color:var(--ink);flex:1;letter-spacing:-.005em;}
-.cart-item-subtotal{font-family:var(--serif);font-size:16px;color:var(--ink);font-weight:500;letter-spacing:-.01em;}
-.cart-item-controls{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+.cart-item-name{font-weight:600;font-size:14.5px;color:var(--ink);flex:1;letter-spacing:-.005em;line-height:1.25;}
+.cart-item-subtotal{font-family:var(--serif);font-size:17px;color:var(--ink);font-weight:600;letter-spacing:-.01em;}
+.cart-item-desc{font-size:11.5px;color:var(--muted);line-height:1.5;}
+.cart-item-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.cart-item-tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;background:var(--champagne-bg);color:var(--champagne-deep);padding:3px 8px;border-radius:20px;border:1px solid rgba(184,148,106,.2);}
+.cart-item-tag.muted{background:var(--surface-2);color:var(--muted);border-color:var(--line-soft);}
+.cart-item-controls{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+
+/* Cart total time bar */
+.cart-time-bar{margin:6px 16px 14px;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--champagne-bg) 0%,rgba(184,148,106,.04) 100%);border:1px solid rgba(184,148,106,.2);border-radius:var(--radius);padding:14px 18px;}
+.cart-time-icon{font-size:22px;line-height:1;color:var(--champagne);}
+.cart-time-text{flex:1;min-width:0;}
+.cart-time-label{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:3px;}
+.cart-time-value{font-family:var(--serif);font-size:18px;color:var(--ink);font-weight:600;letter-spacing:-.005em;}
+.cart-time-meta{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:500;}
 .qty-group{display:flex;align-items:center;gap:16px;}
 .qty-btn{width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);font-size:16px;display:flex;align-items:center;justify-content:center;font-weight:300;color:var(--ink);}
 .qty-btn:active{background:var(--ink);color:#FFF;border-color:var(--ink);}
@@ -827,6 +847,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
   <h1 class="screen-title">Review Bill</h1>
   <div class="screen-subtitle">Confirm services before payment</div>
+  <div class="cart-time-bar" id="cart-time-bar" style="display:none"></div>
   <div class="cart-list" id="cart-list"></div>
   <div id="discount-area"></div>
   <div class="totals" id="totals-block"></div>
@@ -1241,6 +1262,92 @@ const DEFAULTS = {
 /* ────────────────────────────────────────────────────
    STATE & CONFIG
 ──────────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────
+   SERVICE CATALOG META
+   Duration + description + image per service. Lookup by
+   exact service name first, then keyword fallback. Used by
+   both the billing screen and cart for staff guidance.
+──────────────────────────────────────────────────── */
+const SERVICE_META = {
+  // HAIR ESSENTIALS
+  'Haircut': { mins:30, desc:'Consultation + scissor or machine cut, neckline + sideburn finish, light style.', img:'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=400&q=70' },
+  'Kids Haircut (below 12)': { mins:25, desc:'Gentle haircut for kids — calm chair, simple style, neat finish.', img:'https://images.unsplash.com/photo-1588534-22650b9b8bb8?auto=format&fit=crop&w=400&q=70' },
+  'Beard Trim / Styling': { mins:20, desc:'Beard shape-up, line-up with trimmer, hot towel finish.', img:'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=400&q=70' },
+  'Shaving (Clean)': { mins:20, desc:'Hot towel, pre-shave oil, clean razor shave, after-shave balm.', img:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=400&q=70' },
+  'Hair Wash (Normal)': { mins:15, desc:'Standard salon shampoo + conditioner, quick blow.', img:'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=400&q=70' },
+  'Hair Wash (Keratin)': { mins:25, desc:'Keratin smoothing shampoo + conditioner, scalp massage, blow dry.', img:'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=400&q=70' },
+  'Blow Dry': { mins:20, desc:'Heat-protect spray, round-brush blow dry, light styling.', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=400&q=70' },
+
+  // HAIR TREATMENTS
+  'Hair Colour (Global)': { mins:90, desc:'Full-head global colour, ammonia-free brand, includes wash + blow dry.', img:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=400&q=70' },
+  'Hair Colour (Black)': { mins:30, desc:'Touch-up black colour for grey coverage, root to tip, includes wash.', img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=70' },
+  'Hair Spa': { mins:45, desc:'Deep-conditioning spa cream, steam, scalp massage, rinse + blow dry.', img:'https://images.unsplash.com/photo-1559599101-f09722fb4948?auto=format&fit=crop&w=400&q=70' },
+  'Head Massage (Oil)': { mins:20, desc:'Warm oil champi-style head massage, relaxing pressure points.', img:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=70' },
+  'Henna': { mins:60, desc:'Pure henna application, conditioning, rinse + blow dry.', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=400&q=70' },
+
+  // SKIN & FACE
+  'Face & Neck De-tan': { mins:30, desc:'De-tan scrub + pack on face, neck, ears. Removes dullness, brightens skin.', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=400&q=70' },
+  'Oxylife D-Tan': { mins:35, desc:'Oxylife brand de-tan kit — bubble massage + cooling pack. Premium glow.', img:'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=400&q=70' },
+  'Bleach (Face & Neck)': { mins:25, desc:'Cream bleach for facial hair, calming pack after.', img:'https://images.unsplash.com/photo-1612817159949-195b6eb9e31a?auto=format&fit=crop&w=400&q=70' },
+  'Clean Up (Basic)': { mins:30, desc:'Cleansing, scrub, steam, blackhead removal, light face pack.', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=400&q=70' },
+  'Facial (Vitamin C / O3)': { mins:60, desc:'Cleanse, scrub, steam, extraction, Vit-C / O3 massage, mask, moisturiser.', img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=70' },
+  'Korean Glass Facial': { mins:75, desc:'10-step Korean ritual: double cleanse, exfoliate, essence, sheet mask, glow serum.', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=400&q=70' },
+
+  // BODY & SPA
+  'Pedicure (Basic)': { mins:30, desc:'Foot soak, scrub, nail trim + file, cuticle care, moisturise.', img:'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=400&q=70' },
+  'Manicure (Basic)': { mins:30, desc:'Hand soak, scrub, nail shape + buff, cuticle care, hand massage.', img:'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=400&q=70' },
+  'Spa Pedicure (Premium)': { mins:45, desc:'Full pedicure + paraffin wax, callus removal, extended massage.', img:'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=400&q=70' },
+  'Full Body Massage (45 min)': { mins:45, desc:'Full body relaxation massage, aroma oil, soothing music room.', img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=400&q=70' },
+  'Back & Neck Massage (30 min)': { mins:30, desc:'Targeted back, shoulder, neck massage. Releases tension and stiffness.', img:'https://images.unsplash.com/photo-1591343395082-e120087004b4?auto=format&fit=crop&w=400&q=70' },
+  'Foot Massage (20 min)': { mins:20, desc:'Reflexology foot massage with warm oil, pressure-point relief.', img:'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=400&q=70' },
+
+  // COMBO PACKAGES
+  'M1 — Quick Trim (Haircut + Beard + Wash)': { mins:60, desc:'Haircut, beard styling, hair wash. Quick fresh look.', img:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=400&q=70' },
+  'M2 — Clean Slate (Haircut + Beard + Wash + De-tan)': { mins:90, desc:'Haircut, beard, wash + face & neck de-tan. Brightens up the look.', img:'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=400&q=70' },
+  'M3 — Fresh Face (+ Head Massage)': { mins:105, desc:'M2 + relaxing oil head massage. Stress relief + groomed look.', img:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=70' },
+  'M5 — Glow Up (Haircut + Beard + Facial + De-tan + Wash)': { mins:150, desc:'Haircut, beard, facial, de-tan, wash. Complete grooming + glow.', img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=70' },
+  'M7 — Spa Day (Full Premium)': { mins:210, desc:'Full premium ritual: haircut, beard, facial, de-tan, hair spa, head + back massage.', img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=400&q=70' },
+};
+
+const CATEGORY_IMG = {
+  'Hair Essentials': 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=240&q=70',
+  'Hair Treatments': 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=240&q=70',
+  'Skin & Face':     'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=240&q=70',
+  'Body & Spa':      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=240&q=70',
+  'Combo Packages':  'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=240&q=70',
+};
+
+function getServiceMeta(name, category) {
+  if (SERVICE_META[name]) return SERVICE_META[name];
+  // keyword fallback so custom service names still get reasonable info
+  const n = (name || '').toLowerCase();
+  if (n.includes('haircut'))  return { mins:30, desc:'Cut, shape, neckline finish.', img:CATEGORY_IMG['Hair Essentials'] };
+  if (n.includes('beard'))    return { mins:20, desc:'Beard trim / shape-up.', img:CATEGORY_IMG['Hair Essentials'] };
+  if (n.includes('shav'))     return { mins:20, desc:'Hot towel + clean shave.', img:CATEGORY_IMG['Hair Essentials'] };
+  if (n.includes('wash') || n.includes('shampoo'))   return { mins:15, desc:'Salon shampoo + condition.', img:CATEGORY_IMG['Hair Essentials'] };
+  if (n.includes('blow') || n.includes('dry'))   return { mins:20, desc:'Blow dry + style.', img:CATEGORY_IMG['Hair Essentials'] };
+  if (n.includes('colour') || n.includes('color'))  return { mins:60, desc:'Hair colour application + wash.', img:CATEGORY_IMG['Hair Treatments'] };
+  if (n.includes('spa'))      return { mins:45, desc:'Hair spa with steam + scalp massage.', img:CATEGORY_IMG['Hair Treatments'] };
+  if (n.includes('massage'))  return { mins:30, desc:'Relaxing massage with oil.', img:CATEGORY_IMG['Body & Spa'] };
+  if (n.includes('facial') || n.includes('glass') )  return { mins:60, desc:'Multi-step facial with mask.', img:CATEGORY_IMG['Skin & Face'] };
+  if (n.includes('clean'))    return { mins:30, desc:'Cleansing + extraction + pack.', img:CATEGORY_IMG['Skin & Face'] };
+  if (n.includes('tan'))      return { mins:30, desc:'De-tan scrub + brightening pack.', img:CATEGORY_IMG['Skin & Face'] };
+  if (n.includes('bleach'))   return { mins:25, desc:'Cream bleach for facial hair.', img:CATEGORY_IMG['Skin & Face'] };
+  if (n.includes('pedicure')) return { mins:30, desc:'Foot soak + nail care + massage.', img:CATEGORY_IMG['Body & Spa'] };
+  if (n.includes('manicure')) return { mins:30, desc:'Hand soak + nail care + massage.', img:CATEGORY_IMG['Body & Spa'] };
+  if (n.includes('henna'))    return { mins:60, desc:'Henna application + rinse + dry.', img:CATEGORY_IMG['Hair Treatments'] };
+  if (n.includes('combo') || n.includes('package') || /^m\d/i.test(name)) return { mins:90, desc:'Combo package — see staff for details.', img:CATEGORY_IMG['Combo Packages'] };
+  // fallback: category image, no duration
+  return { mins:0, desc:'', img:(category && CATEGORY_IMG[category]) || CATEGORY_IMG['Hair Essentials'] };
+}
+
+function fmtDur(mins){
+  if (!mins) return '';
+  if (mins < 60) return mins + ' min';
+  const h = Math.floor(mins/60), m = mins%60;
+  return m ? `${h}h ${m}m` : `${h}h`;
+}
+
 let config = loadConfig();
 let state = {
   screen: 'loading',
@@ -2163,12 +2270,19 @@ function renderHome() {
   const listEl = document.getElementById('service-list');
   listEl.innerHTML = '';
   (config.services[state.tab] || []).forEach((svc, idx) => {
-    const div = document.createElement('div');
-    div.className = 'service-item';
+    const meta = getServiceMeta(svc.name, state.tab);
+    const dur  = fmtDur(meta.mins);
+    const div  = document.createElement('div');
+    div.className = 'service-item premium';
     div.innerHTML = `
+      <div class="service-thumb" style="background-image:url('${meta.img}')"></div>
       <div class="service-info">
         <div class="service-name">${esc(svc.name)}</div>
-        <div class="service-price">₹${svc.price.toLocaleString('en-IN')}</div>
+        ${meta.desc ? `<div class="service-desc">${esc(meta.desc)}</div>` : ''}
+        <div class="service-meta-row">
+          <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
+          ${dur ? `<span class="service-dur">⏱ ${dur}</span>` : ''}
+        </div>
       </div>
       <button class="add-btn" onclick="addToCart('${esc(state.tab)}',${idx})">+</button>
     `;
@@ -2218,25 +2332,55 @@ function grandTotal() {
 function renderCart() {
   const listEl = document.getElementById('cart-list');
   listEl.innerHTML = '';
+  let totalMins = 0;
   state.cart.forEach(item => {
+    const meta = getServiceMeta(item.name);
+    totalMins += (meta.mins || 0) * item.qty;
+    const dur = fmtDur(meta.mins);
     const div = document.createElement('div');
-    div.className = 'cart-item';
+    div.className = 'cart-item premium';
     div.innerHTML = `
-      <div class="cart-item-top">
-        <div class="cart-item-name">${esc(item.name)}</div>
-        <div class="cart-item-subtotal">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
-      </div>
-      <div class="cart-item-controls">
-        <div class="qty-group">
-          <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
-          <div class="qty-value">${item.qty}</div>
-          <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+      <div class="cart-item-thumb" style="background-image:url('${meta.img}')"></div>
+      <div class="cart-item-body">
+        <div class="cart-item-top">
+          <div class="cart-item-name">${esc(item.name)}</div>
+          <div class="cart-item-subtotal">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
         </div>
-        <button class="remove-btn" onclick="removeItem('${item.id}')">REMOVE</button>
+        ${meta.desc ? `<div class="cart-item-desc">${esc(meta.desc)}</div>` : ''}
+        <div class="cart-item-tags">
+          ${dur ? `<span class="cart-item-tag">⏱ ${dur} per session</span>` : ''}
+          <span class="cart-item-tag muted">₹${item.price.toLocaleString('en-IN')} × ${item.qty}</span>
+        </div>
+        <div class="cart-item-controls">
+          <div class="qty-group">
+            <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+            <div class="qty-value">${item.qty}</div>
+            <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+          </div>
+          <button class="remove-btn" onclick="removeItem('${item.id}')">REMOVE</button>
+        </div>
       </div>
     `;
     listEl.appendChild(div);
   });
+
+  // Total time bar
+  const timeBar = document.getElementById('cart-time-bar');
+  if (timeBar) {
+    if (state.cart.length && totalMins > 0) {
+      timeBar.style.display = 'flex';
+      timeBar.innerHTML = `
+        <span class="cart-time-icon">⏱</span>
+        <div class="cart-time-text">
+          <div class="cart-time-label">Estimated total time</div>
+          <div class="cart-time-value">${fmtDur(totalMins)}</div>
+        </div>
+        <div class="cart-time-meta">${state.cart.reduce((s,i)=>s+i.qty,0)} service${state.cart.reduce((s,i)=>s+i.qty,0)===1?'':'s'}</div>
+      `;
+    } else {
+      timeBar.style.display = 'none';
+    }
+  }
 
   // Discount area
   const da = document.getElementById('discount-area');
