@@ -2661,6 +2661,44 @@ function renderPayment() {
   if (config.upiId) {
     upiH.innerHTML = `<span>UPI ID</span>${esc(config.upiId)}`;
   }
+  renderPaymentMethodUI();
+}
+
+function normalizePaymentMethod(v) {
+  const m = String(v || '').trim().toUpperCase();
+  if (m === 'CASH') return 'Cash';
+  if (m === 'CARD') return 'Card';
+  return 'UPI';
+}
+
+function setPaymentMethod(method) {
+  state.paymentMethod = normalizePaymentMethod(method);
+  renderPaymentMethodUI();
+}
+
+function renderPaymentMethodUI() {
+  const method = normalizePaymentMethod(state.paymentMethod);
+  state.paymentMethod = method;
+  const byId = {
+    UPI:  document.getElementById('pay-btn-upi'),
+    Cash: document.getElementById('pay-btn-cash'),
+    Card: document.getElementById('pay-btn-card'),
+  };
+  Object.entries(byId).forEach(([k, el]) => {
+    if (el) el.classList.toggle('active', k === method);
+  });
+  const qrCard = document.querySelector('#screen-payment .qr-card');
+  const note   = document.getElementById('payment-note');
+  if (qrCard) qrCard.style.display = (method === 'UPI') ? '' : 'none';
+  if (note) {
+    if (method === 'UPI') {
+      note.textContent = 'Ask the customer to scan using PhonePe, GPay, or any UPI app. Tap below once payment reflects.';
+    } else if (method === 'Cash') {
+      note.textContent = 'Collect cash and verify amount before tapping Payment Received.';
+    } else {
+      note.textContent = 'Process card payment on POS machine and confirm approval before tapping Payment Received.';
+    }
+  }
 }
 
 /* ────────────────────────────────────────────────────
