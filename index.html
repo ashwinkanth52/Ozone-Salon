@@ -208,6 +208,25 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 
 /* BILLING HERO STRIP */
 .billing-hero{position:relative;height:120px;overflow:hidden;background:linear-gradient(135deg,#1a1a1a 0%,#2d2018 100%);background-image:linear-gradient(135deg,rgba(17,17,17,.55) 0%,rgba(45,32,24,.30) 100%),url('https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=1280');background-size:cover;background-position:center;}
+
+/* ADMIN HERO — image + tagline per active tab */
+.admin-hero{position:relative;height:140px;overflow:hidden;background:#221911;background-size:cover;background-position:center;transition:background-image .4s ease;}
+.admin-hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(15,12,10,.65) 0%,rgba(25,18,14,.40) 60%,rgba(0,0,0,0) 100%);}
+.admin-hero-content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 22px;color:#FFF;}
+.admin-hero-eyebrow{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:6px;}
+.admin-hero-title{font-family:var(--serif);font-size:24px;font-weight:500;letter-spacing:-.005em;line-height:1.1;text-shadow:0 1px 8px rgba(0,0,0,.35);}
+.admin-hero-sub{font-size:11.5px;color:rgba(255,255,255,.78);margin-top:6px;letter-spacing:.04em;font-weight:400;}
+@media (max-width:380px){
+  .admin-hero{height:120px;}
+  .admin-hero-title{font-size:21px;}
+}
+
+/* Image-decorated section banners inside admin tabs */
+.admin-section-banner{position:relative;height:90px;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:18px;background:#241a13;background-size:cover;background-position:center;box-shadow:var(--shadow-card);}
+.admin-section-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,12,10,.7) 0%,rgba(15,12,10,.25) 60%,rgba(0,0,0,0) 100%);}
+.admin-section-banner-content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 20px;color:#FFF;z-index:1;}
+.admin-section-banner-eyebrow{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:4px;}
+.admin-section-banner-title{font-family:var(--serif);font-size:19px;font-weight:500;letter-spacing:-.005em;text-shadow:0 1px 6px rgba(0,0,0,.3);}
 .billing-hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 60%);}
 .billing-hero-content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 22px;color:#FFF;}
 .billing-hero-eyebrow{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:6px;}
@@ -953,6 +972,16 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <div class="brand-tag" id="admin-top-date"></div>
     </div>
     <button class="back-btn" onclick="exitAdmin()" style="font-size:14px">Done</button>
+  </div>
+
+  <!-- Admin tab hero — image + label change per active tab -->
+  <div class="admin-hero" id="admin-hero">
+    <div class="admin-hero-overlay"></div>
+    <div class="admin-hero-content">
+      <div class="admin-hero-eyebrow" id="admin-hero-eyebrow">Dashboard</div>
+      <div class="admin-hero-title" id="admin-hero-title">Today at a glance</div>
+      <div class="admin-hero-sub" id="admin-hero-sub">Revenue, payroll &amp; net P&amp;L</div>
+    </div>
   </div>
 
   <div class="admin-tabs" id="admin-tab-bar">
@@ -2688,9 +2717,41 @@ function setAdminTab(t) {
   if (t === 'team') renderAdminTeam();
   if (t === 'security') renderAdminSecurity();
   document.getElementById('admin-top-date').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  updateAdminHero(t);
 }
 
-/* ────────────────────────────────────────────────────
+// Premium imagery + tagline for each admin tab. Pexels images verified 200 OK.
+const ADMIN_HERO_META = {
+  dashboard: { eyebrow:'Dashboard',  title:'Today at a glance',          sub:'Revenue, payroll & net P&L',
+               img:'https://images.pexels.com/photos/669996/pexels-photo-669996.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  analytics: { eyebrow:'Analytics',  title:'Deep performance insights',  sub:'Trends, top services & busiest hours',
+               img:'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  sales:     { eyebrow:'Sales',      title:'Every bill, every day',      sub:'Filter, export, audit transactions',
+               img:'https://images.pexels.com/photos/3962285/pexels-photo-3962285.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  expenses:  { eyebrow:'Expenses',   title:'Where the money goes',       sub:'Fixed costs & variable spending',
+               img:'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  payroll:   { eyebrow:'Payroll',    title:'Take care of your team',     sub:'Salaries, commissions, attendance',
+               img:'https://images.pexels.com/photos/3992872/pexels-photo-3992872.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  advances:  { eyebrow:'Advances',   title:'Staff cash advances',        sub:'Auto-deducted from next salary',
+               img:'https://images.pexels.com/photos/3943723/pexels-photo-3943723.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  emi:       { eyebrow:'EMI',        title:'Loans & equipment finance',  sub:'Track monthly outflow projections',
+               img:'https://images.pexels.com/photos/3943746/pexels-photo-3943746.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  setup:     { eyebrow:'Setup',      title:'Salon configuration',        sub:'Staff, services, shop settings',
+               img:'https://images.pexels.com/photos/3998415/pexels-photo-3998415.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  team:      { eyebrow:'Team',       title:'Who has access',             sub:'Admins, supervisors & staff',
+               img:'https://images.pexels.com/photos/3992876/pexels-photo-3992876.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+  security:  { eyebrow:'Security',   title:'Protect your salon',         sub:'PINs, audit log, sign-in policies',
+               img:'https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg?auto=compress&cs=tinysrgb&w=1280' },
+};
+
+function updateAdminHero(tab) {
+  const meta = ADMIN_HERO_META[tab] || ADMIN_HERO_META.dashboard;
+  const hero = document.getElementById('admin-hero');
+  if (!hero) return;
+  hero.style.backgroundImage = `url('${meta.img}')`;
+  document.getElementById('admin-hero-eyebrow').textContent = meta.eyebrow;
+  document.getElementById('admin-hero-title').textContent   = meta.title;
+  document.getElementById('admin-hero-sub').textContent     = meta.sub;
    ADMIN: DASHBOARD (P&L)
 ──────────────────────────────────────────────────── */
 async function renderAdminDashboard() {
