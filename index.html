@@ -471,6 +471,43 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 .admin-service-row-v2 .svc-mins{width:66px;text-align:right;}
 .admin-service-row-v2 .svc-desc{width:100%;resize:vertical;min-height:44px;line-height:1.5;}
 .admin-service-row-v2 .del-btn{flex-shrink:0;}
+
+/* SETUP — SERVICES (redesigned admin Setup → Services UI) */
+.svc-toolbar{display:flex;gap:8px;margin:0 0 10px;align-items:stretch;}
+.svc-search-input{flex:1;padding:11px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:14px;outline:none;color:var(--ink);}
+.svc-search-input:focus{border-color:var(--champagne);box-shadow:0 0 0 3px rgba(184,149,106,.10);}
+.svc-cat-actions{display:flex;gap:8px;margin-bottom:14px;}
+.svc-mini{padding:6px 12px;border-radius:8px;background:transparent;border:1px solid var(--line);color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;}
+.svc-mini:active{background:var(--surface-2);color:var(--ink);}
+.svc-cat-card{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;margin-bottom:14px;overflow:hidden;}
+.svc-cat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;background:linear-gradient(to bottom, var(--surface), var(--surface));user-select:none;}
+.svc-cat-header:active{background:var(--surface-2);}
+.svc-cat-card.collapsed .svc-cat-header{background:var(--surface);}
+.svc-cat-name{font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.005em;line-height:1.2;}
+.svc-cat-meta{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.02em;}
+.svc-cat-chev{font-size:14px;color:var(--muted);font-weight:300;width:28px;text-align:center;}
+.svc-cat-body{padding:6px 12px 0;}
+.svc-cat-foot{padding:0 12px 12px;}
+.svc-cat-foot .add-service-btn{width:100%;margin-top:6px;}
+.svc-card{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:12px;padding:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s;}
+.svc-card.missing{border-color:rgba(166,85,85,.35);background:rgba(166,85,85,.03);}
+.svc-card-row1{display:flex;gap:8px;align-items:center;}
+.svc-card-row2{display:flex;gap:8px;align-items:flex-end;}
+.svc-card input,.svc-card textarea{padding:10px 12px;background:#FFF;border:1px solid var(--line-soft);border-radius:8px;font-size:14px;outline:none;color:var(--ink);font-family:inherit;}
+.svc-card input:focus,.svc-card textarea:focus{border-color:var(--champagne);box-shadow:0 0 0 3px rgba(184,149,106,.10);}
+.svc-card .svc-name{flex:1;min-width:0;font-weight:500;}
+.svc-field{display:flex;flex-direction:column;gap:4px;flex:1;}
+.svc-field span{font-size:9.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600;padding-left:2px;}
+.svc-field input{text-align:right;}
+.svc-card .svc-desc{width:100%;resize:vertical;min-height:48px;line-height:1.5;font-family:inherit;}
+.svc-del{width:36px;height:36px;border-radius:50%;background:transparent;border:1px solid var(--line);color:var(--muted);font-size:18px;font-weight:300;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.svc-del:active{background:var(--terracotta);color:#FFF;border-color:var(--terracotta);}
+.svc-autofill{width:42px;height:42px;border-radius:10px;background:rgba(184,149,106,.12);border:1px solid rgba(184,149,106,.30);color:var(--champagne-deep);font-size:18px;flex-shrink:0;}
+.svc-autofill:active{background:var(--champagne);color:#FFF;}
+.svc-save-bar{position:sticky;bottom:0;left:0;right:0;background:linear-gradient(to top, var(--bg) 60%, rgba(248,245,240,0));padding:14px 0 calc(8px + env(safe-area-inset-bottom));margin:18px -2px 0;z-index:5;}
+.svc-save-bar-inner{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;box-shadow:0 8px 28px rgba(17,17,17,.10);}
+.add-service-btn{width:100%;padding:11px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;background:transparent;}
+.add-service-btn:active{background:var(--surface-2);color:var(--ink);border-color:var(--champagne);}
 .del-btn{width:36px;height:36px;border-radius:8px;background:transparent;color:var(--terracotta);flex-shrink:0;font-size:18px;border:1px solid rgba(166,85,85,.2);font-weight:300;}
 .del-btn:active{background:rgba(166,85,85,.08);}
 .add-service-btn{width:100%;padding:10px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:11px;margin-top:6px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;}
@@ -1619,13 +1656,139 @@ function getServiceSegment(category) {
   return 'Other';
 }
 
+// Smart inference for any service name — used for admin Setup auto-fill AND billing
+// screen fallback. Returns { mins, desc, img } based on keywords found in the name.
+function inferServiceMeta(name, category) {
+  const n  = String(name || '').toLowerCase();
+  const cat = String(category || '');
+  const isWomen = cat.includes('Women') || /female/i.test(name);
+  const isMen   = cat.includes('Men ·') || /\bmen\b|\bmale\b/i.test(name);
+
+  // Combo packages — look for code (M1..M8 / W1..W8 / C1..C3) or "combo"/"package" keyword
+  if (/^m\d/i.test(name) || /^w\d/i.test(name) || /^c\d/i.test(name) || n.includes('combo') || n.includes('package') || n.includes('bridal')) {
+    let mins = 90;
+    if (n.includes('royal') || n.includes('queen') || n.includes('power') || n.includes('full package')) mins = 210;
+    else if (n.includes('spa day') || n.includes('pamper') || n.includes('bridal lite') || n.includes('date night')) mins = 150;
+    else if (n.includes('quick') || n.includes('quick duo')) mins = 60;
+    return { mins, desc:'Curated package — see breakdown for included services.', img:_IMG.cat_combo };
+  }
+
+  // Bridal premium
+  if (n.includes('bridal')) return { mins:90, desc:'Bridal-grade premium treatment with extended care.', img:_IMG.facial_korean };
+
+  // Hair – cuts (most specific first)
+  if (n.includes('butterfly')) return { mins:60, desc:'Butterfly layered cut with face-framing layers.', img:_IMG.haircut_men };
+  if (n.includes('laser cut')) return { mins:50, desc:'Laser cut — precision edge for sharp blunt finish.', img:_IMG.haircut_men };
+  if (n.includes('step cut'))  return { mins:50, desc:'Long step layers for movement and volume.', img:_IMG.haircut_men };
+  if (n.includes('u cut'))     return { mins:35, desc:'Classic U-shaped back cut, smooth finish.', img:_IMG.haircut_men };
+  if (n.includes('boy cut') || n.includes('layers')) return { mins:40, desc:'Short boy-cut style or layered cut.', img:_IMG.haircut_men };
+  if (n.includes('blend cut')) return { mins:40, desc:'Blended layers with seamless transitions.', img:_IMG.haircut_men };
+  if (n.includes('front cut')) return { mins:20, desc:'Front fringe / face-framing trim only.', img:_IMG.haircut_men };
+  if (n.includes('blunt'))     return { mins:30, desc:'Blunt cut — sharp single-length finish.', img:_IMG.haircut_men };
+  if (n.includes('baby cut') || n.includes('kid'))  return { mins:25, desc:'Gentle haircut for kids — calm chair, neat finish.', img:_IMG.haircut_kids };
+  if (n.includes('haircut'))   return { mins:30, desc:'Consultation, scissor cut, neckline + sideburn finish, light styling.', img:isWomen?_IMG.haircut_men:_IMG.haircut_men };
+
+  // Beard / shave
+  if (n.includes('beard'))     return { mins:20, desc:'Beard shape-up, line-up with trimmer, hot towel finish, beard oil.', img:_IMG.beard_trim };
+  if (n.includes('shav') && n.includes('style')) return { mins:25, desc:'Designer shave with custom shape / line work.', img:_IMG.shaving };
+  if (n.includes('shav'))      return { mins:20, desc:'Hot towel, pre-shave oil, clean razor shave, after-shave balm.', img:_IMG.shaving };
+  if (n.includes('mustache') || n.includes('moustache')) return { mins:15, desc:'Mustache trim and shape-up.', img:_IMG.beard_trim };
+
+  // Wash / blow / styling
+  if (n.includes('wash') && n.includes('keratin')) return { mins:25, desc:'Keratin smoothing shampoo + conditioner, scalp massage, blow dry.', img:_IMG.hair_wash_keratin };
+  if (n.includes('wash'))      return { mins:15, desc:'Salon shampoo + conditioner with quick blow.', img:_IMG.hair_wash };
+  if (n.includes('blow dry'))  return { mins:25, desc:'Heat-protect spray, round-brush blow dry, light styling.', img:_IMG.blow_dry };
+  if (n.includes('tongs') || n.includes('iron')) return { mins:30, desc:'Hair styling with curling tongs or flat iron.', img:_IMG.blow_dry };
+  if (n.includes('crimp'))     return { mins:30, desc:'Hair crimping for textured volume look.', img:_IMG.blow_dry };
+
+  // Hair colour & treatments
+  if (n.includes('root touchup')) return { mins:45, desc:'Root touch-up with matched colour, includes wash.', img:_IMG.colour_global };
+  if (n.includes('global') && n.includes('colour')) return { mins:90, desc:'Full-head global colour application + wash + blow dry.', img:_IMG.colour_global };
+  if (n.includes('highlights') && n.includes('full')) return { mins:120, desc:'Full-head highlights with foils + toner + wash.', img:_IMG.colour_global };
+  if (n.includes('highlights') || n.includes('streak')) return { mins:30, desc:'Per-streak foil highlights for accent colour.', img:_IMG.colour_global };
+  if (n.includes("l'oreal") || n.includes('matrix')) return { mins:90, desc:"Premium L'Oréal / Matrix colour application + wash + blow dry.", img:_IMG.colour_global };
+  if (n.includes('colour')) return { mins:60, desc:'Hair colour application with matched shade + wash.', img:_IMG.colour_black };
+
+  if (n.includes('keratin'))   return { mins:90, desc:'Keratin smoothing mask treatment for frizz-free shine.', img:_IMG.hair_spa };
+  if (n.includes('protein'))   return { mins:60, desc:'Protein deep-conditioning pack for damaged hair.', img:_IMG.hair_spa };
+  if (n.includes('dandruff'))  return { mins:45, desc:'Anti-dandruff scalp treatment + targeted serum.', img:_IMG.hair_spa };
+  if (n.includes('straighten') && n.includes('perm')) return { mins:240, desc:'Permanent hair straightening — lasts 6–8 months.', img:_IMG.hair_spa };
+  if (n.includes('straighten')) return { mins:60, desc:'Temporary hair straightening with heat tools.', img:_IMG.hair_spa };
+  if (n.includes('hair spa'))  return { mins:45, desc:'Deep-conditioning spa cream, steam, scalp massage, rinse + blow dry.', img:_IMG.hair_spa };
+  if (n.includes('head massage')) return { mins:20, desc:'Warm-oil champi head massage with relaxing pressure points.', img:_IMG.head_massage };
+  if (n.includes('henna'))     return { mins:60, desc:'Pure henna application, conditioning, rinse + blow dry.', img:_IMG.henna };
+
+  // Skin & face
+  if (n.includes('threading')) {
+    if (n.includes('eyebrow')) return { mins:8,  desc:'Eyebrow shaping with thread.', img:_IMG.cat_skin_face };
+    if (n.includes('upper lip')) return { mins:5, desc:'Upper-lip threading.', img:_IMG.cat_skin_face };
+    if (n.includes('full face')) return { mins:25, desc:'Full-face threading — brows, lip, chin, forehead.', img:_IMG.cat_skin_face };
+    return { mins:7, desc:'Precision threading.', img:_IMG.cat_skin_face };
+  }
+  if (n.includes('korean'))    return { mins:75, desc:'10-step Korean ritual: double cleanse, exfoliate, essence, sheet mask, glow serum.', img:_IMG.facial_korean };
+  if (n.includes('o3'))        return { mins:75, desc:'O3+ professional facial — oxygenating multi-step ritual for instant glow.', img:_IMG.facial_korean };
+  if (n.includes('shahnaz'))   return { mins:75, desc:'Shahnaz Hussain herbal premium facial — full multi-step.', img:_IMG.facial_korean };
+  if (n.includes('vitamin c')) return { mins:60, desc:'Vitamin-C brightening facial — cleanse, scrub, mask, moisturise.', img:_IMG.facial_vitamin };
+  if (n.includes('gold'))      return { mins:60, desc:'Gold radiance facial for premium glow.', img:_IMG.facial_vitamin };
+  if (n.includes('pearl'))     return { mins:60, desc:'Pearl whitening facial for luminous skin.', img:_IMG.facial_vitamin };
+  if (n.includes('fruit'))     return { mins:50, desc:'Fruit facial — refreshing natural ingredients.', img:_IMG.facial_vitamin };
+  if (n.includes('facial'))    return { mins:60, desc:'Multi-step facial: cleanse, scrub, steam, extraction, mask, moisturiser.', img:_IMG.facial_vitamin };
+
+  if (n.includes('oxylife') && n.includes('tan')) return { mins:35, desc:'Oxylife premium de-tan kit — bubble massage + cooling pack.', img:_IMG.oxylife };
+  if (n.includes('d-tan') || n.includes('detan') || n.includes('de-tan') || n.includes('de tan')) return { mins:30, desc:'De-tan scrub + brightening pack to remove dullness.', img:_IMG.detan };
+
+  if (n.includes('bleach') && n.includes('full body')) return { mins:60, desc:'Full-body bleach for even skin tone.', img:_IMG.bleach };
+  if (n.includes('bleach') && n.includes('underarm')) return { mins:15, desc:'Cream bleach for underarms.', img:_IMG.bleach };
+  if (n.includes('bleach') && n.includes('feet')) return { mins:15, desc:'Cream bleach for feet brightening.', img:_IMG.bleach };
+  if (n.includes('bleach'))    return { mins:25, desc:'Cream bleach for hair lightening with calming pack after.', img:_IMG.bleach };
+
+  if (n.includes('cleanup') || n.includes('clean up')) return { mins:30, desc:'Cleansing, scrub, steam, blackhead removal, light face pack.', img:_IMG.cleanup };
+
+  // Waxing
+  if (n.includes('wax')) {
+    let mins = 25;
+    let scope = 'arms';
+    if (n.includes('full body')) { mins = 75; scope = 'full body'; }
+    else if (n.includes('full legs')) { mins = 35; scope = 'full legs'; }
+    else if (n.includes('half legs')) { mins = 25; scope = 'half legs'; }
+    else if (n.includes('full arms')) { mins = 25; scope = 'full arms'; }
+    else if (n.includes('half arms')) { mins = 18; scope = 'half arms'; }
+    else if (n.includes('underarm')) { mins = 10; scope = 'underarms'; }
+    else if (n.includes('full face')) { mins = 20; scope = 'full face'; }
+    const premium = n.includes('rica') ? ' (Rica premium wax)' : (n.includes('honey') ? ' (honey wax)' : '');
+    return { mins, desc:`Hair removal on ${scope}${premium}.`, img:_IMG.cat_body_spa };
+  }
+
+  // Body / Spa / Mani-Pedi
+  if (n.includes('full body massage')) return { mins:45, desc:'Full body relaxation massage with aroma oil in our private spa room.', img:_IMG.full_body_massage };
+  if (n.includes('back & neck') || (n.includes('back') && n.includes('massage'))) return { mins:30, desc:'Targeted back, shoulder & neck massage. Releases tension and stiffness.', img:_IMG.back_neck_massage };
+  if (n.includes('head & shoulder')) return { mins:20, desc:'Head and shoulder massage — relieves tension.', img:_IMG.head_massage };
+  if (n.includes('foot massage')) return { mins:20, desc:'Reflexology foot massage with warm oil, pressure-point relief.', img:_IMG.foot_massage };
+  if (n.includes('massage'))   return { mins:30, desc:'Relaxing massage with aroma oil.', img:_IMG.full_body_massage };
+
+  if (n.includes('manicure') && n.includes('spa')) return { mins:45, desc:'Spa manicure — extended soak, scrub, mask, hand massage.', img:_IMG.manicure };
+  if (n.includes('manicure') && n.includes('d-tan')) return { mins:50, desc:'De-tan manicure — brightening hand treatment + nail care.', img:_IMG.manicure };
+  if (n.includes('manicure'))  return { mins:30, desc:'Hand soak, scrub, nail shape + buff, cuticle care, hand massage.', img:_IMG.manicure };
+
+  if (n.includes('pedicure') && (n.includes('crystal') || n.includes('ice'))) return { mins:50, desc:'Premium crystal/ice pedicure — luxury foot ritual with extended care.', img:_IMG.pedicure_premium };
+  if (n.includes('pedicure') && n.includes('spa')) return { mins:45, desc:'Spa pedicure — soak + scrub + paraffin + extended massage.', img:_IMG.pedicure_premium };
+  if (n.includes('pedicure') && n.includes('d-tan')) return { mins:50, desc:'De-tan pedicure — brightening foot treatment + nail care.', img:_IMG.pedicure_premium };
+  if (n.includes('pedicure'))  return { mins:30, desc:'Foot soak, scrub, nail trim + file, cuticle care, moisturise.', img:_IMG.pedicure };
+
+  if (n.includes('scrub'))     return { mins:25, desc:'Exfoliating body scrub for smooth skin.', img:_IMG.cat_body_spa };
+  if (n.includes('underarm') && n.includes('removal')) return { mins:10, desc:'Underarm hair removal.', img:_IMG.cat_body_spa };
+
+  // Generic fallback by category image
+  return { mins:0, desc:'', img:(category && CATEGORY_IMG[category]) || CATEGORY_IMG['Hair Essentials'] };
+}
+
 function getServiceMeta(name, category) {
   // 1. Admin-edited mins/desc on the actual service record beats the static catalogue.
   const tryRecord = (cat) => {
     if (!cat || !config.services || !config.services[cat]) return null;
     const f = config.services[cat].find(s => s.name === name);
     if (f && (f.mins || f.desc)) {
-      const stat = SERVICE_META[name] || {};
+      const stat = SERVICE_META[name] || inferServiceMeta(name, cat);
       return {
         mins: f.mins || stat.mins || 0,
         desc: f.desc || stat.desc || '',
@@ -1644,26 +1807,8 @@ function getServiceMeta(name, category) {
     }
   }
   if (SERVICE_META[name]) return SERVICE_META[name];
-  // keyword fallback so custom service names still get reasonable info
-  const n = (name || '').toLowerCase();
-  if (n.includes('haircut'))  return { mins:30, desc:'Cut, shape, neckline finish.', img:CATEGORY_IMG['Hair Essentials'] };
-  if (n.includes('beard'))    return { mins:20, desc:'Beard trim / shape-up.', img:CATEGORY_IMG['Hair Essentials'] };
-  if (n.includes('shav'))     return { mins:20, desc:'Hot towel + clean shave.', img:CATEGORY_IMG['Hair Essentials'] };
-  if (n.includes('wash') || n.includes('shampoo'))   return { mins:15, desc:'Salon shampoo + condition.', img:CATEGORY_IMG['Hair Essentials'] };
-  if (n.includes('blow') || n.includes('dry'))   return { mins:20, desc:'Blow dry + style.', img:CATEGORY_IMG['Hair Essentials'] };
-  if (n.includes('colour') || n.includes('color'))  return { mins:60, desc:'Hair colour application + wash.', img:CATEGORY_IMG['Hair Treatments'] };
-  if (n.includes('spa'))      return { mins:45, desc:'Hair spa with steam + scalp massage.', img:CATEGORY_IMG['Hair Treatments'] };
-  if (n.includes('massage'))  return { mins:30, desc:'Relaxing massage with oil.', img:CATEGORY_IMG['Body & Spa'] };
-  if (n.includes('facial') || n.includes('glass') )  return { mins:60, desc:'Multi-step facial with mask.', img:CATEGORY_IMG['Skin & Face'] };
-  if (n.includes('clean'))    return { mins:30, desc:'Cleansing + extraction + pack.', img:CATEGORY_IMG['Skin & Face'] };
-  if (n.includes('tan'))      return { mins:30, desc:'De-tan scrub + brightening pack.', img:CATEGORY_IMG['Skin & Face'] };
-  if (n.includes('bleach'))   return { mins:25, desc:'Cream bleach for facial hair.', img:CATEGORY_IMG['Skin & Face'] };
-  if (n.includes('pedicure')) return { mins:30, desc:'Foot soak + nail care + massage.', img:CATEGORY_IMG['Body & Spa'] };
-  if (n.includes('manicure')) return { mins:30, desc:'Hand soak + nail care + massage.', img:CATEGORY_IMG['Body & Spa'] };
-  if (n.includes('henna'))    return { mins:60, desc:'Henna application + rinse + dry.', img:CATEGORY_IMG['Hair Treatments'] };
-  if (n.includes('combo') || n.includes('package') || /^m\d/i.test(name)) return { mins:90, desc:'Combo package — see staff for details.', img:CATEGORY_IMG['Combo Packages'] };
-  // fallback: category image, no duration
-  return { mins:0, desc:'', img:(category && CATEGORY_IMG[category]) || CATEGORY_IMG['Hair Essentials'] };
+  // Smart keyword inference for any service name (covers all 144+ services)
+  return inferServiceMeta(name, category);
 }
 
 function fmtDur(mins){
@@ -4805,61 +4950,205 @@ async function saveStaffList() {
   toast(ok ? 'Staff saved ✓' : '⚠ Could not save staff');
 }
 
+// Holds which categories are collapsed in the admin Setup → Services view
+state._svcCollapsed = state._svcCollapsed || {};
+state._svcSearch    = state._svcSearch    || '';
+
 function renderSetupServices(host) {
-  let html = '<div class="admin-section-title">Service Menu</div>';
-  html += '<div class="muted-text" style="margin:-6px 0 16px;font-size:12.5px;line-height:1.5">Add a short description and the typical duration (in minutes) for each service. These show up on the staff billing screen so the team can explain it to customers.</div>';
+  // Compute counts for header
+  let totalCount = 0, missingDesc = 0, missingMins = 0;
+  Object.values(config.services).forEach(items => {
+    items.forEach(s => {
+      totalCount++;
+      if (!s.desc || !String(s.desc).trim()) missingDesc++;
+      if (!s.mins || !parseInt(s.mins)) missingMins++;
+    });
+  });
+
+  const search = (state._svcSearch || '').trim().toLowerCase();
+
+  let html = `
+    <div class="admin-section-title">Service Menu</div>
+    <div class="muted-text" style="margin:-6px 0 14px;font-size:12.5px;line-height:1.55">
+      <strong style="color:var(--ink)">${totalCount}</strong> services across ${Object.keys(config.services).length} categories.
+      ${missingDesc ? `<span style="color:var(--terracotta)">${missingDesc} missing description</span> · ` : ''}
+      ${missingMins ? `<span style="color:var(--terracotta)">${missingMins} missing duration</span>` : ''}
+      ${(!missingDesc && !missingMins) ? '<span style="color:var(--sage)">All services fully described ✓</span>' : ''}
+    </div>
+
+    <div class="svc-toolbar">
+      <input type="search" class="svc-search-input" id="svc-search" placeholder="🔎 Search service name…" value="${escAttr(search)}" oninput="onSvcSearchInput(this.value)">
+      <button class="btn btn-gold" style="flex:none;padding:10px 14px;font-size:11px" onclick="autoFillAllServices()">✨ Auto-fill all</button>
+    </div>
+
+    <div class="svc-cat-actions">
+      <button class="svc-mini" onclick="toggleAllSvcCategories(false)">Expand all</button>
+      <button class="svc-mini" onclick="toggleAllSvcCategories(true)">Collapse all</button>
+    </div>
+  `;
+
   Object.keys(config.services).forEach(cat => {
+    const items = config.services[cat] || [];
+    // If searching, only show categories with at least one match
+    const visibleItems = search
+      ? items.filter(s => String(s.name || '').toLowerCase().includes(search) || String(s.desc || '').toLowerCase().includes(search))
+      : items;
+    if (search && !visibleItems.length) return;
+
+    const collapsed = !search && state._svcCollapsed[cat];
+    const catId = btoa(unescape(encodeURIComponent(cat))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const catMissingDesc = items.filter(s => !s.desc || !String(s.desc).trim()).length;
     html += `
-      <div class="admin-category">
-        <div style="font-weight:500;font-size:14px;letter-spacing:.04em;margin-bottom:10px;">${esc(cat)}</div>
-        <div id="svc-rows-${btoa(cat).replace(/=/g,'')}"></div>
-        <button class="add-service-btn" onclick="addService('${esc(cat)}')">+ Add service</button>
+      <div class="svc-cat-card${collapsed ? ' collapsed' : ''}">
+        <div class="svc-cat-header" onclick="toggleSvcCategory('${escAttr(cat)}')">
+          <div>
+            <div class="svc-cat-name">${esc(cat)}</div>
+            <div class="svc-cat-meta">${items.length} service${items.length === 1 ? '' : 's'}${catMissingDesc ? ` · <span style="color:var(--terracotta)">${catMissingDesc} need description</span>` : ''}</div>
+          </div>
+          <div class="svc-cat-chev">${collapsed ? '▸' : '▾'}</div>
+        </div>
+        <div class="svc-cat-body" id="svc-rows-${catId}" style="${collapsed ? 'display:none' : ''}"></div>
+        <div class="svc-cat-foot" style="${collapsed ? 'display:none' : ''}">
+          <button class="add-service-btn" onclick="addService('${escAttr(cat)}')">+ Add service to ${esc(cat.split('·').pop().trim())}</button>
+        </div>
       </div>
     `;
   });
-  html += `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveServicesList()">Save Services →</button>`;
+
+  html += `
+    <div class="svc-save-bar">
+      <div class="svc-save-bar-inner">
+        <span class="muted-text" style="font-size:12px;">${totalCount} services ready</span>
+        <button class="btn btn-primary" style="flex:none;padding:13px 22px" onclick="saveServicesList()">Save All Services ✓</button>
+      </div>
+    </div>
+  `;
+
   host.innerHTML = html;
+
   Object.keys(config.services).forEach(cat => {
-    const rowsHost = document.getElementById('svc-rows-' + btoa(cat).replace(/=/g,''));
+    const items = config.services[cat] || [];
+    const visibleItems = search
+      ? items.filter(s => String(s.name || '').toLowerCase().includes(search) || String(s.desc || '').toLowerCase().includes(search))
+      : items;
+    if (search && !visibleItems.length) return;
+    const catId = btoa(unescape(encodeURIComponent(cat))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const rowsHost = document.getElementById('svc-rows-' + catId);
     if (!rowsHost) return;
-    (config.services[cat] || []).forEach((svc, idx) => {
-      // Pre-fill defaults from the static catalogue so the user can just save.
-      if ((!svc.mins || !svc.desc) && SERVICE_META[svc.name]) {
-        if (!svc.mins) svc.mins = SERVICE_META[svc.name].mins;
-        if (!svc.desc) svc.desc = SERVICE_META[svc.name].desc;
+    items.forEach((svc, idx) => {
+      // Hide rows that don't match the search filter
+      if (search && !visibleItems.includes(svc)) return;
+      // Pre-fill defaults from smart inference so admin can just save.
+      if (!svc.mins || !svc.desc) {
+        const inferred = SERVICE_META[svc.name] || inferServiceMeta(svc.name, cat);
+        if (!svc.mins && inferred.mins) svc.mins = inferred.mins;
+        if (!svc.desc && inferred.desc) svc.desc = inferred.desc;
       }
+      const isMissing = !svc.desc || !String(svc.desc).trim();
       const r = document.createElement('div');
-      r.className = 'admin-service-row-v2';
+      r.className = 'svc-card' + (isMissing ? ' missing' : '');
       r.innerHTML = `
-        <div class="svc-row-line1">
-          <input type="text"   class="svc-name"  value="${escAttr(svc.name)}"           placeholder="Service name">
-          <input type="number" class="svc-price" value="${svc.price}"                   placeholder="₹" min="0">
-          <input type="number" class="svc-mins"  value="${svc.mins || ''}"              placeholder="Min" min="0" max="600">
-          <button class="del-btn" title="Delete">×</button>
+        <div class="svc-card-row1">
+          <input type="text" class="svc-name" value="${escAttr(svc.name)}" placeholder="Service name">
+          <button class="svc-del" title="Delete service">×</button>
         </div>
-        <textarea class="svc-desc" rows="2" placeholder="What's done in this service…">${esc(svc.desc || '')}</textarea>
+        <div class="svc-card-row2">
+          <label class="svc-field">
+            <span>Price (₹)</span>
+            <input type="number" class="svc-price" value="${svc.price}" placeholder="0" min="0" inputmode="numeric">
+          </label>
+          <label class="svc-field">
+            <span>Duration (min)</span>
+            <input type="number" class="svc-mins" value="${svc.mins || ''}" placeholder="0" min="0" max="600" inputmode="numeric">
+          </label>
+          <button class="svc-autofill" title="Auto-fill description & duration from name">✨</button>
+        </div>
+        <textarea class="svc-desc" rows="2" placeholder="What's done in this service… (tap ✨ to auto-fill)">${esc(svc.desc || '')}</textarea>
       `;
       const ni = r.querySelector('.svc-name');
       const pi = r.querySelector('.svc-price');
       const mi = r.querySelector('.svc-mins');
       const di = r.querySelector('.svc-desc');
-      const xb = r.querySelector('.del-btn');
-      ni.onchange = () => { svc.name = ni.value.trim() || svc.name; };
-      pi.onchange = () => { svc.price = parseFloat(pi.value) || 0; };
-      mi.onchange = () => { svc.mins  = parseInt(mi.value) || 0; };
-      di.onchange = () => { svc.desc  = di.value.trim(); };
+      const xb = r.querySelector('.svc-del');
+      const af = r.querySelector('.svc-autofill');
+      const persist = () => { saveConfig(); };
+      ni.oninput  = () => { svc.name = ni.value.trim() || svc.name; persist(); };
+      pi.oninput  = () => { svc.price = parseFloat(pi.value) || 0; persist(); };
+      mi.oninput  = () => { svc.mins  = parseInt(mi.value) || 0; persist(); };
+      di.oninput  = () => {
+        svc.desc = di.value.trim();
+        persist();
+        r.classList.toggle('missing', !svc.desc);
+      };
       xb.onclick  = () => {
-        if (!confirm('Delete?')) return;
+        if (!confirm('Delete this service?')) return;
         config.services[cat].splice(idx, 1);
+        saveConfig();
         renderSetupServices(host);
+      };
+      af.onclick = () => {
+        const inferred = SERVICE_META[svc.name] || inferServiceMeta(svc.name, cat);
+        if (inferred.desc) { svc.desc = inferred.desc; di.value = inferred.desc; }
+        if (inferred.mins) { svc.mins = inferred.mins; mi.value = inferred.mins; }
+        r.classList.toggle('missing', !svc.desc);
+        saveConfig();
+        toast('Filled ✓');
       };
       rowsHost.appendChild(r);
     });
   });
 }
 
+function toggleSvcCategory(cat) {
+  state._svcCollapsed[cat] = !state._svcCollapsed[cat];
+  renderSetupServices(document.getElementById('setup-sub-content'));
+}
+
+function toggleAllSvcCategories(collapse) {
+  state._svcCollapsed = {};
+  if (collapse) {
+    Object.keys(config.services).forEach(c => state._svcCollapsed[c] = true);
+  }
+  renderSetupServices(document.getElementById('setup-sub-content'));
+}
+
+let _svcSearchTimer = null;
+function onSvcSearchInput(v) {
+  state._svcSearch = v;
+  clearTimeout(_svcSearchTimer);
+  _svcSearchTimer = setTimeout(() => {
+    renderSetupServices(document.getElementById('setup-sub-content'));
+    // Restore focus on the search box
+    const sb = document.getElementById('svc-search');
+    if (sb) { sb.focus(); sb.setSelectionRange(sb.value.length, sb.value.length); }
+  }, 180);
+}
+
+function autoFillAllServices() {
+  let filled = 0;
+  Object.entries(config.services).forEach(([cat, items]) => {
+    items.forEach(svc => {
+      const inferred = SERVICE_META[svc.name] || inferServiceMeta(svc.name, cat);
+      if ((!svc.desc || !String(svc.desc).trim()) && inferred.desc) {
+        svc.desc = inferred.desc;
+        filled++;
+      }
+      if ((!svc.mins || !parseInt(svc.mins)) && inferred.mins) {
+        svc.mins = inferred.mins;
+        filled++;
+      }
+    });
+  });
+  saveConfig();
+  toast(filled ? `Auto-filled ${filled} fields ✓` : 'Already complete');
+  renderSetupServices(document.getElementById('setup-sub-content'));
+}
+
 function addService(cat) {
   config.services[cat].push({ name: 'New Service', price: 0, mins: 0, desc: '' });
+  // Make sure the category we just added to is expanded
+  state._svcCollapsed[cat] = false;
+  saveConfig();
   const host = document.getElementById('setup-sub-content');
   renderSetupServices(host);
 }
