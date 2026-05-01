@@ -103,6 +103,22 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .sync-pill.syncing{background:var(--gold);}
 .sync-pill.error{background:var(--danger);}
 
+/* GLOBAL BRAND STRIP — shown on every authenticated screen */
+.brand-strip{display:none;align-items:center;gap:10px;padding:10px 16px 8px;background:linear-gradient(180deg,var(--ivory),var(--offwhite));border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;}
+.brand-strip.visible{display:flex;}
+.brand-strip-logo{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--gold-soft));display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:white;flex-shrink:0;box-shadow:0 2px 8px rgba(212,165,165,.4);}
+.brand-strip-name{font-family:var(--serif);font-size:14px;color:var(--charcoal);letter-spacing:.02em;line-height:1;}
+.brand-strip-tag{font-size:9px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-top:2px;}
+.brand-strip-meta{flex:1;min-width:0;}
+.brand-strip-user{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--line);padding:4px 10px 4px 4px;border-radius:30px;flex-shrink:0;}
+.brand-strip-user img{width:22px;height:22px;border-radius:50%;object-fit:cover;}
+.brand-strip-user-init{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--gold-soft));color:white;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:11px;flex-shrink:0;}
+.brand-strip-user-name{font-size:11px;color:var(--charcoal);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.brand-strip-user-role{font-size:9px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;}
+
+/* Tweak: existing top-bar should NOT show under brand strip on protected screens */
+.brand-strip.visible + .screen .top-bar{top:50px;}
+
 /* USER CHIP (signed-in indicator) */
 .user-chip{display:flex;align-items:center;gap:10px;background:var(--offwhite);border:1px solid var(--line);border-radius:50px;padding:6px 6px 6px 6px;margin-bottom:32px;width:100%;max-width:340px;box-shadow:var(--shadow-soft);}
 .user-chip img{width:36px;height:36px;border-radius:50%;object-fit:cover;}
@@ -351,6 +367,25 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════════
+     GLOBAL BRAND STRIP (shown on signed-in screens)
+     ═══════════════════════════════════════════════════ -->
+<div class="brand-strip" id="brand-strip">
+  <div class="brand-strip-logo">O</div>
+  <div class="brand-strip-meta">
+    <div class="brand-strip-name" id="brand-strip-name">Ozone Salon &amp; Spa</div>
+    <div class="brand-strip-tag" id="brand-strip-tag">Salon ERP · Live</div>
+  </div>
+  <div class="brand-strip-user" id="brand-strip-user">
+    <div class="brand-strip-user-init" id="brand-strip-user-init">O</div>
+    <img id="brand-strip-user-photo" src="" alt="" style="display:none">
+    <div>
+      <div class="brand-strip-user-name" id="brand-strip-user-name">—</div>
+      <div class="brand-strip-user-role" id="brand-strip-user-role">—</div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════
      SCREEN: LOADING
@@ -684,12 +719,13 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
       <div style="font-size:11px;letter-spacing:.1em;text-align:right;opacity:.9;">PAID<br>VIA UPI</div>
     </div>
 
-    <label class="form-label">Served by (Staff)</label>
+    <label class="form-label">Served by (Staff) <span style="color:var(--danger);">*</span></label>
     <div class="input-group">
-      <select class="input" id="receipt-staff" style="padding-left:16px;">
+      <select class="input" id="receipt-staff" style="padding-left:16px;" required>
         <option value="">— Select staff member —</option>
       </select>
     </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:-14px;margin-bottom:20px;padding-left:4px;">Required · used for commission &amp; payroll.</div>
 
     <label class="form-label">Customer WhatsApp Number</label>
     <div class="input-group">
@@ -735,26 +771,61 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 
   <div class="admin-tabs" id="admin-tab-bar">
     <button class="admin-tab active" data-atab="dashboard" onclick="setAdminTab('dashboard')">📊 Dashboard</button>
+    <button class="admin-tab" data-atab="analytics" onclick="setAdminTab('analytics')">📈 Analytics</button>
     <button class="admin-tab" data-atab="sales" onclick="setAdminTab('sales')">🧾 Sales</button>
     <button class="admin-tab" data-atab="expenses" onclick="setAdminTab('expenses')">💸 Expenses</button>
     <button class="admin-tab" data-atab="payroll" onclick="setAdminTab('payroll')">👥 Payroll</button>
+    <button class="admin-tab" data-atab="advances" onclick="setAdminTab('advances')">💵 Advances</button>
     <button class="admin-tab" data-atab="emi" onclick="setAdminTab('emi')">📋 EMI</button>
     <button class="admin-tab" data-atab="setup" onclick="setAdminTab('setup')">⚙️ Setup</button>
-    <button class="admin-tab" data-atab="team" onclick="setAdminTab('team')">👥 Team</button>
+    <button class="admin-tab" data-atab="team" onclick="setAdminTab('team')">🧑‍💼 Team</button>
     <button class="admin-tab" data-atab="security" onclick="setAdminTab('security')">🔒 Security</button>
   </div>
 
   <div class="admin-body">
     <div id="admin-tab-dashboard"></div>
+    <div id="admin-tab-analytics" style="display:none"></div>
     <div id="admin-tab-sales" style="display:none"></div>
     <div id="admin-tab-expenses" style="display:none"></div>
     <div id="admin-tab-payroll" style="display:none"></div>
+    <div id="admin-tab-advances" style="display:none"></div>
     <div id="admin-tab-emi" style="display:none"></div>
     <div id="admin-tab-setup" style="display:none"></div>
     <div id="admin-tab-team" style="display:none"></div>
     <div id="admin-tab-security" style="display:none"></div>
   </div>
 </section>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: ADD ADVANCE
+     ═══════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-add-advance">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Give Staff Advance</div>
+    <div class="muted-text" style="font-size:12px;margin-bottom:14px;line-height:1.5;">Cash advance handed to a staff member. This amount is deducted from their next salary payout.</div>
+    <div class="modal-field">
+      <label class="modal-label">Staff Member</label>
+      <select class="modal-input" id="adv-staff"></select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Amount (₹)</label>
+      <input type="number" class="modal-input" id="adv-amount" placeholder="500" inputmode="numeric">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Date</label>
+      <input type="date" class="modal-input" id="adv-date">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Note (optional)</label>
+      <input type="text" class="modal-input" id="adv-note" placeholder="e.g. Medical, family">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-advance')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAdvance()">Save Advance</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════
      MODAL: PIN
@@ -934,6 +1005,7 @@ const COL = {
   EMI:           'emi',
   ATTENDANCE:    'attendance',
   FOOTFALL:      'footfall',
+  ADVANCES:      'advances',       // staff cash advances (deducted from salary)
   AUDIT:         'audit',          // append-only audit log of admin actions
 };
 
@@ -1498,6 +1570,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   state.screen = name;
+  updateBrandStrip(name);
   if (name === 'auth') renderAuth();
   if (name === 'home') renderHome();
   if (name === 'cart') renderCart();
@@ -1510,6 +1583,47 @@ function showScreen(name) {
 function renderReceipt() {
   const el = document.getElementById('receipt-total');
   if (el) el.textContent = '₹' + grandTotal().toLocaleString('en-IN');
+}
+
+function updateBrandStrip(screen) {
+  const strip = document.getElementById('brand-strip');
+  if (!strip) return;
+  // Brand strip on every screen EXCEPT loading, setup, auth, no-access (those
+  // have their own large branding).
+  const showOn = ['landing','staff','home','cart','payment','receipt','confirm','admin'];
+  const shouldShow = showOn.includes(screen) && currentUser;
+  strip.classList.toggle('visible', shouldShow);
+  if (!shouldShow) return;
+
+  document.getElementById('brand-strip-name').textContent = config.shopName || 'Ozone Salon & Spa';
+  // Context tag changes per screen
+  const tagMap = {
+    landing:  'Home',
+    staff:    'Staff Counter',
+    home:     'New Bill',
+    cart:     'Bill Summary',
+    payment:  'Collect Payment',
+    receipt:  'Send Receipt',
+    confirm:  'Saved',
+    admin:    'Admin · ERP',
+  };
+  document.getElementById('brand-strip-tag').textContent = tagMap[screen] || 'Salon ERP';
+
+  const photoEl = document.getElementById('brand-strip-user-photo');
+  const initEl  = document.getElementById('brand-strip-user-init');
+  if (currentUser.photo) {
+    photoEl.src = currentUser.photo;
+    photoEl.style.display = '';
+    initEl.style.display = 'none';
+  } else {
+    photoEl.style.display = 'none';
+    initEl.style.display = '';
+    initEl.textContent = (currentUser.name || currentUser.email || 'O').charAt(0).toUpperCase();
+  }
+  document.getElementById('brand-strip-user-name').textContent =
+    (currentUser.name || currentUser.email || '').split(' ')[0];
+  document.getElementById('brand-strip-user-role').textContent =
+    currentUser.role === 'admin' ? 'Admin' : 'Staff';
 }
 
 function renderAuth() {
@@ -2041,20 +2155,38 @@ async function finaliseTransaction(phone) {
   // Guard against double-submit: if already finalising, ignore subsequent taps.
   if (state.txInFlight) return;
   if (!state.cart.length) { toast('Cart is empty'); return; }
+
+  // MANDATORY: which staff served this customer (for commission/payroll).
+  const staffName = (document.getElementById('receipt-staff').value || '').trim();
+  if (!staffName) {
+    toast('Please select the staff who served this customer');
+    const sel = document.getElementById('receipt-staff');
+    if (sel) {
+      sel.style.borderColor = 'var(--danger)';
+      sel.focus();
+      setTimeout(() => { sel.style.borderColor = ''; }, 2000);
+    }
+    return;
+  }
   state.txInFlight = true;
 
   // Disable both finish buttons while writing
   const recScreen = document.getElementById('screen-receipt');
   const buttons = recScreen ? recScreen.querySelectorAll('button') : [];
   buttons.forEach(b => b.disabled = true);
-
-  const staffName = document.getElementById('receipt-staff').value || 'Staff';
   const sub = subtotal();
   const disc = discountAmount();
   const gst = config.gstRate ? Math.round((sub - disc) * config.gstRate / 100) : 0;
   const total = sub - disc + gst;
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+
+  // Look up staff record (for commission % + staffId stamp)
+  const staffRec = (config.staff || []).find(s => String(s.name) === staffName);
+  const commissionPct = staffRec ? (parseFloat(staffRec.commissionPct) || 0) : 0;
+  // Commission is computed on the post-discount, pre-GST amount (taxable).
+  const taxable = sub - disc;
+  const commissionAmount = commissionPct > 0 ? Math.round(taxable * commissionPct / 100) : 0;
 
   // Build transaction row. NOTE: no client `id` — fbAppendDoc generates one.
   const txRow = {
@@ -2068,7 +2200,10 @@ async function finaliseTransaction(phone) {
     gst,
     total,
     paymentMethod: 'UPI',
-    staffName,
+    staffId:   staffRec ? (staffRec.id || '') : '',
+    staffName: staffName,
+    commissionPct,
+    commissionAmount,
   };
 
   // APPEND a brand new transaction document — never overwrites.
@@ -2131,14 +2266,16 @@ function exitAdmin() { showScreen('landing'); }
 function setAdminTab(t) {
   state.adminTab = t;
   document.querySelectorAll('.admin-tab').forEach(b => b.classList.toggle('active', b.dataset.atab === t));
-  ['dashboard','sales','expenses','payroll','emi','setup','team','security'].forEach(n => {
+  ['dashboard','analytics','sales','expenses','payroll','advances','emi','setup','team','security'].forEach(n => {
     const el = document.getElementById('admin-tab-' + n);
     if (el) el.style.display = (n === t) ? '' : 'none';
   });
   if (t === 'dashboard') renderAdminDashboard();
+  if (t === 'analytics') renderAdminAnalytics();
   if (t === 'sales') renderAdminSales();
   if (t === 'expenses') renderAdminExpenses();
   if (t === 'payroll') renderAdminPayroll();
+  if (t === 'advances') renderAdminAdvances();
   if (t === 'emi') renderAdminEMI();
   if (t === 'setup') renderAdminSetup();
   if (t === 'team') renderAdminTeam();
@@ -2159,15 +2296,16 @@ async function renderAdminDashboard() {
     <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching numbers…</div>
   `;
 
-  let txs, variable, fixed, salaries, emi, footfalls;
+  let txs, variable, fixed, salaries, emi, footfalls, advances;
   try {
-    [txs, variable, fixed, salaries, emi, footfalls] = await Promise.all([
+    [txs, variable, fixed, salaries, emi, footfalls, advances] = await Promise.all([
       fbQueryByMonth(COL.TRANSACTIONS, ym),
       fbQueryByMonth(COL.EXPENSES, ym),
       fbGetCollection(COL.FIXED),
       fbGetCollection(COL.SALARIES),
       fbGetCollection(COL.EMI),
       fbGetCollection(COL.FOOTFALL),
+      fbQueryByMonth(COL.ADVANCES, ym),
     ]);
   } catch(e) {
     host.innerHTML += '<div class="muted-text center" style="margin-top:12px">⚠ Could not load. Check internet connection.</div>';
@@ -2179,9 +2317,15 @@ async function renderAdminDashboard() {
   const revenue     = sumOf(txs, 'total');
   const varExpenses = sumOf(variable, 'amount');
   const fixedTotal  = sumOf(fixed, 'amount');
-  const salaryTotal = (salaries || [])
+  const salaryPaid = (salaries || [])
     .filter(s => String(s.month) === mm && String(s.year) === yy)
     .reduce((a, s) => a + (parseFloat(s.amount) || 0), 0);
+  // Projected total payroll if not yet paid: base + commissions − advances
+  const baseTotal = (config.staff || []).reduce((a,s) => a + (parseFloat(s.salary)||0), 0);
+  const commTotal = sumOf(txs, 'commissionAmount');
+  const advTotal  = sumOf(advances, 'amount');
+  const salaryProjected = Math.max(0, baseTotal + commTotal - advTotal);
+  const salaryTotal = salaryPaid > 0 ? salaryPaid : salaryProjected;
   const emiTotal    = sumOf(emi, 'monthlyEMI');
   const totalExpenses = varExpenses + fixedTotal + salaryTotal + emiTotal;
   const netPL       = revenue - totalExpenses;
@@ -2192,9 +2336,28 @@ async function renderAdminDashboard() {
   const plPct = revenue > 0 ? Math.min(100, Math.round((revenue / (totalExpenses || 1)) * 100)) : 0;
   const isProfit = netPL >= 0;
 
+  // Today's snapshot
+  const todayTxs = txs.filter(t => String(t.date) === state.todayStr);
+  const todayRevenue = sumOf(todayTxs, 'total');
+  const todayCount   = todayTxs.length;
+  const todayFootfall = (footfalls || [])
+    .filter(r => String(r.date) === state.todayStr)
+    .reduce((s, r) => s + (parseInt(r.count) || 0), 0);
+
   host.innerHTML = `
     <div class="admin-section-title">
-      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} — P&L
+      Today · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
+    </div>
+    <div class="erp-grid">
+      <div class="erp-card gold full">
+        <div class="erp-label">Today's Revenue</div>
+        <div class="erp-value gold">₹${fmt(todayRevenue)}</div>
+        <div class="erp-sub">${todayCount} bills · ${todayFootfall} customers</div>
+      </div>
+    </div>
+
+    <div class="admin-section-title" style="margin-top:18px">
+      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} · P&L
     </div>
     <div class="erp-grid">
       <div class="erp-card gold full">
@@ -2203,8 +2366,9 @@ async function renderAdminDashboard() {
         <div class="erp-sub">${txCount} transactions · ${footfall} customers</div>
       </div>
       <div class="erp-card">
-        <div class="erp-label">Salaries</div>
+        <div class="erp-label">${salaryPaid > 0 ? 'Salaries Paid' : 'Payroll (proj.)'}</div>
         <div class="erp-value">₹${fmt(salaryTotal)}</div>
+        <div class="erp-sub">${salaryPaid > 0 ? '' : 'Base + Comm − Adv'}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Fixed Expenses</div>
@@ -2468,55 +2632,127 @@ async function renderAdminPayroll() {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2,'0');
   const year  = String(now.getFullYear());
+  const ym    = `${year}-${month}`;
   const monthName = now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
 
   if (!config.staff || !config.staff.length) {
-    host.innerHTML = `<div class="admin-section-title">Payroll</div><div class="muted-text center" style="padding:24px">No staff added yet. Go to Setup → Staff.</div>`;
+    host.innerHTML = `<div class="admin-section-title">Payroll · ${monthName}</div><div class="muted-text center" style="padding:24px">No staff added yet. Go to Setup → Staff.</div>`;
     return;
   }
 
-  // Fetch which staff were paid this month
-  const paid = new Set();
+  host.innerHTML = `
+    <div class="admin-section-title">Payroll · ${monthName}</div>
+    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Calculating commissions, advances, attendance…</div>
+  `;
+
+  // Pull this month's transactions, salaries, advances, attendance in parallel
+  let txs = [], salariesAll = [], advances = [], attendance = [];
   try {
-    const salaries = await fbGetCollection(COL.SALARIES);
-    salaries.forEach(s => {
-      if (String(s.month) === month && String(s.year) === year) paid.add(String(s.staffName));
-    });
+    [txs, salariesAll, advances, attendance] = await Promise.all([
+      fbQueryByMonth(COL.TRANSACTIONS, ym),
+      fbGetCollection(COL.SALARIES),
+      fbQueryByMonth(COL.ADVANCES, ym),
+      fbQueryByMonth(COL.ATTENDANCE, ym),
+    ]);
   } catch(e) { console.warn('payroll load failed:', e); }
 
-  let html = `<div class="admin-section-title">Payroll — ${monthName}</div>`;
-  let totalSalary = 0;
+  // Index transactions by staff for commission tally
+  const commByStaff = {};
+  txs.forEach(t => {
+    const k = String(t.staffName || '');
+    if (!k) return;
+    commByStaff[k] = (commByStaff[k] || 0) + (parseFloat(t.commissionAmount) || 0);
+  });
+
+  // Index advances by staff for this month
+  const advByStaff = {};
+  advances.forEach(a => {
+    const k = String(a.staffName || '');
+    if (!k) return;
+    advByStaff[k] = (advByStaff[k] || 0) + (parseFloat(a.amount) || 0);
+  });
+
+  // Index attendance days by staff (this month) — count unique dates checked-in
+  const attByStaff = {};
+  attendance.forEach(a => {
+    const k = String(a.staffName || '');
+    if (!k) return;
+    if (!attByStaff[k]) attByStaff[k] = new Set();
+    attByStaff[k].add(String(a.date));
+  });
+
+  const paid = new Set();
+  salariesAll.forEach(s => {
+    if (String(s.month) === month && String(s.year) === year) paid.add(String(s.staffName));
+  });
+
+  let html = `<div class="admin-section-title">Payroll · ${monthName}</div>`;
+  let totalNet = 0, totalBase = 0, totalCom = 0, totalAdv = 0;
   config.staff.forEach(s => {
-    const salary = parseFloat(s.salary) || 0;
-    totalSalary += salary;
+    const base    = parseFloat(s.salary) || 0;
+    const commPct = parseFloat(s.commissionPct) || 0;
+    const com     = parseFloat(commByStaff[s.name] || 0);
+    const adv     = parseFloat(advByStaff[s.name] || 0);
+    const days    = attByStaff[s.name] ? attByStaff[s.name].size : 0;
+    const net     = Math.max(0, base + com - adv);
+    totalBase += base; totalCom += com; totalAdv += adv; totalNet += net;
     const isPaid = paid.has(s.name);
     html += `
-      <div class="payroll-row">
-        <div class="payroll-name">${esc(s.name)}</div>
-        <div class="payroll-salary">₹${fmt(salary)} / month</div>
-        <div class="payroll-status">
+      <div class="payroll-row" style="padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+          <div>
+            <div class="payroll-name">${esc(s.name)}</div>
+            <div class="muted-text" style="font-size:12px;margin-top:4px">
+              ${commPct ? commPct + '% commission · ' : ''}${days} days present
+            </div>
+          </div>
+          ${isPaid
+            ? `<div class="paid-badge">✓ Paid</div>`
+            : ''
+          }
+        </div>
+        <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="background:var(--ivory);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">Base</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--charcoal);">₹${fmt(base)}</div>
+          </div>
+          <div style="background:rgba(122,152,118,.12);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:10px;color:var(--success);letter-spacing:.1em;text-transform:uppercase;">+ Comm</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--success);">₹${fmt(com)}</div>
+          </div>
+          <div style="background:rgba(197,106,106,.10);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:10px;color:var(--danger);letter-spacing:.1em;text-transform:uppercase;">− Adv</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--danger);">₹${fmt(adv)}</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);">
+          <div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">Net Payable</div>
+            <div style="font-family:var(--serif);font-size:22px;color:var(--gold);">₹${fmt(net)}</div>
+          </div>
           ${isPaid
             ? `<div class="paid-badge">✓ Paid this month</div>`
-            : `<button class="pay-btn" onclick="markSalaryPaid('${esc(s.name)}','${s.id}',${salary},'${month}','${year}')">Mark Paid</button>`
+            : `<button class="pay-btn" onclick="markSalaryPaid('${escAttr(s.name)}','${escAttr(s.id || '')}',${net},'${month}','${year}',${base},${com},${adv})">Mark Paid ₹${fmt(net)}</button>`
           }
         </div>
       </div>
     `;
   });
   html += `
-    <div class="erp-card" style="margin-top:12px">
-      <div class="erp-label">Total Salary Outflow</div>
-      <div class="erp-value">₹${fmt(totalSalary)}</div>
+    <div class="erp-card gold full" style="margin-top:14px">
+      <div class="erp-label">Total Net Payout · ${monthName}</div>
+      <div class="erp-value gold">₹${fmt(totalNet)}</div>
+      <div class="erp-sub">Base ₹${fmt(totalBase)} + Commission ₹${fmt(totalCom)} − Advances ₹${fmt(totalAdv)}</div>
     </div>
   `;
   host.innerHTML = html;
 }
 
-async function markSalaryPaid(name, staffId, amount, month, year) {
-  if (!confirm(`Mark salary of ₹${fmt(amount)} paid to ${name}?`)) return;
+async function markSalaryPaid(name, staffId, amount, month, year, base, com, adv) {
+  if (!confirm(`Pay ${name} ₹${fmt(amount)} now?\n\nBase ₹${fmt(base)} + Commission ₹${fmt(com)} − Advances ₹${fmt(adv)}`)) return;
   const today = state.todayStr;
   // Idempotency: if a salary entry for the same staff/month/year already exists,
-  // do not create a duplicate. The list is small, so a client-side check is fine.
+  // do not create a duplicate.
   try {
     const existing = await fbGetCollection(COL.SALARIES);
     const dup = (existing || []).find(s =>
@@ -2530,12 +2766,297 @@ async function markSalaryPaid(name, staffId, amount, month, year) {
       return;
     }
   } catch(e) { /* network failure — proceed and let server enforce */ }
-  const row = { staffId, staffName: name, month, year, amount, paidDate: today };
+  const row = {
+    staffId, staffName: name, month, year,
+    amount,            // net paid
+    base, commission: com, advance: adv,
+    paidDate: today,
+  };
   const newId = await fbAppendDoc(COL.SALARIES, row);
   if (!newId) { toast('⚠ Could not save salary'); return; }
-  logAudit('salary.paid', `${COL.SALARIES}/${newId}`, { staffName: name, month, year, amount });
+  logAudit('salary.paid', `${COL.SALARIES}/${newId}`, { staffName: name, month, year, amount, base, com, adv });
   toast(name + ' salary marked paid ✓');
   renderAdminPayroll();
+}
+
+/* ────────────────────────────────────────────────────
+   ADMIN: ADVANCES (cash given to staff, deducted from salary)
+──────────────────────────────────────────────────── */
+async function renderAdminAdvances() {
+  const host = document.getElementById('admin-tab-advances');
+  const ym = state.todayStr.slice(0, 7);
+
+  if (!config.staff || !config.staff.length) {
+    host.innerHTML = `<div class="admin-section-title">Staff Advances</div>
+      <div class="muted-text center" style="padding:24px">Add staff first in Setup → Staff.</div>`;
+    return;
+  }
+
+  host.innerHTML = `
+    <div class="admin-section-title">Staff Advances</div>
+    <div class="muted-text" style="margin-bottom:14px;line-height:1.6;font-size:13px;">
+      Cash given to staff. Deducted automatically from their next salary payout.
+    </div>
+    <div class="month-picker">
+      <input type="month" id="adv-month" value="${ym}" class="setup-input" style="flex:1">
+      <button class="btn btn-primary" style="flex:none;padding:12px 18px" onclick="loadAdvances()">Load</button>
+    </div>
+    <button class="btn btn-rose" style="width:100%;margin-bottom:12px" onclick="openAddAdvance()">+ Give Advance</button>
+    <div id="advances-list"><div class="muted-text center" style="padding:16px">Tap Load to view.</div></div>
+  `;
+  loadAdvances();
+}
+
+function openAddAdvance() {
+  if (!config.staff || !config.staff.length) {
+    toast('Add staff first');
+    return;
+  }
+  document.getElementById('adv-date').value = state.todayStr;
+  document.getElementById('adv-amount').value = '';
+  document.getElementById('adv-note').value = '';
+  const sel = document.getElementById('adv-staff');
+  sel.innerHTML = '<option value="">— Select staff —</option>';
+  config.staff.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.name; o.textContent = s.name;
+    sel.appendChild(o);
+  });
+  openModal('modal-add-advance');
+}
+
+async function saveAdvance() {
+  const staffName = document.getElementById('adv-staff').value;
+  const amount    = parseFloat(document.getElementById('adv-amount').value) || 0;
+  const date      = document.getElementById('adv-date').value;
+  const note      = document.getElementById('adv-note').value.trim();
+  if (!staffName) { toast('Select staff'); return; }
+  if (!amount || amount <= 0) { toast('Enter amount'); return; }
+  if (!date) { toast('Pick a date'); return; }
+  const staffRec = (config.staff || []).find(s => String(s.name) === staffName);
+  closeModal('modal-add-advance');
+  const newId = await fbAppendDoc(COL.ADVANCES, {
+    date, amount, note,
+    staffId:   staffRec ? (staffRec.id || '') : '',
+    staffName,
+  });
+  if (!newId) { toast('⚠ Could not save advance'); return; }
+  logAudit('advance.create', `${COL.ADVANCES}/${newId}`, { staffName, amount, date });
+  toast(`₹${fmt(amount)} advance to ${staffName} ✓`);
+  loadAdvances();
+}
+
+async function loadAdvances() {
+  const ymInput = document.getElementById('adv-month');
+  if (!ymInput) return;
+  const ym = ymInput.value;
+  const host = document.getElementById('advances-list');
+  host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loading…</div>';
+  let rows;
+  try { rows = await fbQueryByMonth(COL.ADVANCES, ym); }
+  catch(e) { host.innerHTML = '<div class="muted-text center">Could not load.</div>'; return; }
+  if (!rows.length) { host.innerHTML = '<div class="muted-text center" style="padding:20px">No advances this month.</div>'; return; }
+  // Sort newest first, then group by staff
+  const sorted = [...rows].sort((a,b) => (b.createdAtMs||0) - (a.createdAtMs||0));
+  const byStaff = {};
+  let monthTotal = 0;
+  sorted.forEach(r => {
+    const k = r.staffName || '—';
+    if (!byStaff[k]) byStaff[k] = { total: 0, items: [] };
+    byStaff[k].total += parseFloat(r.amount) || 0;
+    byStaff[k].items.push(r);
+    monthTotal += parseFloat(r.amount) || 0;
+  });
+  let html = `
+    <div class="erp-card gold" style="margin-bottom:12px">
+      <div class="erp-label">Month Total · ${ym}</div>
+      <div class="erp-value gold">₹${fmt(monthTotal)}</div>
+      <div class="erp-sub">${sorted.length} advances across ${Object.keys(byStaff).length} staff</div>
+    </div>
+  `;
+  Object.keys(byStaff).forEach(name => {
+    const grp = byStaff[name];
+    html += `
+      <div style="font-weight:500;font-size:14px;margin:14px 0 6px;color:var(--charcoal);letter-spacing:.04em;display:flex;justify-content:space-between;">
+        <span>${esc(name)}</span><span style="color:var(--gold);font-family:var(--serif);">₹${fmt(grp.total)}</span>
+      </div>
+    `;
+    grp.items.forEach(r => {
+      html += `
+        <div class="exp-row">
+          <div class="exp-left">
+            <div class="exp-name">₹${fmt(parseFloat(r.amount)||0)}${r.note ? ' · ' + esc(r.note) : ''}</div>
+            <div class="exp-meta">${esc(r.date)}${r.createdBy ? ' · by ' + esc(r.createdBy) : ''}</div>
+          </div>
+          <button class="del-btn" onclick="deleteAdvance('${r.id}','${escAttr(r.staffName||'')}',${r.amount||0})">×</button>
+        </div>
+      `;
+    });
+  });
+  host.innerHTML = html;
+}
+
+async function deleteAdvance(id, staffName, amount) {
+  if (!confirm(`Delete ₹${fmt(amount)} advance for ${staffName}?`)) return;
+  if (!db) return;
+  try {
+    await db.collection(COL.ADVANCES).doc(id).delete();
+    logAudit('advance.delete', `${COL.ADVANCES}/${id}`, { staffName, amount });
+    toast('Advance removed');
+    loadAdvances();
+  } catch(e) {
+    toast('⚠ Could not delete');
+  }
+}
+
+/* ────────────────────────────────────────────────────
+   ADMIN: ANALYTICS
+──────────────────────────────────────────────────── */
+async function renderAdminAnalytics() {
+  const host = document.getElementById('admin-tab-analytics');
+  const ym = state.todayStr.slice(0, 7);
+  host.innerHTML = `
+    <div class="admin-section-title">Analytics · ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
+    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching data…</div>
+  `;
+
+  let txs = [], footfalls = [];
+  try {
+    [txs, footfalls] = await Promise.all([
+      fbQueryByMonth(COL.TRANSACTIONS, ym),
+      fbQueryByMonth(COL.FOOTFALL, ym).catch(() => fbGetCollection(COL.FOOTFALL)),
+    ]);
+  } catch(e) {
+    host.innerHTML += `<div class="muted-text center">⚠ Failed to load analytics.</div>`;
+    return;
+  }
+
+  const totalRevenue = txs.reduce((s,t) => s + (parseFloat(t.total)||0), 0);
+  const txCount = txs.length;
+  const avgBill = txCount > 0 ? Math.round(totalRevenue / txCount) : 0;
+  const totalDiscount = txs.reduce((s,t) => s + (parseFloat(t.discount)||0), 0);
+  const totalCommission = txs.reduce((s,t) => s + (parseFloat(t.commissionAmount)||0), 0);
+
+  // By staff
+  const byStaff = {};
+  txs.forEach(t => {
+    const k = String(t.staffName || '—');
+    if (!byStaff[k]) byStaff[k] = { revenue: 0, count: 0, comm: 0 };
+    byStaff[k].revenue += parseFloat(t.total) || 0;
+    byStaff[k].count   += 1;
+    byStaff[k].comm    += parseFloat(t.commissionAmount) || 0;
+  });
+  const topStaff = Object.entries(byStaff).sort((a,b) => b[1].revenue - a[1].revenue);
+
+  // By service
+  const byService = {};
+  txs.forEach(t => {
+    if (Array.isArray(t.items)) {
+      t.items.forEach(it => {
+        const k = String(it.name || '—');
+        if (!byService[k]) byService[k] = { qty: 0, revenue: 0 };
+        byService[k].qty     += parseInt(it.qty) || 0;
+        byService[k].revenue += (parseFloat(it.price)||0) * (parseInt(it.qty)||0);
+      });
+    } else if (t.services) {
+      // Older transactions without items[] — just count once.
+      const k = String(t.services).split(',')[0].trim() || '—';
+      if (!byService[k]) byService[k] = { qty: 0, revenue: 0 };
+      byService[k].qty     += 1;
+      byService[k].revenue += parseFloat(t.total) || 0;
+    }
+  });
+  const topServices = Object.entries(byService).sort((a,b) => b[1].revenue - a[1].revenue).slice(0,8);
+
+  // Daily revenue trend for current month
+  const daily = {};
+  txs.forEach(t => {
+    const d = String(t.date || '');
+    daily[d] = (daily[d] || 0) + (parseFloat(t.total) || 0);
+  });
+  const dailyEntries = Object.entries(daily).sort((a,b) => a[0].localeCompare(b[0]));
+  const maxDay = Math.max(1, ...dailyEntries.map(([_,v]) => v));
+
+  // Footfall this month
+  const footfallTotal = (footfalls || [])
+    .filter(r => String(r.date||'').startsWith(ym))
+    .reduce((s, r) => s + (parseInt(r.count)||0), 0);
+  const conversion = footfallTotal > 0 ? Math.round((txCount / footfallTotal) * 100) : 0;
+
+  // Build sparkline
+  let sparkHtml = '';
+  if (dailyEntries.length) {
+    const w = 100, h = 50;
+    const step = w / Math.max(1, dailyEntries.length - 1);
+    const pts = dailyEntries.map(([_, v], i) => {
+      const x = i * step;
+      const y = h - (v / maxDay) * (h - 4) - 2;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const lastX = (dailyEntries.length - 1) * step;
+    const areaPts = `0,${h} ${pts} ${lastX.toFixed(1)},${h}`;
+    sparkHtml = `
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:80px;display:block;">
+        <polygon points="${areaPts}" fill="rgba(212,165,165,.25)"/>
+        <polyline points="${pts}" fill="none" stroke="var(--rose-deep)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+      </svg>
+    `;
+  }
+
+  let html = `
+    <div class="admin-section-title">Analytics · ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
+
+    <div class="erp-grid">
+      <div class="erp-card gold full">
+        <div class="erp-label">Revenue this month</div>
+        <div class="erp-value gold">₹${fmt(totalRevenue)}</div>
+        <div class="erp-sub">${txCount} transactions · Avg ₹${fmt(avgBill)} / bill</div>
+      </div>
+      <div class="erp-card">
+        <div class="erp-label">Footfall</div>
+        <div class="erp-value">${footfallTotal}</div>
+        <div class="erp-sub">${conversion}% bill conversion</div>
+      </div>
+      <div class="erp-card">
+        <div class="erp-label">Commissions</div>
+        <div class="erp-value">₹${fmt(totalCommission)}</div>
+        <div class="erp-sub">paid out to staff</div>
+      </div>
+      <div class="erp-card red full">
+        <div class="erp-label">Discounts given</div>
+        <div class="erp-value red">₹${fmt(totalDiscount)}</div>
+      </div>
+    </div>
+
+    <div class="erp-card full" style="margin-bottom:16px;">
+      <div class="erp-label">Daily revenue trend</div>
+      ${sparkHtml || '<div class="muted-text" style="padding:12px 0">No transactions yet this month.</div>'}
+      <div class="erp-sub">Peak day: ₹${fmt(maxDay)}</div>
+    </div>
+
+    <div class="admin-section-title" style="margin-top:8px;">🏆 Top performers</div>
+    ${topStaff.length ? topStaff.map(([name, d], i) => `
+      <div class="exp-row">
+        <div class="exp-left">
+          <div class="exp-name">${i+1}. ${esc(name)}</div>
+          <div class="exp-meta">${d.count} bills · Comm earned ₹${fmt(d.comm)}</div>
+        </div>
+        <div class="exp-amount">₹${fmt(d.revenue)}</div>
+      </div>
+    `).join('') : '<div class="muted-text" style="padding:12px 0">No transactions.</div>'}
+
+    <div class="admin-section-title" style="margin-top:18px;">⭐ Top services</div>
+    ${topServices.length ? topServices.map(([name, d], i) => `
+      <div class="exp-row">
+        <div class="exp-left">
+          <div class="exp-name">${i+1}. ${esc(name)}</div>
+          <div class="exp-meta">${d.qty} sold</div>
+        </div>
+        <div class="exp-amount">₹${fmt(d.revenue)}</div>
+      </div>
+    `).join('') : '<div class="muted-text" style="padding:12px 0">No service data yet.</div>'}
+  `;
+  host.innerHTML = html;
 }
 
 /* ────────────────────────────────────────────────────
@@ -2654,12 +3175,16 @@ function showSetupTab(t) {
 
 function renderSetupStaff(host) {
   let html = '<div class="admin-section-title">Staff Members</div>';
+  html += '<div class="muted-text" style="margin-bottom:12px;font-size:12px;line-height:1.6">Salary is the fixed monthly amount. Commission % applies to each transaction this staff serves (post-discount, pre-GST).</div>';
   (config.staff || []).forEach((s, i) => {
     html += `
-      <div class="staff-setup-row">
-        <input type="text" placeholder="Name" value="${escAttr(s.name)}" onchange="updateStaff(${i},'name',this.value)">
-        <input type="number" placeholder="Salary ₹" value="${s.salary||''}" onchange="updateStaff(${i},'salary',this.value)">
-        <button class="del-btn" onclick="deleteStaff(${i})">×</button>
+      <div class="staff-setup-row" style="flex-wrap:wrap;">
+        <input type="text" placeholder="Name" value="${escAttr(s.name)}" onchange="updateStaff(${i},'name',this.value)" style="flex:2 1 100%;">
+        <div style="display:flex;gap:8px;width:100%;">
+          <input type="number" placeholder="Salary ₹" value="${s.salary||''}" onchange="updateStaff(${i},'salary',this.value)" style="flex:2;">
+          <input type="number" placeholder="Comm %" value="${s.commissionPct||''}" min="0" max="100" step="0.5" onchange="updateStaff(${i},'commissionPct',this.value)" style="flex:1;">
+          <button class="del-btn" onclick="deleteStaff(${i})">×</button>
+        </div>
       </div>
     `;
   });
@@ -2672,12 +3197,17 @@ function renderSetupStaff(host) {
 
 function addStaff() {
   if (!config.staff) config.staff = [];
-  config.staff.push({ id: uid(), name: '', salary: 0 });
+  config.staff.push({ id: uid(), name: '', salary: 0, commissionPct: 0 });
   showSetupTab('staff');
 }
 
 function updateStaff(idx, field, val) {
-  if (config.staff[idx]) config.staff[idx][field] = field === 'salary' ? (parseFloat(val)||0) : val;
+  if (!config.staff[idx]) return;
+  if (field === 'salary' || field === 'commissionPct') {
+    config.staff[idx][field] = parseFloat(val) || 0;
+  } else {
+    config.staff[idx][field] = val;
+  }
 }
 
 function deleteStaff(idx) {
