@@ -1290,11 +1290,16 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div class="modal-field">
       <label class="modal-label">Category</label>
       <select class="modal-input" id="exp-category">
-        <option>Consumables / Products</option>
-        <option>Repairs & Maintenance</option>
-        <option>Utilities</option>
-        <option>Marketing</option>
-        <option>Miscellaneous</option>
+        <option>Product Purchase - Hair Care</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Payment Mode</label>
+      <select class="modal-input" id="exp-payment-mode">
+        <option>Cash</option>
+        <option>UPI</option>
+        <option>Card</option>
+        <option>Credit</option>
       </select>
     </div>
     <div class="modal-field">
@@ -1422,6 +1427,7 @@ const DEFAULTS = {
   location: 'Ozone Heights Clubhouse, Tellapur',
   gstRate: 0,
   upiId: '',
+  adminWhatsappNumber: '',
   qrImage: '',
   receiptFooter: 'Thank you for your visit! See you soon.',
   adminPin: '1234',
@@ -1432,6 +1438,23 @@ const DEFAULTS = {
   staffEmails: [],      // Google account emails allowed staff access
   // Which admin tabs supervisors can access — admin-configurable
   supervisorPermissions: ['dashboard', 'sales', 'attendance', 'team'],
+  expenseCategories: [
+    'Product Purchase - Hair Care',
+    'Product Purchase - Skin/Facial',
+    'Color/Chemical Stock',
+    'Consumables (Gloves, Towels, Foils)',
+    'Laundry & Cleaning',
+    'Utilities (Power, Water, Internet)',
+    'Rent & Facility',
+    'Repairs & Maintenance',
+    'Marketing & Ads',
+    'Training & Education',
+    'Software & Subscriptions',
+    'Tea/Snacks & Pantry',
+    'Transport & Delivery',
+    'Miscellaneous',
+  ],
+  codOpeningBalances: {},
   staff: [],
   fixedExpenses: [],
   emi: [],
@@ -2280,6 +2303,9 @@ async function handleAuthStateChange(user) {
       if (Array.isArray(shopCfg.supervisorEmails))     config.supervisorEmails     = shopCfg.supervisorEmails;
       if (Array.isArray(shopCfg.staffEmails))          config.staffEmails          = shopCfg.staffEmails;
       if (Array.isArray(shopCfg.supervisorPermissions)) config.supervisorPermissions = shopCfg.supervisorPermissions;
+      if (shopCfg.adminWhatsappNumber !== undefined)    config.adminWhatsappNumber  = shopCfg.adminWhatsappNumber;
+      if (Array.isArray(shopCfg.expenseCategories))     config.expenseCategories     = shopCfg.expenseCategories;
+      if (shopCfg.codOpeningBalances && typeof shopCfg.codOpeningBalances === 'object') config.codOpeningBalances = shopCfg.codOpeningBalances;
       saveConfig();
     }
   } catch(e) { console.warn('Could not refresh team list:', e); }
@@ -2563,8 +2589,11 @@ function subscribeLiveCollections() {
       if (d.location)         config.location = d.location;
       if (d.gstRate !== undefined) config.gstRate = parseFloat(d.gstRate) || 0;
       if (d.upiId !== undefined)         config.upiId = d.upiId;
+      if (d.adminWhatsappNumber !== undefined) config.adminWhatsappNumber = d.adminWhatsappNumber;
       if (d.qrImage !== undefined)       config.qrImage = d.qrImage;
       if (d.receiptFooter !== undefined) config.receiptFooter = d.receiptFooter;
+      if (Array.isArray(d.expenseCategories)) config.expenseCategories = d.expenseCategories;
+      if (d.codOpeningBalances && typeof d.codOpeningBalances === 'object') config.codOpeningBalances = d.codOpeningBalances;
       if (d.adminPin)         config.adminPin = d.adminPin;
       if (d.staffPin)         config.staffPin = d.staffPin;
       if (d.discountRequiresPin !== undefined) config.discountRequiresPin = !!d.discountRequiresPin;
@@ -2804,8 +2833,11 @@ async function init() {
       if (shopCfg.location)         config.location = shopCfg.location;
       if (shopCfg.gstRate !== undefined) config.gstRate = parseFloat(shopCfg.gstRate) || 0;
       if (shopCfg.upiId)            config.upiId = shopCfg.upiId;
+      if (shopCfg.adminWhatsappNumber !== undefined) config.adminWhatsappNumber = shopCfg.adminWhatsappNumber;
       if (shopCfg.qrImage)          config.qrImage = shopCfg.qrImage;
       if (shopCfg.receiptFooter)    config.receiptFooter = shopCfg.receiptFooter;
+      if (Array.isArray(shopCfg.expenseCategories)) config.expenseCategories = shopCfg.expenseCategories;
+      if (shopCfg.codOpeningBalances && typeof shopCfg.codOpeningBalances === 'object') config.codOpeningBalances = shopCfg.codOpeningBalances;
       if (shopCfg.adminPin)         config.adminPin = shopCfg.adminPin;
       if (shopCfg.staffPin)         config.staffPin = shopCfg.staffPin;
       if (shopCfg.discountRequiresPin !== undefined) config.discountRequiresPin = !!shopCfg.discountRequiresPin;
@@ -3595,7 +3627,7 @@ async function finaliseTransaction(phone) {
     discountLabel: state.discount ? (state.discount.label || '') : '',
     gst,
     total,
-    paymentMethod: 'UPI',
+    paymentMethod: normalizePaymentMethod(state.paymentMethod),
     staffId:   staffRec ? (staffRec.id || '') : '',
     staffName: staffName,
     commissionPct,
@@ -4491,9 +4523,142 @@ function openExportSheet(opts) {
 /* ────────────────────────────────────────────────────
    ADMIN: EXPENSES
 ──────────────────────────────────────────────────── */
+function getExpenseCategories() {
+  const list = Array.isArray(config.expenseCategories) ? config.expenseCategories : [];
+  const cleaned = list.map(v => String(v || '').trim()).filter(Boolean);
+  return cleaned.length ? cleaned : (DEFAULTS.expenseCategories || ['Miscellaneous']);
+}
+
+function renderExpenseCategoryOptions(selected) {
+  const sel = document.getElementById('exp-category');
+  if (!sel) return;
+  const cats = getExpenseCategories();
+  sel.innerHTML = cats.map(c => `<option value="${escAttr(c)}">${esc(c)}</option>`).join('');
+  sel.value = selected && cats.includes(selected) ? selected : cats[0];
+}
+
+function getCashbookOpening(dateStr) {
+  const map = config.codOpeningBalances || {};
+  return parseFloat(map[dateStr]) || 0;
+}
+
+async function saveCODOpeningBalance() {
+  const dateStr = (document.getElementById('cod-date') || {}).value;
+  const opening = parseFloat((document.getElementById('cod-opening') || {}).value) || 0;
+  if (!dateStr) { toast('Select date first'); return; }
+  if (!config.codOpeningBalances) config.codOpeningBalances = {};
+  config.codOpeningBalances[dateStr] = opening;
+  saveConfig();
+  await fbSetConfig({ codOpeningBalances: config.codOpeningBalances });
+  toast('COD opening saved');
+  refreshCODPanel();
+}
+
+async function getDailySalesAndExpense(dateStr) {
+  const ym = String(dateStr || '').slice(0, 7);
+  if (!ym) return { txs: [], exps: [] };
+  let txs = [], exps = [];
+  try {
+    [txs, exps] = await Promise.all([
+      fbQueryByMonth(COL.TRANSACTIONS, ym),
+      fbQueryByMonth(COL.EXPENSES, ym),
+    ]);
+  } catch(e) {}
+  return {
+    txs: (txs || []).filter(t => String(t.date) === dateStr),
+    exps: (exps || []).filter(e => String(e.date) === dateStr),
+  };
+}
+
+async function refreshCODPanel() {
+  const dateStr = (document.getElementById('cod-date') || {}).value;
+  const host = document.getElementById('cod-summary');
+  if (!dateStr || !host) return;
+  host.innerHTML = '<div class="muted-text center" style="padding:8px"><div class="spinner" style="margin:0 auto 8px"></div>Calculating COD...</div>';
+
+  const { txs, exps } = await getDailySalesAndExpense(dateStr);
+  const salesSplit = { UPI: 0, Cash: 0, Card: 0 };
+  txs.forEach(t => {
+    const m = normalizePaymentMethod(t.paymentMethod);
+    salesSplit[m] += parseFloat(t.total) || 0;
+  });
+  let expenseTotal = 0;
+  let cashExpenseTotal = 0;
+  exps.forEach(e => {
+    const amt = parseFloat(e.amount) || 0;
+    expenseTotal += amt;
+    if (String(e.paymentMode || 'Cash') === 'Cash') cashExpenseTotal += amt;
+  });
+  const opening = getCashbookOpening(dateStr);
+  const closingExpected = opening + salesSplit.Cash - cashExpenseTotal;
+  const totalSales = salesSplit.UPI + salesSplit.Cash + salesSplit.Card;
+
+  host.innerHTML = `
+    <div class="erp-grid" style="margin:0;">
+      <div class="erp-card"><div class="erp-label">Opening Cash</div><div class="erp-value">₹${fmt(opening)}</div></div>
+      <div class="erp-card"><div class="erp-label">Cash Sales</div><div class="erp-value">₹${fmt(salesSplit.Cash)}</div></div>
+      <div class="erp-card"><div class="erp-label">Cash Expenses</div><div class="erp-value">₹${fmt(cashExpenseTotal)}</div></div>
+      <div class="erp-card gold"><div class="erp-label">Expected COD Closing</div><div class="erp-value gold">₹${fmt(closingExpected)}</div></div>
+      <div class="erp-card full"><div class="erp-sub">Sales split: UPI ₹${fmt(salesSplit.UPI)} · Cash ₹${fmt(salesSplit.Cash)} · Card ₹${fmt(salesSplit.Card)} | Total sales: ₹${fmt(totalSales)} | Total expenses: ₹${fmt(expenseTotal)}</div></div>
+    </div>
+  `;
+
+  window.__lastCODReport = {
+    date: dateStr,
+    opening,
+    salesSplit,
+    totalSales,
+    expenseTotal,
+    cashExpenseTotal,
+    closingExpected,
+    txCount: txs.length,
+    expenseCount: exps.length,
+  };
+}
+
+function onCODDateChange() {
+  const dateStr = (document.getElementById('cod-date') || {}).value;
+  const openingEl = document.getElementById('cod-opening');
+  if (openingEl && dateStr) openingEl.value = getCashbookOpening(dateStr);
+  refreshCODPanel();
+}
+
+async function sendCODReportWhatsApp() {
+  const numberRaw = String(config.adminWhatsappNumber || '').replace(/\D/g, '');
+  if (numberRaw.length < 10) {
+    toast('Set Admin WhatsApp number in Setup > Shop');
+    return;
+  }
+  const report = window.__lastCODReport;
+  if (!report) { toast('Load COD report first'); return; }
+  const phone = numberRaw.length === 10 ? ('91' + numberRaw) : numberRaw;
+  const lines = [
+    `*${config.shopName || 'Salon'} - COD Day Close*`,
+    `Date: ${report.date}`,
+    `Location: ${config.location || '-'}`,
+    '------------------------------',
+    `Opening Cash: INR ${fmtPlain(report.opening)}`,
+    `Cash Sales: INR ${fmtPlain(report.salesSplit.Cash)}`,
+    `Cash Expenses: INR ${fmtPlain(report.cashExpenseTotal)}`,
+    `*Expected COD Closing: INR ${fmtPlain(report.closingExpected)}*`,
+    '------------------------------',
+    `UPI Sales: INR ${fmtPlain(report.salesSplit.UPI)}`,
+    `Card Sales: INR ${fmtPlain(report.salesSplit.Card)}`,
+    `Total Sales: INR ${fmtPlain(report.totalSales)}`,
+    `Total Expenses: INR ${fmtPlain(report.expenseTotal)}`,
+    `Transactions: ${report.txCount}`,
+    `Expense Entries: ${report.expenseCount}`,
+  ];
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(lines.join('\n'))}`;
+  window.open(url, '_blank');
+  logAudit('cod.report.whatsapp', null, { date: report.date, totalSales: report.totalSales, closingExpected: report.closingExpected });
+}
+
 async function renderAdminExpenses() {
   const host = document.getElementById('admin-tab-expenses');
   const ym = state.todayStr.slice(0, 7);
+  const today = state.todayStr;
+  const opening = getCashbookOpening(today);
 
   // Fixed expenses section
   let fixedHtml = '<div class="admin-section-title">Fixed Monthly Expenses</div>';
@@ -4513,6 +4678,16 @@ async function renderAdminExpenses() {
   host.innerHTML = `
     ${fixedHtml}
     <div class="separator"></div>
+    <div class="admin-section-title">COD Cashbook</div>
+    <div class="month-picker" style="margin-bottom:10px;">
+      <input type="date" id="cod-date" value="${today}" class="setup-input" style="flex:1" onchange="onCODDateChange()">
+      <input type="number" id="cod-opening" value="${opening}" class="setup-input" placeholder="Opening cash" style="flex:1;max-width:180px;">
+      <button class="btn btn-primary" style="flex:none;padding:12px 14px" onclick="saveCODOpeningBalance()">Save Opening</button>
+    </div>
+    <div id="cod-summary" style="margin-bottom:10px;"><div class="muted-text center" style="padding:10px">Load COD summary...</div></div>
+    <button class="btn btn-gold" style="width:100%;margin-bottom:12px" onclick="sendCODReportWhatsApp()">Send COD Report to Admin WhatsApp</button>
+
+    <div class="separator"></div>
     <div class="admin-section-title">Variable Expenses</div>
     <div class="month-picker">
       <input type="month" id="exp-month" value="${ym}" class="setup-input" style="flex:1">
@@ -4521,12 +4696,15 @@ async function renderAdminExpenses() {
     <button class="btn btn-rose" style="width:100%;margin-bottom:12px" onclick="openAddExpense()">+ Add Expense</button>
     <div id="var-expenses-list"><div class="muted-text center" style="padding:16px">Tap Load to view expenses.</div></div>
   `;
+  refreshCODPanel();
 }
 
 function openAddExpense() {
   document.getElementById('exp-date').value = state.todayStr;
   document.getElementById('exp-desc').value = '';
   document.getElementById('exp-amount').value = '';
+  document.getElementById('exp-payment-mode').value = 'Cash';
+  renderExpenseCategoryOptions();
   openModal('modal-add-expense');
 }
 
@@ -4534,12 +4712,13 @@ async function saveExpense() {
   if (state.expInFlight) return;
   const category = document.getElementById('exp-category').value;
   const desc     = document.getElementById('exp-desc').value.trim();
+  const paymentMode = document.getElementById('exp-payment-mode').value || 'Cash';
   const amount   = parseFloat(document.getElementById('exp-amount').value) || 0;
   const date     = document.getElementById('exp-date').value;
   if (!amount || !date) { toast('Fill in amount and date'); return; }
   state.expInFlight = true;
   closeModal('modal-add-expense');
-  const row = { date, category, description: desc || category, amount };
+  const row = { date, category, description: desc || category, amount, paymentMode };
   const newId = await fbAppendDoc(COL.EXPENSES, row);
   state.expInFlight = false;
   if (!newId) { toast('⚠️  Could not save expense'); return; }
@@ -4564,7 +4743,7 @@ async function loadExpenses() {
       <div class="exp-row">
         <div class="exp-left">
           <div class="exp-name">${esc(String(e.description||e.category))}</div>
-          <div class="exp-meta">${e.date} · ${e.category}</div>
+          <div class="exp-meta">${e.date} · ${e.category} · ${e.paymentMode || 'Cash'}</div>
         </div>
         <div class="exp-amount">₹${fmt(parseFloat(e.amount)||0)}</div>
       </div>
@@ -4590,6 +4769,7 @@ function shapeExpenseRows(rows) {
     Date:        r.date || '',
     Category:    r.category || '',
     Description: r.description || '',
+    'Payment Mode': r.paymentMode || 'Cash',
     Amount:      parseFloat(r.amount) || 0,
     'Logged By': r.createdBy || '',
   }));
@@ -4600,10 +4780,12 @@ function exportExpensesAs(ym, fmt) {
   if (!rows.length) { toast('Nothing to export'); return; }
   const shaped = shapeExpenseRows(rows);
   const total  = rows.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
+  const cashSpent = rows.reduce((s,r) => s + ((String(r.paymentMode||'Cash') === 'Cash') ? (parseFloat(r.amount)||0) : 0), 0);
   // Group by category for summary
   const byCat = {};
   rows.forEach(r => { byCat[r.category||'Other'] = (byCat[r.category||'Other']||0) + (parseFloat(r.amount)||0); });
   const summary = [`Total Expenses: ₹${fmtPlain(total)}`,'']
+    .concat([`Cash-mode expenses: ₹${fmtPlain(cashSpent)}`,''])
     .concat(Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([c,v]) => `${c}: ₹${fmtPlain(v)}`));
   const base = `ozone-expenses-${ym}`;
   if (fmt === 'csv')  exportCSV(`${base}.csv`, shaped);
@@ -5963,6 +6145,7 @@ async function saveServicesList() {
 }
 
 function renderSetupShop(host) {
+  const categoriesText = (getExpenseCategories() || []).join('\n');
   host.innerHTML = `
     <div class="admin-section-title">Shop Settings</div>
     <div class="setting-row">
@@ -5982,6 +6165,10 @@ function renderSetupShop(host) {
       <input type="text" id="set-upi" value="${escAttr(config.upiId)}" placeholder="yourname@upi">
     </div>
     <div class="setting-row">
+      <label class="setting-label">Admin WhatsApp Number (COD reports)</label>
+      <input type="text" id="set-admin-wa" value="${escAttr(config.adminWhatsappNumber || '')}" placeholder="10-digit number">
+    </div>
+    <div class="setting-row">
       <label class="setting-label">UPI QR Code</label>
       ${config.qrImage ? `<img src="${config.qrImage}" class="qr-preview" alt="QR">` : '<div class="muted-text">No QR uploaded.</div>'}
       <label class="file-input-label" style="margin-top:10px">
@@ -5992,6 +6179,10 @@ function renderSetupShop(host) {
     <div class="setting-row">
       <label class="setting-label">Receipt Footer</label>
       <textarea id="set-footer" rows="2">${esc(config.receiptFooter)}</textarea>
+    </div>
+    <div class="setting-row">
+      <label class="setting-label">Expense Categories (one per line)</label>
+      <textarea id="set-exp-cats" rows="7" placeholder="Product Purchase - Hair Care\nUtilities\nMarketing">${esc(categoriesText)}</textarea>
     </div>
     <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="saveShopSettings()">Save Settings →</button>
   `;
@@ -6014,6 +6205,10 @@ async function saveShopSettings() {
   config.location      = document.getElementById('set-location').value.trim();
   config.gstRate       = Math.max(0, parseFloat(document.getElementById('set-gst').value) || 0);
   config.upiId         = document.getElementById('set-upi').value.trim();
+  config.adminWhatsappNumber = String(document.getElementById('set-admin-wa').value || '').replace(/\D/g, '');
+  const catsRaw = document.getElementById('set-exp-cats').value || '';
+  const cats = catsRaw.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  config.expenseCategories = cats.length ? cats : (DEFAULTS.expenseCategories || ['Miscellaneous']);
   config.receiptFooter = document.getElementById('set-footer').value.trim();
   saveConfig();
   await fbSetConfig({
@@ -6021,6 +6216,8 @@ async function saveShopSettings() {
     location: config.location,
     gstRate: config.gstRate,
     upiId: config.upiId,
+    adminWhatsappNumber: config.adminWhatsappNumber,
+    expenseCategories: config.expenseCategories,
     qrImage: config.qrImage,
     receiptFooter: config.receiptFooter,
   });
