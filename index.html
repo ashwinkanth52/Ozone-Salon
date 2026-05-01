@@ -1289,7 +1289,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div class="modal-title">Add Expense</div>
     <div class="modal-field">
       <label class="modal-label">Category</label>
-      <select class="modal-input" id="exp-category">
+      <select class="modal-input" id="exp-category" onchange="onExpenseCategoryChange()">
         <option>Product Purchase - Hair Care</option>
       </select>
     </div>
@@ -1305,6 +1305,35 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div class="modal-field">
       <label class="modal-label">Description</label>
       <input type="text" class="modal-input" id="exp-desc" placeholder="e.g. Hair colour stock">
+    </div>
+    <div id="exp-inventory-fields" style="display:none;">
+      <div class="modal-field">
+        <label class="modal-label">Product Name</label>
+        <input type="text" class="modal-input" id="exp-product-name" placeholder="e.g. Loreal Majirel 6.0">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Vendor / Supplier</label>
+        <input type="text" class="modal-input" id="exp-vendor" placeholder="e.g. Beauty Wholesale Hyderabad">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Invoice No</label>
+        <input type="text" class="modal-input" id="exp-invoice-no" placeholder="e.g. INV-2026-0019">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Quantity</label>
+        <input type="number" class="modal-input" id="exp-qty" placeholder="0" min="0" step="0.01" inputmode="decimal" oninput="onExpenseQtyCostChange()">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Unit Cost (INR)</label>
+        <input type="number" class="modal-input" id="exp-unit-cost" placeholder="0" min="0" step="0.01" inputmode="decimal" oninput="onExpenseQtyCostChange()">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Stock Impact</label>
+        <select class="modal-input" id="exp-stock-impact-sign" onchange="onExpenseQtyCostChange()">
+          <option value="+">Increase Stock (+)</option>
+          <option value="-">Decrease Stock (-)</option>
+        </select>
+      </div>
     </div>
     <div class="modal-field">
       <label class="modal-label">Amount (₹)</label>
@@ -4132,6 +4161,13 @@ async function renderAdminDashboard() {
   const [yy, mm] = ym.split('-');
   const revenue     = sumOf(txs, 'total');
   const varExpenses = sumOf(variable, 'amount');
+  const inventoryPurchaseTotal = (variable || []).filter(v => v.productName || isInventoryCategory(v.category)).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const expenseMode = { Cash: 0, UPI: 0, Card: 0, Credit: 0 };
+  (variable || []).forEach(v => {
+    const pm = String(v.paymentMode || 'Cash');
+    if (expenseMode[pm] === undefined) expenseMode[pm] = 0;
+    expenseMode[pm] += parseFloat(v.amount) || 0;
+  });
   const fixedTotal  = sumOf(fixed, 'amount');
   const salaryPaid = (salaries || [])
     .filter(s => String(s.month) === mm && String(s.year) === yy)
@@ -4213,7 +4249,7 @@ async function renderAdminDashboard() {
       <div class="erp-card">
         <div class="erp-label">Variable Expenses</div>
         <div class="erp-value">₹${fmt(varExpenses)}</div>
-        <div class="erp-sub">Products, Misc</div>
+        <div class="erp-sub">Inventory ₹${fmt(inventoryPurchaseTotal)} · Cash ₹${fmt(expenseMode.Cash||0)} · UPI ₹${fmt(expenseMode.UPI||0)} · Card ₹${fmt(expenseMode.Card||0)} · Credit ₹${fmt(expenseMode.Credit||0)}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">EMI Payments</div>
@@ -4529,12 +4565,102 @@ function getExpenseCategories() {
   return cleaned.length ? cleaned : (DEFAULTS.expenseCategories || ['Miscellaneous']);
 }
 
+function isInventoryCategory(cat) {
+  const c = String(cat || '').toLowerCase();
+  return c.includes('product purchase') || c.includes('color/chemical') || c.includes('consumables');
+}
+
+function onExpenseCategoryChange() {
+  const catEl = document.getElementById('exp-category');
+  const wrap = document.getElementById('exp-inventory-fields');
+  if (!catEl || !wrap) return;
+  const isInv = isInventoryCategory(catEl.value);
+  wrap.style.display = isInv ? '' : 'none';
+  if (!isInv) {
+    ['exp-product-name','exp-vendor','exp-invoice-no','exp-qty','exp-unit-cost'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const sign = document.getElementById('exp-stock-impact-sign');
+    if (sign) sign.value = '+';
+  }
+}
+
+function onExpenseQtyCostChange() {
+  const qty = parseFloat((document.getElementById('exp-qty') || {}).value) || 0;
+  const unitCost = parseFloat((document.getElementById('exp-unit-cost') || {}).value) || 0;
+  const amountEl = document.getElementById('exp-amount');
+  if (!amountEl) return;
+  if (qty > 0 && unitCost > 0) {
+    amountEl.value = Math.round(qty * unitCost * 100) / 100;
+  }
+}
+
+function computeInventoryAudit(rows) {
+  const ledger = {};
+  (rows || []).forEach(r => {
+    const name = String(r.productName || '').trim();
+    if (!name) return;
+    if (!ledger[name]) ledger[name] = { qtyIn: 0, qtyOut: 0, netQty: 0, totalCost: 0, lastVendor: '', lastInvoice: '' };
+    const qty = parseFloat(r.quantity) || 0;
+    const sign = String(r.stockImpactSign || '+') === '-' ? -1 : 1;
+    const impact = sign * qty;
+    if (impact >= 0) ledger[name].qtyIn += impact;
+    else ledger[name].qtyOut += Math.abs(impact);
+    ledger[name].netQty += impact;
+    ledger[name].totalCost += parseFloat(r.amount) || 0;
+    ledger[name].lastVendor = r.vendor || ledger[name].lastVendor;
+    ledger[name].lastInvoice = r.invoiceNo || ledger[name].lastInvoice;
+  });
+  return ledger;
+}
+
+async function getMonthlyLifecycle(ym, monthExpenses) {
+  const [yy, mm] = String(ym || '').split('-');
+  let txs = [], salaries = [], advances = [], fixed = [], emi = [];
+  try {
+    [txs, salaries, advances, fixed, emi] = await Promise.all([
+      fbQueryByMonth(COL.TRANSACTIONS, ym),
+      fbGetCollection(COL.SALARIES),
+      fbQueryByMonth(COL.ADVANCES, ym),
+      fbGetCollection(COL.FIXED),
+      fbGetCollection(COL.EMI),
+    ]);
+  } catch(e) {}
+  const salesSplit = { UPI: 0, Cash: 0, Card: 0 };
+  (txs || []).forEach(t => {
+    const m = normalizePaymentMethod(t.paymentMethod);
+    salesSplit[m] += parseFloat(t.total) || 0;
+  });
+  const salesTotal = salesSplit.UPI + salesSplit.Cash + salesSplit.Card;
+  const variableTotal = (monthExpenses || []).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const inventoryPurchaseTotal = (monthExpenses || []).filter(r => isInventoryCategory(r.category)).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const fixedTotal = (fixed || []).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const emiTotal = (emi || []).reduce((s, r) => s + (parseFloat(r.monthlyEMI) || 0), 0);
+  const advancesTotal = (advances || []).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const payrollPaid = (salaries || []).filter(s => String(s.month) === mm && String(s.year) === yy).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const totalOut = variableTotal + fixedTotal + emiTotal + advancesTotal + payrollPaid;
+  return {
+    salesSplit,
+    salesTotal,
+    variableTotal,
+    inventoryPurchaseTotal,
+    fixedTotal,
+    emiTotal,
+    advancesTotal,
+    payrollPaid,
+    totalOut,
+    net: salesTotal - totalOut,
+  };
+}
+
 function renderExpenseCategoryOptions(selected) {
   const sel = document.getElementById('exp-category');
   if (!sel) return;
   const cats = getExpenseCategories();
   sel.innerHTML = cats.map(c => `<option value="${escAttr(c)}">${esc(c)}</option>`).join('');
   sel.value = selected && cats.includes(selected) ? selected : cats[0];
+  onExpenseCategoryChange();
 }
 
 function getCashbookOpening(dateStr) {
@@ -4704,6 +4830,12 @@ function openAddExpense() {
   document.getElementById('exp-desc').value = '';
   document.getElementById('exp-amount').value = '';
   document.getElementById('exp-payment-mode').value = 'Cash';
+  const pn = document.getElementById('exp-product-name'); if (pn) pn.value = '';
+  const vd = document.getElementById('exp-vendor'); if (vd) vd.value = '';
+  const iv = document.getElementById('exp-invoice-no'); if (iv) iv.value = '';
+  const qy = document.getElementById('exp-qty'); if (qy) qy.value = '';
+  const uc = document.getElementById('exp-unit-cost'); if (uc) uc.value = '';
+  const sg = document.getElementById('exp-stock-impact-sign'); if (sg) sg.value = '+';
   renderExpenseCategoryOptions();
   openModal('modal-add-expense');
 }
@@ -4713,12 +4845,36 @@ async function saveExpense() {
   const category = document.getElementById('exp-category').value;
   const desc     = document.getElementById('exp-desc').value.trim();
   const paymentMode = document.getElementById('exp-payment-mode').value || 'Cash';
-  const amount   = parseFloat(document.getElementById('exp-amount').value) || 0;
+  const qty      = parseFloat((document.getElementById('exp-qty') || {}).value) || 0;
+  const unitCost = parseFloat((document.getElementById('exp-unit-cost') || {}).value) || 0;
+  const amountInput = parseFloat(document.getElementById('exp-amount').value) || 0;
+  const amount   = amountInput || (qty > 0 && unitCost > 0 ? Math.round(qty * unitCost * 100) / 100 : 0);
   const date     = document.getElementById('exp-date').value;
   if (!amount || !date) { toast('Fill in amount and date'); return; }
   state.expInFlight = true;
   closeModal('modal-add-expense');
-  const row = { date, category, description: desc || category, amount, paymentMode };
+  const productName = ((document.getElementById('exp-product-name') || {}).value || '').trim();
+  const vendor = ((document.getElementById('exp-vendor') || {}).value || '').trim();
+  const invoiceNo = ((document.getElementById('exp-invoice-no') || {}).value || '').trim();
+  const stockImpactSign = ((document.getElementById('exp-stock-impact-sign') || {}).value || '+') === '-' ? '-' : '+';
+  const inventory = {
+    productName,
+    vendor,
+    invoiceNo,
+    quantity: qty,
+    unitCost,
+    stockImpactSign,
+    stockImpactUnits: (stockImpactSign === '-' ? -1 : 1) * qty,
+  };
+  const row = {
+    date,
+    category,
+    description: desc || productName || category,
+    amount,
+    paymentMode,
+    isInventory: isInventoryCategory(category) || !!productName,
+    ...inventory,
+  };
   const newId = await fbAppendDoc(COL.EXPENSES, row);
   state.expInFlight = false;
   if (!newId) { toast('⚠️  Could not save expense'); return; }
@@ -4735,25 +4891,53 @@ async function loadExpenses() {
   try { exps = await fbQueryByMonth(COL.EXPENSES, ym); }
   catch(e) { host.innerHTML = '<div class="muted-text center">Could not load.</div>'; return; }
   if (!exps.length) { host.innerHTML = '<div class="muted-text center" style="padding:20px">No variable expenses this month.</div>'; return; }
+  const lifecycle = await getMonthlyLifecycle(ym, exps);
+  const inventoryLedger = computeInventoryAudit(exps);
   let total = 0;
   let html = '';
   exps.forEach(e => {
     total += parseFloat(e.amount) || 0;
+    const invMeta = e.productName
+      ? ` · ${e.productName}${e.quantity ? ' · qty ' + e.quantity : ''}${e.invoiceNo ? ' · inv ' + e.invoiceNo : ''}${e.vendor ? ' · ' + e.vendor : ''}`
+      : '';
     html += `
       <div class="exp-row">
         <div class="exp-left">
           <div class="exp-name">${esc(String(e.description||e.category))}</div>
-          <div class="exp-meta">${e.date} · ${e.category} · ${e.paymentMode || 'Cash'}</div>
+          <div class="exp-meta">${e.date} · ${e.category} · ${e.paymentMode || 'Cash'}${invMeta}</div>
         </div>
         <div class="exp-amount">₹${fmt(parseFloat(e.amount)||0)}</div>
       </div>
     `;
   });
+  let invHtml = '';
+  const invRows = Object.entries(inventoryLedger).sort((a,b) => b[1].totalCost - a[1].totalCost);
+  if (invRows.length) {
+    invHtml = '<div class="erp-card" style="margin-top:12px">' +
+      '<div class="erp-label">Inventory Purchase Audit</div>' +
+      invRows.map(([name, d]) =>
+        `<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line-soft)">` +
+          `<div style="min-width:0"><div style="font-size:13px;color:var(--ink);font-weight:500">${esc(name)}</div><div class="exp-meta">In ${fmt(d.qtyIn)} · Out ${fmt(d.qtyOut)} · Net ${fmt(d.netQty)}${d.lastInvoice ? ' · Inv ' + esc(d.lastInvoice) : ''}</div></div>` +
+          `<div style="font-family:var(--serif);font-size:16px;color:var(--ink)">₹${fmt(d.totalCost)}</div>` +
+        `</div>`
+      ).join('') +
+      '</div>';
+  }
   host.innerHTML = `
     <div class="erp-card" style="margin-bottom:10px">
       <div class="erp-label">Month Total</div>
       <div class="erp-value">₹${fmt(total)}</div>
     </div>
+    <div class="erp-grid" style="margin-bottom:10px">
+      <div class="erp-card gold full">
+        <div class="erp-label">Cash Lifecycle · ${ym}</div>
+        <div class="erp-sub">Sales ₹${fmt(lifecycle.salesTotal)} (UPI ₹${fmt(lifecycle.salesSplit.UPI)} · Cash ₹${fmt(lifecycle.salesSplit.Cash)} · Card ₹${fmt(lifecycle.salesSplit.Card)})</div>
+        <div class="erp-sub" style="margin-top:6px">Outflow ₹${fmt(lifecycle.totalOut)} = Variable ₹${fmt(lifecycle.variableTotal)} + Fixed ₹${fmt(lifecycle.fixedTotal)} + EMI ₹${fmt(lifecycle.emiTotal)} + Payroll Paid ₹${fmt(lifecycle.payrollPaid)} + Advances ₹${fmt(lifecycle.advancesTotal)}</div>
+        <div class="erp-sub" style="margin-top:6px">Inventory Purchases (included in variable): ₹${fmt(lifecycle.inventoryPurchaseTotal)}</div>
+        <div class="erp-value ${lifecycle.net >= 0 ? 'green' : 'red'}" style="font-size:24px;margin-top:10px">${lifecycle.net >= 0 ? 'Net Operating Surplus' : 'Net Operating Deficit'}: ₹${fmt(Math.abs(lifecycle.net))}</div>
+      </div>
+    </div>
+    ${invHtml}
     <div class="export-row">
       <button class="btn btn-primary" onclick='exportExpensesAs("${ym}","pdf")'>📄 PDF</button>
       <button class="btn btn-gold" onclick='exportExpensesAs("${ym}","xlsx")'>📊 Excel</button>
@@ -4769,6 +4953,12 @@ function shapeExpenseRows(rows) {
     Date:        r.date || '',
     Category:    r.category || '',
     Description: r.description || '',
+    Product:     r.productName || '',
+    Vendor:      r.vendor || '',
+    Invoice:     r.invoiceNo || '',
+    Quantity:    parseFloat(r.quantity) || 0,
+    'Unit Cost': parseFloat(r.unitCost) || 0,
+    'Stock Impact': parseFloat(r.stockImpactUnits) || 0,
     'Payment Mode': r.paymentMode || 'Cash',
     Amount:      parseFloat(r.amount) || 0,
     'Logged By': r.createdBy || '',
@@ -4781,11 +4971,22 @@ function exportExpensesAs(ym, fmt) {
   const shaped = shapeExpenseRows(rows);
   const total  = rows.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
   const cashSpent = rows.reduce((s,r) => s + ((String(r.paymentMode||'Cash') === 'Cash') ? (parseFloat(r.amount)||0) : 0), 0);
+  const upiSpent = rows.reduce((s,r) => s + ((String(r.paymentMode||'Cash') === 'UPI') ? (parseFloat(r.amount)||0) : 0), 0);
+  const cardSpent = rows.reduce((s,r) => s + ((String(r.paymentMode||'Cash') === 'Card') ? (parseFloat(r.amount)||0) : 0), 0);
+  const creditSpent = rows.reduce((s,r) => s + ((String(r.paymentMode||'Cash') === 'Credit') ? (parseFloat(r.amount)||0) : 0), 0);
+  const inventoryTotal = rows.filter(r => r.productName || isInventoryCategory(r.category)).reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
   // Group by category for summary
   const byCat = {};
   rows.forEach(r => { byCat[r.category||'Other'] = (byCat[r.category||'Other']||0) + (parseFloat(r.amount)||0); });
   const summary = [`Total Expenses: ₹${fmtPlain(total)}`,'']
-    .concat([`Cash-mode expenses: ₹${fmtPlain(cashSpent)}`,''])
+    .concat([
+      `Inventory purchases: ₹${fmtPlain(inventoryTotal)}`,
+      `Cash-mode expenses: ₹${fmtPlain(cashSpent)}`,
+      `UPI-mode expenses: ₹${fmtPlain(upiSpent)}`,
+      `Card-mode expenses: ₹${fmtPlain(cardSpent)}`,
+      `Credit-mode expenses: ₹${fmtPlain(creditSpent)}`,
+      ''
+    ])
     .concat(Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([c,v]) => `${c}: ₹${fmtPlain(v)}`));
   const base = `ozone-expenses-${ym}`;
   if (fmt === 'csv')  exportCSV(`${base}.csv`, shaped);
