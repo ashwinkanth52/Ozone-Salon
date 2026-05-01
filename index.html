@@ -199,7 +199,7 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .new-bill-cta:active{background:#000;}
 
 /* STAFF HERO BANNER */
-.staff-hero{position:relative;height:200px;margin:0 16px 0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-card);background:linear-gradient(135deg,#2a1f1a 0%,#3d2a20 100%);background-image:linear-gradient(135deg,rgba(26,18,14,.55) 0%,rgba(40,28,22,.35) 100%),url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1080&q=80');background-size:cover;background-position:center;margin-top:18px;}
+.staff-hero{position:relative;height:200px;margin:0 16px 0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-card);background:linear-gradient(135deg,#2a1f1a 0%,#3d2a20 100%);background-image:linear-gradient(135deg,rgba(20,14,10,.55) 0%,rgba(40,28,22,.30) 100%),url('https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1280');background-size:cover;background-position:center;margin-top:18px;}
 .staff-hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.45) 100%);}
 .staff-hero-content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 22px 20px;color:#FFF;}
 .staff-hero-tag{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:8px;}
@@ -207,7 +207,7 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .staff-hero-sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:10px;opacity:.85;font-weight:500;}
 
 /* BILLING HERO STRIP */
-.billing-hero{position:relative;height:120px;overflow:hidden;background:linear-gradient(135deg,#1a1a1a 0%,#2d2018 100%);background-image:linear-gradient(135deg,rgba(17,17,17,.6) 0%,rgba(45,32,24,.4) 100%),url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1080&q=80');background-size:cover;background-position:center;}
+.billing-hero{position:relative;height:120px;overflow:hidden;background:linear-gradient(135deg,#1a1a1a 0%,#2d2018 100%);background-image:linear-gradient(135deg,rgba(17,17,17,.55) 0%,rgba(45,32,24,.30) 100%),url('https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=1280');background-size:cover;background-position:center;}
 .billing-hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 60%);}
 .billing-hero-content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 22px;color:#FFF;}
 .billing-hero-eyebrow{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:6px;}
@@ -1268,53 +1268,103 @@ const DEFAULTS = {
    exact service name first, then keyword fallback. Used by
    both the billing screen and cart for staff guidance.
 ──────────────────────────────────────────────────── */
+// Pexels-hosted premium salon images (free CC0 licence, fast CDN, high quality).
+// Each service has a UNIQUE photograph that shows the actual treatment / tool / outcome.
+const _IMG = {
+  // Hair – cuts & shaves
+  haircut_men:        'https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=400',
+  haircut_kids:       'https://images.pexels.com/photos/3993134/pexels-photo-3993134.jpeg?auto=compress&cs=tinysrgb&w=400',
+  beard_trim:         'https://images.pexels.com/photos/3998415/pexels-photo-3998415.jpeg?auto=compress&cs=tinysrgb&w=400',
+  shaving:            'https://images.pexels.com/photos/3998421/pexels-photo-3998421.jpeg?auto=compress&cs=tinysrgb&w=400',
+  hair_wash:          'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=400',
+  hair_wash_keratin:  'https://images.pexels.com/photos/3992871/pexels-photo-3992871.jpeg?auto=compress&cs=tinysrgb&w=400',
+  blow_dry:           'https://images.pexels.com/photos/3993456/pexels-photo-3993456.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  // Hair – treatments
+  colour_global:      'https://images.pexels.com/photos/3993454/pexels-photo-3993454.jpeg?auto=compress&cs=tinysrgb&w=400',
+  colour_black:       'https://images.pexels.com/photos/3993469/pexels-photo-3993469.jpeg?auto=compress&cs=tinysrgb&w=400',
+  hair_spa:           'https://images.pexels.com/photos/7755515/pexels-photo-7755515.jpeg?auto=compress&cs=tinysrgb&w=400',
+  head_massage:       'https://images.pexels.com/photos/3997381/pexels-photo-3997381.jpeg?auto=compress&cs=tinysrgb&w=400',
+  henna:              'https://images.pexels.com/photos/2698935/pexels-photo-2698935.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  // Skin & Face
+  detan:              'https://images.pexels.com/photos/3997385/pexels-photo-3997385.jpeg?auto=compress&cs=tinysrgb&w=400',
+  oxylife:            'https://images.pexels.com/photos/3985317/pexels-photo-3985317.jpeg?auto=compress&cs=tinysrgb&w=400',
+  bleach:             'https://images.pexels.com/photos/3997383/pexels-photo-3997383.jpeg?auto=compress&cs=tinysrgb&w=400',
+  cleanup:            'https://images.pexels.com/photos/3985322/pexels-photo-3985322.jpeg?auto=compress&cs=tinysrgb&w=400',
+  facial_vitamin:     'https://images.pexels.com/photos/3985338/pexels-photo-3985338.jpeg?auto=compress&cs=tinysrgb&w=400',
+  facial_korean:      'https://images.pexels.com/photos/3985316/pexels-photo-3985316.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  // Body & Spa
+  pedicure:           'https://images.pexels.com/photos/3997984/pexels-photo-3997984.jpeg?auto=compress&cs=tinysrgb&w=400',
+  manicure:           'https://images.pexels.com/photos/3997386/pexels-photo-3997386.jpeg?auto=compress&cs=tinysrgb&w=400',
+  pedicure_premium:   'https://images.pexels.com/photos/3997389/pexels-photo-3997389.jpeg?auto=compress&cs=tinysrgb&w=400',
+  full_body_massage:  'https://images.pexels.com/photos/3865792/pexels-photo-3865792.jpeg?auto=compress&cs=tinysrgb&w=400',
+  back_neck_massage:  'https://images.pexels.com/photos/3865711/pexels-photo-3865711.jpeg?auto=compress&cs=tinysrgb&w=400',
+  foot_massage:       'https://images.pexels.com/photos/6663577/pexels-photo-6663577.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  // Combos
+  combo_quick:        'https://images.pexels.com/photos/1453005/pexels-photo-1453005.jpeg?auto=compress&cs=tinysrgb&w=400',
+  combo_clean_slate:  'https://images.pexels.com/photos/1805600/pexels-photo-1805600.jpeg?auto=compress&cs=tinysrgb&w=400',
+  combo_fresh_face:   'https://images.pexels.com/photos/4046317/pexels-photo-4046317.jpeg?auto=compress&cs=tinysrgb&w=400',
+  combo_glow_up:      'https://images.pexels.com/photos/3992874/pexels-photo-3992874.jpeg?auto=compress&cs=tinysrgb&w=400',
+  combo_spa_day:      'https://images.pexels.com/photos/3997983/pexels-photo-3997983.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  // Category fallbacks
+  cat_hair_ess:       'https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=240',
+  cat_hair_treat:     'https://images.pexels.com/photos/3992872/pexels-photo-3992872.jpeg?auto=compress&cs=tinysrgb&w=240',
+  cat_skin_face:      'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=240',
+  cat_body_spa:       'https://images.pexels.com/photos/3865676/pexels-photo-3865676.jpeg?auto=compress&cs=tinysrgb&w=240',
+  cat_combo:          'https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=240',
+};
+
 const SERVICE_META = {
   // HAIR ESSENTIALS
-  'Haircut': { mins:30, desc:'Consultation + scissor or machine cut, neckline + sideburn finish, light style.', img:'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=400&q=70' },
-  'Kids Haircut (below 12)': { mins:25, desc:'Gentle haircut for kids — calm chair, simple style, neat finish.', img:'https://images.unsplash.com/photo-1588534-22650b9b8bb8?auto=format&fit=crop&w=400&q=70' },
-  'Beard Trim / Styling': { mins:20, desc:'Beard shape-up, line-up with trimmer, hot towel finish.', img:'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=400&q=70' },
-  'Shaving (Clean)': { mins:20, desc:'Hot towel, pre-shave oil, clean razor shave, after-shave balm.', img:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=400&q=70' },
-  'Hair Wash (Normal)': { mins:15, desc:'Standard salon shampoo + conditioner, quick blow.', img:'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=400&q=70' },
-  'Hair Wash (Keratin)': { mins:25, desc:'Keratin smoothing shampoo + conditioner, scalp massage, blow dry.', img:'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=400&q=70' },
-  'Blow Dry': { mins:20, desc:'Heat-protect spray, round-brush blow dry, light styling.', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=400&q=70' },
+  'Haircut':                                                          { mins:30,  desc:'Consultation + scissor or machine cut, neckline + sideburn finish, light styling.', img:_IMG.haircut_men },
+  'Kids Haircut (below 12)':                                          { mins:25,  desc:'Gentle haircut for kids — calm chair, simple style, neat finish.',                  img:_IMG.haircut_kids },
+  'Beard Trim / Styling':                                             { mins:20,  desc:'Beard shape-up, line-up with trimmer, hot towel finish, beard oil.',                img:_IMG.beard_trim },
+  'Shaving (Clean)':                                                  { mins:20,  desc:'Hot towel, pre-shave oil, clean razor shave, after-shave balm.',                    img:_IMG.shaving },
+  'Hair Wash (Normal)':                                               { mins:15,  desc:'Standard salon shampoo + conditioner with quick blow.',                              img:_IMG.hair_wash },
+  'Hair Wash (Keratin)':                                              { mins:25,  desc:'Keratin smoothing shampoo + conditioner, scalp massage, blow dry.',                  img:_IMG.hair_wash_keratin },
+  'Blow Dry':                                                         { mins:20,  desc:'Heat-protect spray, round-brush blow dry, light styling.',                           img:_IMG.blow_dry },
 
   // HAIR TREATMENTS
-  'Hair Colour (Global)': { mins:90, desc:'Full-head global colour, ammonia-free brand, includes wash + blow dry.', img:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=400&q=70' },
-  'Hair Colour (Black)': { mins:30, desc:'Touch-up black colour for grey coverage, root to tip, includes wash.', img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=70' },
-  'Hair Spa': { mins:45, desc:'Deep-conditioning spa cream, steam, scalp massage, rinse + blow dry.', img:'https://images.unsplash.com/photo-1559599101-f09722fb4948?auto=format&fit=crop&w=400&q=70' },
-  'Head Massage (Oil)': { mins:20, desc:'Warm oil champi-style head massage, relaxing pressure points.', img:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=70' },
-  'Henna': { mins:60, desc:'Pure henna application, conditioning, rinse + blow dry.', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=400&q=70' },
+  'Hair Colour (Global)':                                             { mins:90,  desc:'Full-head global colour, ammonia-free brand. Includes wash + blow dry.',             img:_IMG.colour_global },
+  'Hair Colour (Black)':                                              { mins:30,  desc:'Touch-up black colour for grey coverage, root to tip. Includes wash.',                img:_IMG.colour_black },
+  'Hair Spa':                                                         { mins:45,  desc:'Deep-conditioning spa cream, steam, scalp massage, rinse + blow dry.',               img:_IMG.hair_spa },
+  'Head Massage (Oil)':                                               { mins:20,  desc:'Warm-oil champi head massage, relaxing pressure points.',                            img:_IMG.head_massage },
+  'Henna':                                                            { mins:60,  desc:'Pure henna application, conditioning, rinse + blow dry.',                            img:_IMG.henna },
 
   // SKIN & FACE
-  'Face & Neck De-tan': { mins:30, desc:'De-tan scrub + pack on face, neck, ears. Removes dullness, brightens skin.', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=400&q=70' },
-  'Oxylife D-Tan': { mins:35, desc:'Oxylife brand de-tan kit — bubble massage + cooling pack. Premium glow.', img:'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=400&q=70' },
-  'Bleach (Face & Neck)': { mins:25, desc:'Cream bleach for facial hair, calming pack after.', img:'https://images.unsplash.com/photo-1612817159949-195b6eb9e31a?auto=format&fit=crop&w=400&q=70' },
-  'Clean Up (Basic)': { mins:30, desc:'Cleansing, scrub, steam, blackhead removal, light face pack.', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=400&q=70' },
-  'Facial (Vitamin C / O3)': { mins:60, desc:'Cleanse, scrub, steam, extraction, Vit-C / O3 massage, mask, moisturiser.', img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=70' },
-  'Korean Glass Facial': { mins:75, desc:'10-step Korean ritual: double cleanse, exfoliate, essence, sheet mask, glow serum.', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=400&q=70' },
+  'Face & Neck De-tan':                                               { mins:30,  desc:'De-tan scrub + pack on face, neck, ears. Removes dullness, brightens skin.',         img:_IMG.detan },
+  'Oxylife D-Tan':                                                    { mins:35,  desc:'Oxylife premium de-tan kit — bubble massage + cooling pack. Instant glow.',           img:_IMG.oxylife },
+  'Bleach (Face & Neck)':                                             { mins:25,  desc:'Cream bleach for facial hair lightening, calming pack after.',                       img:_IMG.bleach },
+  'Clean Up (Basic)':                                                 { mins:30,  desc:'Cleansing, scrub, steam, blackhead removal, light face pack.',                       img:_IMG.cleanup },
+  'Facial (Vitamin C / O3)':                                          { mins:60,  desc:'Cleanse, scrub, steam, extraction, Vit-C / O3 massage, mask, moisturiser.',          img:_IMG.facial_vitamin },
+  'Korean Glass Facial':                                              { mins:75,  desc:'10-step Korean ritual: double cleanse, exfoliate, essence, sheet mask, glow serum.', img:_IMG.facial_korean },
 
   // BODY & SPA
-  'Pedicure (Basic)': { mins:30, desc:'Foot soak, scrub, nail trim + file, cuticle care, moisturise.', img:'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=400&q=70' },
-  'Manicure (Basic)': { mins:30, desc:'Hand soak, scrub, nail shape + buff, cuticle care, hand massage.', img:'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=400&q=70' },
-  'Spa Pedicure (Premium)': { mins:45, desc:'Full pedicure + paraffin wax, callus removal, extended massage.', img:'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=400&q=70' },
-  'Full Body Massage (45 min)': { mins:45, desc:'Full body relaxation massage, aroma oil, soothing music room.', img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=400&q=70' },
-  'Back & Neck Massage (30 min)': { mins:30, desc:'Targeted back, shoulder, neck massage. Releases tension and stiffness.', img:'https://images.unsplash.com/photo-1591343395082-e120087004b4?auto=format&fit=crop&w=400&q=70' },
-  'Foot Massage (20 min)': { mins:20, desc:'Reflexology foot massage with warm oil, pressure-point relief.', img:'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=400&q=70' },
+  'Pedicure (Basic)':                                                 { mins:30,  desc:'Foot soak, scrub, nail trim + file, cuticle care, moisturise.',                      img:_IMG.pedicure },
+  'Manicure (Basic)':                                                 { mins:30,  desc:'Hand soak, scrub, nail shape + buff, cuticle care, hand massage.',                   img:_IMG.manicure },
+  'Spa Pedicure (Premium)':                                           { mins:45,  desc:'Full pedicure + paraffin wax dip, callus removal, extended foot massage.',          img:_IMG.pedicure_premium },
+  'Full Body Massage (45 min)':                                       { mins:45,  desc:'Full body relaxation massage with aroma oil in our private spa room.',               img:_IMG.full_body_massage },
+  'Back & Neck Massage (30 min)':                                     { mins:30,  desc:'Targeted back, shoulder & neck massage. Releases tension and stiffness.',            img:_IMG.back_neck_massage },
+  'Foot Massage (20 min)':                                            { mins:20,  desc:'Reflexology foot massage with warm oil, pressure-point relief.',                     img:_IMG.foot_massage },
 
   // COMBO PACKAGES
-  'M1 — Quick Trim (Haircut + Beard + Wash)': { mins:60, desc:'Haircut, beard styling, hair wash. Quick fresh look.', img:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=400&q=70' },
-  'M2 — Clean Slate (Haircut + Beard + Wash + De-tan)': { mins:90, desc:'Haircut, beard, wash + face & neck de-tan. Brightens up the look.', img:'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=400&q=70' },
-  'M3 — Fresh Face (+ Head Massage)': { mins:105, desc:'M2 + relaxing oil head massage. Stress relief + groomed look.', img:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=70' },
-  'M5 — Glow Up (Haircut + Beard + Facial + De-tan + Wash)': { mins:150, desc:'Haircut, beard, facial, de-tan, wash. Complete grooming + glow.', img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=70' },
-  'M7 — Spa Day (Full Premium)': { mins:210, desc:'Full premium ritual: haircut, beard, facial, de-tan, hair spa, head + back massage.', img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=400&q=70' },
+  'M1 — Quick Trim (Haircut + Beard + Wash)':                          { mins:60,  desc:'Haircut + beard styling + hair wash. A quick fresh look.',                          img:_IMG.combo_quick },
+  'M2 — Clean Slate (Haircut + Beard + Wash + De-tan)':                { mins:90,  desc:'Haircut, beard, wash + face & neck de-tan. Brightens up the look.',                 img:_IMG.combo_clean_slate },
+  'M3 — Fresh Face (+ Head Massage)':                                  { mins:105, desc:'Everything in M2 + a relaxing oil head massage. Stress relief + groomed look.',     img:_IMG.combo_fresh_face },
+  'M5 — Glow Up (Haircut + Beard + Facial + De-tan + Wash)':           { mins:150, desc:'Haircut, beard, facial, de-tan, wash. Complete grooming + glow.',                   img:_IMG.combo_glow_up },
+  'M7 — Spa Day (Full Premium)':                                       { mins:210, desc:'Full premium ritual: haircut, beard, facial, de-tan, hair spa, head + back massage.', img:_IMG.combo_spa_day },
 };
 
 const CATEGORY_IMG = {
-  'Hair Essentials': 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=240&q=70',
-  'Hair Treatments': 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=240&q=70',
-  'Skin & Face':     'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=240&q=70',
-  'Body & Spa':      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=240&q=70',
-  'Combo Packages':  'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=240&q=70',
+  'Hair Essentials': _IMG.cat_hair_ess,
+  'Hair Treatments': _IMG.cat_hair_treat,
+  'Skin & Face':     _IMG.cat_skin_face,
+  'Body & Spa':      _IMG.cat_body_spa,
+  'Combo Packages':  _IMG.cat_combo,
 };
 
 function getServiceMeta(name, category) {
