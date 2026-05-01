@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Ozone ERP">
 <link rel="manifest" href="manifest.json">
-<title>Ozone Salon & Spa â€” ERP</title>
+<title>Ozone Salon & Spa — ERP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -487,40 +487,40 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
 </head>
 <body>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      GLOBAL BRAND STRIP (shown on signed-in screens)
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <div class="brand-strip" id="brand-strip">
   <div class="brand-strip-logo">O</div>
   <div class="brand-strip-meta">
     <div class="brand-strip-name" id="brand-strip-name">Ozone Salon &amp; Spa</div>
-    <div class="brand-strip-tag" id="brand-strip-tag">Salon ERP Â· Live</div>
+    <div class="brand-strip-tag" id="brand-strip-tag">Salon ERP · Live</div>
   </div>
   <div class="brand-strip-user" id="brand-strip-user">
     <div class="brand-strip-user-init" id="brand-strip-user-init">O</div>
     <img id="brand-strip-user-photo" src="" alt="" style="display:none">
     <div>
-      <div class="brand-strip-user-name" id="brand-strip-user-name">â€”</div>
-      <div class="brand-strip-user-role" id="brand-strip-user-role">â€”</div>
+      <div class="brand-strip-user-name" id="brand-strip-user-name">—</div>
+      <div class="brand-strip-user-role" id="brand-strip-user-role">—</div>
     </div>
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: LOADING
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen active" id="screen-loading">
   <div class="loading-center">
     <div class="logo-circle">O</div>
     <h1 class="loading-title">Ozone Salon &amp; Spa</h1>
-    <p class="loading-sub" id="loading-status">Starting upâ€¦</p>
+    <p class="loading-sub" id="loading-status">Starting up…</p>
     <div class="spinner"></div>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: SETUP WIZARD
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-setup">
   <div class="setup-wrap">
     <div class="setup-logo">
@@ -543,14 +543,14 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <p class="setup-desc">Create a Firebase project (free), then paste your Firebase config below. The app uses Firestore for real-time sync and works offline automatically.</p>
       <div class="setup-field">
         <label class="setup-label">Firebase Config (JSON)</label>
-        <textarea class="setup-input" id="setup-fb-config" rows="7" placeholder='{"apiKey":"â€¦","authDomain":"â€¦","projectId":"â€¦","storageBucket":"â€¦","messagingSenderId":"â€¦","appId":"â€¦"}' style="font-family:monospace;font-size:13px;resize:vertical;"></textarea>
-        <div class="setup-hint">Firebase Console â†’ Project Settings â†’ Your apps â†’ Firebase SDK snippet â†’ Config object</div>
-        <div class="setup-hint" style="margin-top:8px;color:var(--gold);">âš  Also enable <strong>Google</strong> sign-in: Authentication â†’ Sign-in method â†’ Google â†’ Enable.</div>
+        <textarea class="setup-input" id="setup-fb-config" rows="7" placeholder='{"apiKey":"…","authDomain":"…","projectId":"…","storageBucket":"…","messagingSenderId":"…","appId":"…"}' style="font-family:monospace;font-size:13px;resize:vertical;"></textarea>
+        <div class="setup-hint">Firebase Console → Project Settings → Your apps → Firebase SDK snippet → Config object</div>
+        <div class="setup-hint" style="margin-top:8px;color:var(--gold);">⚠ Also enable <strong>Google</strong> sign-in: Authentication → Sign-in method → Google → Enable.</div>
       </div>
       <div id="setup-connect-result" class="setup-connect-result"></div>
       <div style="display:flex;gap:10px;margin-top:20px;">
         <button class="btn btn-secondary" onclick="testFirebaseConnection()" style="flex:1">Test Connection</button>
-        <button class="btn btn-primary" onclick="setupNext(1)" style="flex:1">Next â†’</button>
+        <button class="btn btn-primary" onclick="setupNext(1)" style="flex:1">Next →</button>
       </div>
     </div>
 
@@ -576,8 +576,8 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
         <input type="number" class="setup-input" id="s-gst" value="0" min="0" max="30">
       </div>
       <div style="display:flex;gap:10px;margin-top:20px;">
-        <button class="btn btn-secondary" onclick="setupBack(2)" style="flex:1">â† Back</button>
-        <button class="btn btn-primary" onclick="setupNext(2)" style="flex:1">Next â†’</button>
+        <button class="btn btn-secondary" onclick="setupBack(2)" style="flex:1">← Back</button>
+        <button class="btn btn-primary" onclick="setupNext(2)" style="flex:1">Next →</button>
       </div>
     </div>
 
@@ -587,25 +587,25 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <h2 class="setup-title">Action PINs</h2>
       <p class="setup-desc">Sign-in is via Google Account. These 4-digit PINs are an extra layer for sensitive staff actions (e.g. approving discounts at the counter).</p>
       <div class="setup-field">
-        <label class="setup-label">Staff PIN (4 digits â€” shared with all staff)</label>
+        <label class="setup-label">Staff PIN (4 digits — shared with all staff)</label>
         <input type="tel" class="setup-input" id="s-staffPin" maxlength="4" placeholder="e.g. 1111" inputmode="numeric">
       </div>
       <div class="setup-field">
-        <label class="setup-label">Admin PIN (4 digits â€” private)</label>
+        <label class="setup-label">Admin PIN (4 digits — private)</label>
         <input type="tel" class="setup-input" id="s-adminPin" maxlength="4" placeholder="e.g. 9876" inputmode="numeric">
       </div>
-      <div class="setup-hint" style="margin-bottom:20px;">âš  Write these down. You can change them later from Admin â†’ Security.</div>
+      <div class="setup-hint" style="margin-bottom:20px;">⚠ Write these down. You can change them later from Admin → Security.</div>
       <div style="display:flex;gap:10px;">
-        <button class="btn btn-secondary" onclick="setupBack(3)" style="flex:1">â† Back</button>
-        <button class="btn btn-primary" onclick="completeSetup()" style="flex:1">Complete Setup âœ“</button>
+        <button class="btn btn-secondary" onclick="setupBack(3)" style="flex:1">← Back</button>
+        <button class="btn btn-primary" onclick="completeSetup()" style="flex:1">Complete Setup ✓</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: AUTH GATE (Google Sign-In)
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-auth">
   <div class="landing-wrap">
     <div class="landing-logo">O</div>
@@ -628,21 +628,21 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       </div>
       <div class="landing-btn-text">
         <div class="landing-btn-label">Sign in with Google</div>
-        <div class="landing-btn-sub">Secure Â· Role-based access</div>
+        <div class="landing-btn-sub">Secure · Role-based access</div>
       </div>
     </button>
 
     <div id="auth-error" style="display:none;margin-top:16px;padding:14px 16px;border-radius:12px;background:rgba(197,106,106,.12);color:var(--danger);font-size:13px;text-align:center;line-height:1.5;"></div>
 
     <div style="margin-top:auto;padding-top:32px;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.06em;">
-      TODAY Â· <span id="auth-date"></span>
+      TODAY · <span id="auth-date"></span>
     </div>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: ACCESS DENIED (signed-in but not authorized)
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-no-access">
   <div class="landing-wrap" style="justify-content:center;">
     <div class="confirm-mark" style="background:var(--terracotta);margin-bottom:24px;">
@@ -651,15 +651,15 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <h1 class="landing-title" style="margin-bottom:8px;">Access Pending</h1>
     <div class="muted-text center" style="max-width:300px;margin:0 auto 24px;line-height:1.6">
       Your Google account <strong id="no-access-email" style="color:var(--charcoal)"></strong> is not authorized for this Ozone ERP yet.
-      <br><br>Please ask the shop owner to add you in <em>Admin â†’ Team</em>.
+      <br><br>Please ask the shop owner to add you in <em>Admin → Team</em>.
     </div>
     <button class="btn btn-secondary" onclick="signOut()" style="min-width:180px">Sign out &amp; try another account</button>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: LANDING
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-landing">
   <div class="landing-wrap">
     <div class="landing-logo">O</div>
@@ -670,7 +670,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <img id="user-chip-photo" src="" alt="" style="display:none">
       <div id="user-chip-initial">O</div>
       <div class="user-chip-meta">
-        <div class="user-chip-name" id="user-chip-name">â€”</div>
+        <div class="user-chip-name" id="user-chip-name">—</div>
         <div class="user-chip-role" id="user-chip-role">Signed in</div>
       </div>
       <button class="user-chip-out" onclick="signOut()" title="Sign out">
@@ -684,7 +684,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       </div>
       <div class="landing-btn-text">
         <div class="landing-btn-label">Staff Counter</div>
-        <div class="landing-btn-sub">Attendance Â· Billing Â· Footfall</div>
+        <div class="landing-btn-sub">Attendance · Billing · Footfall</div>
       </div>
     </button>
 
@@ -694,19 +694,19 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       </div>
       <div class="landing-btn-text">
         <div class="landing-btn-label">Admin ERP</div>
-        <div class="landing-btn-sub">Dashboard Â· P&amp;L Â· Reports Â· Setup</div>
+        <div class="landing-btn-sub">Dashboard · P&amp;L · Reports · Setup</div>
       </div>
     </button>
 
     <div style="margin-top:auto;padding-top:32px;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.06em;">
-      TODAY Â· <span id="landing-date"></span>
+      TODAY · <span id="landing-date"></span>
     </div>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: STAFF DASHBOARD
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-staff">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('landing')">
@@ -724,12 +724,12 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
         <div class="footfall-label">Customers Today</div>
       </div>
       <div class="footfall-controls">
-        <button class="fc-btn" onclick="changeFootfall(-1)">âˆ’</button>
+        <button class="fc-btn" onclick="changeFootfall(-1)">−</button>
         <button class="fc-btn" onclick="changeFootfall(1)">+</New Customer Bill</div>
 
     <!-- New bill button -->
     <button class="new-bill-cta" onclick="showScreen('home')">
-      âœ¦ New Customer Bill
+      ✦ New Customer Bill
     </button>
   </div>
 
@@ -741,9 +741,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: HOME / BILLING
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-home">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('staff')">
@@ -760,15 +760,15 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   <div class="cart-float" id="cart-float" onclick="showScreen('cart')">
     <div style="display:flex;align-items:center;gap:12px;">
       <div class="cart-count-badge" id="cart-count">0</div>
-      <div class="cart-float-total">â‚¹<span id="cart-float-amount">0</span></div>
+      <div class="cart-float-total">₹<span id="cart-float-amount">0</span></div>
     </div>
-    <div style="font-size:14px;letter-spacing:.04em;">View Bill â†’</div>
+    <div style="font-size:14px;letter-spacing:.04em;">View Bill →</div>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: CART
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-cart">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('home')">
@@ -788,9 +788,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: PAYMENT
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-payment">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('cart')">
@@ -801,7 +801,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
   <div class="payment-wrap">
     <div class="payment-amount-label">Amount to Collect</div>
-    <div class="payment-amount"><span class="curr">â‚¹</span><span id="payment-amount">0</span></div>
+    <div class="payment-amount"><span class="curr">₹</span><span id="payment-amount">0</span></div>
     <div class="qr-card">
       <div id="qr-holder"></div>
       <div class="upi-id" id="upi-id-holder"></div>
@@ -809,13 +809,13 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <p style="color:var(--muted);font-size:13px;max-width:280px;margin:0 auto;line-height:1.6;">Ask the customer to scan using PhonePe, GPay, or any UPI app. Tap below once payment reflects.</p>
   </div>
   <div class="cta-footer">
-    <button class="btn btn-primary" onclick="showScreen('receipt')">Payment Received âœ“</button>
+    <button class="btn btn-primary" onclick="showScreen('receipt')">Payment Received ✓</button>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: RECEIPT (WhatsApp + staff log)
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-receipt">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('payment')">
@@ -831,7 +831,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div style="background:var(--ink);color:#FFF;border-radius:14px;padding:18px 22px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;position:relative;">
       <div>
         <div style="font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--champagne);font-weight:500;">Bill Total</div>
-        <div style="font-family:var(--serif);font-size:28px;margin-top:6px;font-weight:500;letter-spacing:-.01em;line-height:1;" id="receipt-total">â‚¹0</div>
+        <div style="font-family:var(--serif);font-size:28px;margin-top:6px;font-weight:500;letter-spacing:-.01em;line-height:1;" id="receipt-total">₹0</div>
       </div>
       <div style="font-size:9.5px;letter-spacing:.22em;text-align:right;color:var(--champagne);font-weight:500;">PAID<br>VIA UPI</div>
     </div>
@@ -839,10 +839,10 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <label class="form-label">Served by (Staff) <span style="color:var(--danger);">*</span></label>
     <div class="input-group">
       <select class="input" id="receipt-staff" style="padding-left:16px;" required>
-        <option value="">â€” Select staff member â€”</option>
+        <option value="">— Select staff member —</option>
       </select>
     </div>
-    <div style="font-size:12px;color:var(--muted);margin-top:-14px;margin-bottom:20px;padding-left:4px;">Required Â· used for commission &amp; payroll.</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:-14px;margin-bottom:20px;padding-left:4px;">Required · used for commission &amp; payroll.</div>
 
     <label class="form-label">Customer WhatsApp Number</label>
     <div class="input-group">
@@ -860,23 +860,23 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: CONFIRM
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-confirm">
   <div class="confirm-wrap">
     <div class="confirm-mark">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
-    <div class="confirm-title">Transaction Saved âœ“</div>
-    <div class="confirm-subtitle" id="confirm-sub">Bill saved Â· Counter ready for next customer.</div>
+    <div class="confirm-title">Transaction Saved ✓</div>
+    <div class="confirm-subtitle" id="confirm-sub">Bill saved · Counter ready for next customer.</div>
     <button class="btn btn-primary" style="min-width:220px" onclick="resetAndGoHome()">New Customer</button>
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      SCREEN: ADMIN ERP
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-admin">
   <div class="top-bar">
     <div class="brand">
@@ -887,16 +887,16 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 
   <div class="admin-tabs" id="admin-tab-bar">
-    <button class="admin-tab active" data-atab="dashboard" onclick="setAdminTab('dashboard')">ðŸ“Š Dashboard</button>
-    <button class="admin-tab" data-atab="analytics" onclick="setAdminTab('analytics')">ðŸ“ˆ Analytics</button>
-    <button class="admin-tab" data-atab="sales" onclick="setAdminTab('sales')">ðŸ§¾ Sales</button>
-    <button class="admin-tab" data-atab="expenses" onclick="setAdminTab('expenses')">ðŸ’¸ Expenses</button>
-    <button class="admin-tab" data-atab="payroll" onclick="setAdminTab('payroll')">ðŸ‘¥ Payroll</button>
-    <button class="admin-tab" data-atab="advances" onclick="setAdminTab('advances')">ðŸ’µ Advances</button>
-    <button class="admin-tab" data-atab="emi" onclick="setAdminTab('emi')">ðŸ“‹ EMI</button>
-    <button class="admin-tab" data-atab="setup" onclick="setAdminTab('setup')">âš™ï¸ Setup</button>
-    <button class="admin-tab" data-atab="team" onclick="setAdminTab('team')">ðŸ§‘â€ðŸ’¼ Team</button>
-    <button class="admin-tab" data-atab="security" onclick="setAdminTab('security')">ðŸ”’ Security</button>
+    <button class="admin-tab active" data-atab="dashboard" onclick="setAdminTab('dashboard')">📊 Dashboard</button>
+    <button class="admin-tab" data-atab="analytics" onclick="setAdminTab('analytics')">📈 Analytics</button>
+    <button class="admin-tab" data-atab="sales" onclick="setAdminTab('sales')">🧾 Sales</button>
+    <button class="admin-tab" data-atab="expenses" onclick="setAdminTab('expenses')">💸 Expenses</button>
+    <button class="admin-tab" data-atab="payroll" onclick="setAdminTab('payroll')">👥 Payroll</button>
+    <button class="admin-tab" data-atab="advances" onclick="setAdminTab('advances')">💵 Advances</button>
+    <button class="admin-tab" data-atab="emi" onclick="setAdminTab('emi')">📋 EMI</button>
+    <button class="admin-tab" data-atab="setup" onclick="setAdminTab('setup')">⚙️ Setup</button>
+    <button class="admin-tab" data-atab="team" onclick="setAdminTab('team')">🧑‍💼 Team</button>
+    <button class="admin-tab" data-atab="security" onclick="setAdminTab('security')">🔒 Security</button>
   </div>
 
   <div class="admin-body">
@@ -913,9 +913,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </section>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      MODAL: ADD ADVANCE
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <div class="modal-backdrop" id="modal-add-advance">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -926,7 +926,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <select class="modal-input" id="adv-staff"></select>
     </div>
     <div class="modal-field">
-      <label class="modal-label">Amount (â‚¹)</label>
+      <label class="modal-label">Amount (₹)</label>
       <input type="number" class="modal-input" id="adv-amount" placeholder="500" inputmode="numeric">
     </div>
     <div class="modal-field">
@@ -944,9 +944,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      MODAL: PIN
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <div class="modal-backdrop" id="modal-pin">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -967,21 +967,21 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <button class="pin-key" onclick="pinPress('9')">9</button>
       <button class="pin-key pin-key-action" onclick="closeModal('modal-pin')">Cancel</button>
       <button class="pin-key" onclick="pinPress('0')">0</button>
-      <button class="pin-key pin-key-action" onclick="pinBackspace()">âŒ«</button>
+      <button class="pin-key pin-key-action" onclick="pinBackspace()">⌫</button>
     </div>
     <div class="pin-message" id="pin-message"></div>
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      MODAL: DISCOUNT
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <div class="modal-backdrop" id="modal-discount">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Apply Discount</div>
     <div class="discount-type-toggle">
-      <button class="active" data-dtype="flat" onclick="setDiscountType('flat')">Flat â‚¹</button>
+      <button class="active" data-dtype="flat" onclick="setDiscountType('flat')">Flat ₹</button>
       <button data-dtype="percent" onclick="setDiscountType('percent')">Percent %</button>
     </div>
     <label class="form-label">Discount Amount</label>
@@ -995,9 +995,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      MODAL: ADD EXPENSE
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <div class="modal-backdrop" id="modal-add-expense">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1017,7 +1017,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <input type="text" class="modal-input" id="exp-desc" placeholder="e.g. Hair colour stock">
     </div>
     <div class="modal-field">
-      <label class="modal-label">Amount (â‚¹)</label>
+      <label class="modal-label">Amount (₹)</label>
       <input type="number" class="modal-input" id="exp-amount" placeholder="0" inputmode="numeric">
     </div>
     <div class="modal-field">
@@ -1031,9 +1031,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      MODAL: ADD EMI
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <div class="modal-backdrop" id="modal-add-emi">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1043,11 +1043,11 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <input type="text" class="modal-input" id="emi-name" placeholder="e.g. Salon Equipment Loan">
     </div>
     <div class="modal-field">
-      <label class="modal-label">Total Loan Amount (â‚¹)</label>
+      <label class="modal-label">Total Loan Amount (₹)</label>
       <input type="number" class="modal-input" id="emi-total" placeholder="300000" inputmode="numeric">
     </div>
     <div class="modal-field">
-      <label class="modal-label">Monthly EMI (â‚¹)</label>
+      <label class="modal-label">Monthly EMI (₹)</label>
       <input type="number" class="modal-input" id="emi-monthly" placeholder="25000" inputmode="numeric">
     </div>
     <div class="modal-field">
@@ -1065,9 +1065,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      MODAL: ADD FIXED EXPENSE
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <div class="modal-backdrop" id="modal-add-fixed">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1077,7 +1077,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <input type="text" class="modal-input" id="fe-name" placeholder="e.g. Rent, Electricity">
     </div>
     <div class="modal-field">
-      <label class="modal-label">Monthly Amount (â‚¹)</label>
+      <label class="modal-label">Monthly Amount (₹)</label>
       <input type="number" class="modal-input" id="fe-amount" placeholder="10000" inputmode="numeric">
     </div>
     <div class="modal-btns">
@@ -1091,9 +1091,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
 <div class="save-toast" id="save-toast"></div>
 <div class="sync-pill" id="sync-pill"></div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     ═══════════════════════════════════════════════════ -->
 <!-- Firebase SDK (compat v10) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1104,9 +1104,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" defer></script>
 <script>
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    CONSTANTS
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 const SK = {
   CONFIG:    'oz_config',
   SETUP:     'oz_setup_done',
@@ -1181,18 +1181,18 @@ const DEFAULTS = {
       {name:'Foot Massage (20 min)', price:300},
     ],
     'Combo Packages': [
-      {name:'M1 â€” Quick Trim (Haircut + Beard + Wash)', price:399},
-      {name:'M2 â€” Clean Slate (Haircut + Beard + Wash + De-tan)', price:799},
-      {name:'M3 â€” Fresh Face (+ Head Massage)', price:999},
-      {name:'M5 â€” Glow Up (Haircut + Beard + Facial + De-tan + Wash)', price:2299},
-      {name:'M7 â€” Spa Day (Full Premium)', price:3499},
+      {name:'M1 — Quick Trim (Haircut + Beard + Wash)', price:399},
+      {name:'M2 — Clean Slate (Haircut + Beard + Wash + De-tan)', price:799},
+      {name:'M3 — Fresh Face (+ Head Massage)', price:999},
+      {name:'M5 — Glow Up (Haircut + Beard + Facial + De-tan + Wash)', price:2299},
+      {name:'M7 — Spa Day (Full Premium)', price:3499},
     ],
   }
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    STATE & CONFIG
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 let config = loadConfig();
 let state = {
   screen: 'loading',
@@ -1204,7 +1204,7 @@ let state = {
   pinPurpose: null,
   discountType: 'flat',
   todayStr: todayISO(),
-  attendanceCache: {},  // staffName â†’ checkInTime
+  attendanceCache: {},  // staffName → checkInTime
   footfallCount: 0,
   txInFlight: false,    // guard against double-submit on receipt screen
   expInFlight: false,   // guard for expense save
@@ -1221,13 +1221,13 @@ function saveConfig() {
   localStorage.setItem(SK.CONFIG, JSON.stringify(config));
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    FIREBASE LAYER
    Firestore SDK loaded above (compat). We use offline
    persistence so the app works without internet, and
    writes are auto-queued by the SDK and flushed on
-   reconnect â€” no manual queue needed.
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   reconnect — no manual queue needed.
+──────────────────────────────────────────────────── */
 let fbApp = null;
 let db    = null;
 let fbAuth = null;
@@ -1256,9 +1256,9 @@ function initFirebase() {
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    GOOGLE AUTH + ROLE-BASED ACCESS
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function normEmail(e) { return String(e || '').trim().toLowerCase(); }
 
 function resolveRole(email) {
@@ -1342,7 +1342,7 @@ async function handleAuthStateChange(user) {
   const email = user.email;
   const role  = resolveRole(email);
 
-  // Bootstrap owner: no admins configured yet â†’ save this user as the first admin
+  // Bootstrap owner: no admins configured yet → save this user as the first admin
   if (role === 'admin' && (!config.adminEmails || !config.adminEmails.length)) {
     config.adminEmails = [normEmail(email)];
     saveConfig();
@@ -1415,7 +1415,7 @@ async function fbAddDoc(coll, data) {
 }
 
 // APPEND: always creates a NEW document with a Firestore auto-ID.
-// Use for transactions, expenses, salaries â€” anything that is a log entry.
+// Use for transactions, expenses, salaries — anything that is a log entry.
 // Adds `createdAt` (server time) + `createdAtMs` (client time) for ordering
 // even when offline. Returns the new doc id, or false on failure.
 // Includes one automatic retry on transient failures.
@@ -1464,12 +1464,12 @@ function isTransientFirestoreError(e) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    AUDIT LOG
-   Appends a record to the `audit` collection. Best-effort â€”
+   Appends a record to the `audit` collection. Best-effort —
    never blocks the main action. Reads include actor email,
    action verb, target collection/id, and a small payload.
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function logAudit(action, target, extra) {
   if (!db) return;
   try {
@@ -1558,16 +1558,16 @@ async function fbIncrementEMIPaid(emiId) {
   } catch(e) { showSync('error'); return false; }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    REAL-TIME LISTENERS
    Subscribes to small, config-style collections so changes
    on any device propagate immediately to every other device.
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 const liveUnsubs = [];
 
 function subscribeLiveCollections() {
   if (!db) return;
-  // Idempotent â€” clear any prior subscriptions before re-subscribing
+  // Idempotent — clear any prior subscriptions before re-subscribing
   while (liveUnsubs.length) { try { liveUnsubs.pop()(); } catch(e){} }
 
   // Shop config doc
@@ -1668,23 +1668,23 @@ function rerenderActive() {
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    SYNC INDICATOR
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 let syncTimer;
 function showSync(status) {
   const el = document.getElementById('sync-pill');
   el.className = 'sync-pill show ' + status;
-  el.textContent = status === 'syncing' ? 'â†‘ Syncingâ€¦' : status === 'ok' ? 'âœ“ Synced' : 'âš  Offline';
+  el.textContent = status === 'syncing' ? '↑ Syncing…' : status === 'ok' ? '✓ Synced' : '⚠ Offline';
   clearTimeout(syncTimer);
   if (status !== 'syncing') syncTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    SCREEN ROUTING
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function showScreen(name) {
-  // Guard sensitive screens â€” must be signed-in & authorized
+  // Guard sensitive screens — must be signed-in & authorized
   const protectedScreens = ['landing','staff','home','cart','payment','receipt','confirm','admin'];
   if (protectedScreens.includes(name)) {
     if (!currentUser || !currentUser.role) {
@@ -1709,7 +1709,7 @@ function showScreen(name) {
 
 function renderReceipt() {
   const el = document.getElementById('receipt-total');
-  if (el) el.textContent = 'â‚¹' + grandTotal().toLocaleString('en-IN');
+  if (el) el.textContent = '₹' + grandTotal().toLocaleString('en-IN');
 }
 
 function updateBrandStrip(screen) {
@@ -1732,7 +1732,7 @@ function updateBrandStrip(screen) {
     payment:  'Collect Payment',
     receipt:  'Send Receipt',
     confirm:  'Saved',
-    admin:    'Admin Â· ERP',
+    admin:    'Admin · ERP',
   };
   document.getElementById('brand-strip-tag').textContent = tagMap[screen] || 'Salon ERP';
 
@@ -1764,11 +1764,11 @@ function renderAuth() {
   if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    APP INIT
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function init() {
-  document.getElementById('loading-status').textContent = 'Checking setupâ€¦';
+  document.getElementById('loading-status').textContent = 'Checking setup…';
 
   // Load today's attendance + footfall from localStorage cache
   try {
@@ -1783,14 +1783,14 @@ async function init() {
     return;
   }
 
-  document.getElementById('loading-status').textContent = 'Connecting to Firebaseâ€¦';
+  document.getElementById('loading-status').textContent = 'Connecting to Firebase…';
 
   if (!initFirebase()) {
     showScreen('setup');
     return;
   }
 
-  // Register auth listener immediately â€” this drives all screen routing.
+  // Register auth listener immediately — this drives all screen routing.
   // We show auth screen right away so the user isn't stuck on loading.
   fbAuth.onAuthStateChanged(handleAuthStateChange);
   if (!fbAuth.currentUser) {
@@ -1844,9 +1844,9 @@ async function init() {
   state.tab = Object.keys(config.services)[0];
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    SETUP WIZARD
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function setupShowStep(n) {
   [1,2,3].forEach(i => {
     document.getElementById('setup-step-' + i).style.display = (i === n) ? '' : 'none';
@@ -1879,11 +1879,11 @@ async function testFirebaseConnection() {
   const res = document.getElementById('setup-connect-result');
   res.style.display = '';
   res.className = 'setup-connect-result';
-  res.textContent = 'Testingâ€¦';
+  res.textContent = 'Testing…';
   const cfg = parseFirebaseConfig(raw);
   if (!cfg) {
     res.className = 'setup-connect-result err';
-    res.textContent = 'âš  Invalid config. Paste the full Firebase config object (must include apiKey & projectId).';
+    res.textContent = '⚠️  Invalid config. Paste the full Firebase config object (must include apiKey & projectId).';
     return;
   }
   try {
@@ -1896,10 +1896,10 @@ async function testFirebaseConnection() {
     firebase.auth(tApp);                 // throws if auth domain is invalid
     await tApp.delete();
     res.className = 'setup-connect-result ok';
-    res.textContent = 'âœ“ Config valid for project "' + cfg.projectId + '". Sign in with Google after setup completes.';
+    res.textContent = '✓ Config valid for project "' + cfg.projectId + '". Sign in with Google after setup completes.';
   } catch(e) {
     res.className = 'setup-connect-result err';
-    res.textContent = 'âš  Invalid config: ' + (e.message || e.code || 'check apiKey, projectId & authDomain');
+    res.textContent = '⚠️  Invalid config: ' + (e.message || e.code || 'check apiKey, projectId & authDomain');
   }
 }
 
@@ -1948,11 +1948,11 @@ async function completeSetup() {
     await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
   } catch(e) {
     console.warn('Initial write to Firestore failed:', e);
-    toast('âš  Saved locally â€” Firestore write failed. Check rules.');
+    toast('⚠ Saved locally — Firestore write failed. Check rules.');
   }
 
   localStorage.setItem(SK.SETUP, '1');
-  toast('Setup complete! âœ“');
+  toast('Setup complete! ✓');
   state.tab = Object.keys(config.services)[0];
   setTimeout(() => showScreen('landing'), 800);
 }
@@ -1965,9 +1965,9 @@ function flattenServices(svcsObj) {
   return arr;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    LANDING
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderLanding() {
   document.getElementById('landing-shop-name').textContent = config.shopName;
   document.getElementById('landing-location').textContent = config.location;
@@ -2006,7 +2006,7 @@ function renderLanding() {
   }
 }
 
-// Direct entry â€” Google Auth already proved identity & role
+// Direct entry — Google Auth already proved identity & role
 function enterStaff() { showScreen('staff'); }
 function enterAdmin() {
   if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'supervisor')) {
@@ -2017,9 +2017,9 @@ function enterAdmin() {
   setAdminTab(currentUser.role === 'supervisor' ? 'team' : 'dashboard');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    STAFF DASHBOARD
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderStaffDashboard() {
   // Footfall
   document.getElementById('footfall-count').textContent = state.footfallCount;
@@ -2038,10 +2038,10 @@ function renderStaffDashboard() {
     div.innerHTML = `
       <div>
         <div class="att-name">${esc(s.name)}</div>
-        ${checked ? `<div class="att-time">âœ“ Checked in at ${state.attendanceCache[s.name]}</div>` : ''}
+        ${checked ? `<div class="att-time">✓ Checked in at ${state.attendanceCache[s.name]}</div>` : ''}
       </div>
       <button class="att-btn ${checked ? 'checked' : ''}" onclick="checkIn('${esc(s.name)}')">
-        ${checked ? 'Present âœ“' : 'Check In'}
+        ${checked ? 'Present ✓' : 'Check In'}
       </button>
     `;
     host.appendChild(div);
@@ -2049,7 +2049,7 @@ function renderStaffDashboard() {
 
   // Staff receipt dropdown
   const sel = document.getElementById('receipt-staff');
-  sel.innerHTML = '<option value="">â€” Select staff member â€”</option>';
+  sel.innerHTML = '<option value="">— Select staff member —</option>';
   (config.staff || []).forEach(s => {
     const o = document.createElement('option');
     o.value = s.name; o.textContent = s.name;
@@ -2065,7 +2065,7 @@ async function checkIn(staffName) {
   renderStaffDashboard();
   // Sync to Firestore (upserts on date+staffName composite id)
   await fbUpsertAttendance({ date: state.todayStr, staffName, checkIn: now });
-  toast(staffName + ' checked in âœ“');
+  toast(staffName + ' checked in ✓');
 }
 
 function changeFootfall(delta) {
@@ -2075,9 +2075,9 @@ function changeFootfall(delta) {
   fbUpsertFootfall(state.todayStr, state.footfallCount);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    BILLING: HOME
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderHome() {
   document.getElementById('home-shop-name').textContent = config.shopName;
   const categories = Object.keys(config.services);
@@ -2087,7 +2087,7 @@ function renderHome() {
       '<div class="muted-text center" style="padding:40px 20px;line-height:1.6">' +
       'No services yet.<br>' +
       (currentUser && currentUser.role === 'admin'
-        ? 'Add services from <strong>Admin â†’ Setup â†’ Services</strong>.'
+        ? 'Add services from <strong>Admin → Setup → Services</strong>.'
         : 'Ask your admin to add services in Setup.') +
       '</div>';
     return;
@@ -2114,7 +2114,7 @@ function renderHome() {
     div.innerHTML = `
       <div class="service-info">
         <div class="service-name">${esc(svc.name)}</div>
-        <div class="service-price">â‚¹${svc.price.toLocaleString('en-IN')}</div>
+        <div class="service-price">₹${svc.price.toLocaleString('en-IN')}</div>
       </div>
       <button class="add-btn" onclick="addToCart('${esc(state.tab)}',${idx})">+</button>
     `;
@@ -2124,9 +2124,9 @@ function renderHome() {
   updateCartFloat();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    CART
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function addToCart(cat, idx) {
   const svc = config.services[cat][idx];
   const existing = state.cart.find(i => i.name === svc.name);
@@ -2170,11 +2170,11 @@ function renderCart() {
     div.innerHTML = `
       <div class="cart-item-top">
         <div class="cart-item-name">${esc(item.name)}</div>
-        <div class="cart-item-subtotal">â‚¹${(item.price * item.qty).toLocaleString('en-IN')}</div>
+        <div class="cart-item-subtotal">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
       </div>
       <div class="cart-item-controls">
         <div class="qty-group">
-          <button class="qty-btn" onclick="changeQty('${item.id}',-1)">âˆ’</button>
+          <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
           <div class="qty-value">${item.qty}</div>
           <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
         </div>
@@ -2189,8 +2189,8 @@ function renderCart() {
   if (state.discount) {
     da.innerHTML = `
       <div class="discount-applied">
-        <span>Discount: ${state.discount.label ? esc(state.discount.label) + ' â€” ' : ''}${state.discount.type === 'flat' ? 'â‚¹' + state.discount.value : state.discount.value + '%'} off</span>
-        <button class="remove-x" onclick="removeDiscount()">Ã—</button>
+        <span>Discount: ${state.discount.label ? esc(state.discount.label) + ' — ' : ''}${state.discount.type === 'flat' ? '₹' + state.discount.value : state.discount.value + '%'} off</span>
+        <button class="remove-x" onclick="removeDiscount()">×</button>
       </div>
     `;
   } else {
@@ -2203,11 +2203,11 @@ function renderCart() {
   const gst = config.gstRate ? Math.round((sub - disc) * config.gstRate / 100) : 0;
   const grand = sub - disc + gst;
   let html = `
-    <div class="totals-row muted"><span>Subtotal</span><span>â‚¹${sub.toLocaleString('en-IN')}</span></div>
+    <div class="totals-row muted"><span>Subtotal</span><span>₹${sub.toLocaleString('en-IN')}</span></div>
   `;
-  if (disc) html += `<div class="totals-row discount"><span>Discount</span><span>âˆ’â‚¹${disc.toLocaleString('en-IN')}</span></div>`;
-  if (gst) html += `<div class="totals-row muted"><span>GST (${config.gstRate}%)</span><span>â‚¹${gst.toLocaleString('en-IN')}</span></div>`;
-  html += `<div class="totals-row grand"><span>Total</span><span class="amount">â‚¹${grand.toLocaleString('en-IN')}</span></div>`;
+  if (disc) html += `<div class="totals-row discount"><span>Discount</span><span>−₹${disc.toLocaleString('en-IN')}</span></div>`;
+  if (gst) html += `<div class="totals-row muted"><span>GST (${config.gstRate}%)</span><span>₹${gst.toLocaleString('en-IN')}</span></div>`;
+  html += `<div class="totals-row grand"><span>Total</span><span class="amount">₹${grand.toLocaleString('en-IN')}</span></div>`;
   document.getElementById('totals-block').innerHTML = html;
 }
 
@@ -2259,9 +2259,9 @@ function applyDiscount() {
   renderCart();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    PAYMENT
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderPayment() {
   // Defensive: if user lands on payment without items, kick them back
   if (!state.cart.length) {
@@ -2274,7 +2274,7 @@ function renderPayment() {
   if (config.qrImage) {
     qrH.innerHTML = `<img src="${config.qrImage}" alt="UPI QR">`;
   } else {
-    qrH.innerHTML = `<div class="qr-placeholder">Upload your UPI QR in Admin â†’ Setup â†’ Shop Settings</div>`;
+    qrH.innerHTML = `<div class="qr-placeholder">Upload your UPI QR in Admin → Setup → Shop Settings</div>`;
   }
   const upiH = document.getElementById('upi-id-holder');
   if (config.upiId) {
@@ -2282,9 +2282,9 @@ function renderPayment() {
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    RECEIPT + TRANSACTION LOG
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function sendWhatsAppReceipt() {
   const phone = document.getElementById('customer-phone').value.trim();
   if (phone && phone.length !== 10) { toast('Enter a valid 10-digit number'); return; }
@@ -2328,11 +2328,11 @@ async function finaliseTransaction(phone) {
   const taxable = sub - disc;
   const commissionAmount = commissionPct > 0 ? Math.round(taxable * commissionPct / 100) : 0;
 
-  // Build transaction row. NOTE: no client `id` â€” fbAppendDoc generates one.
+  // Build transaction row. NOTE: no client `id` — fbAppendDoc generates one.
   const txRow = {
     date: state.todayStr,
     time: timeStr,
-    services: state.cart.map(i => `${i.name}${i.qty > 1 ? ' Ã—' + i.qty : ''}`).join(', '),
+    services: state.cart.map(i => `${i.name}${i.qty > 1 ? ' ×' + i.qty : ''}`).join(', '),
     items: state.cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
     subtotal: sub,
     discount: disc,
@@ -2346,10 +2346,10 @@ async function finaliseTransaction(phone) {
     commissionAmount,
   };
 
-  // APPEND a brand new transaction document â€” never overwrites.
+  // APPEND a brand new transaction document — never overwrites.
   const newId = await fbAppendDoc(COL.TRANSACTIONS, txRow);
   if (!newId) {
-    toast('âš  Could not save transaction. Check connection.');
+    toast('⚠️  Could not save transaction. Check connection.');
     state.txInFlight = false;
     buttons.forEach(b => b.disabled = false);
     return;
@@ -2361,14 +2361,14 @@ async function finaliseTransaction(phone) {
     const lines = [
       `*${config.shopName}*`,
       config.location,
-      'â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
-      ...state.cart.map(i => `${i.name}${i.qty > 1 ? ' Ã—' + i.qty : ''} â€” â‚¹${(i.price * i.qty).toLocaleString('en-IN')}`),
-      'â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
-      sub !== total ? `Subtotal: â‚¹${sub.toLocaleString('en-IN')}` : '',
-      disc ? `Discount: âˆ’â‚¹${disc.toLocaleString('en-IN')}` : '',
-      gst ? `GST (${config.gstRate}%): â‚¹${gst.toLocaleString('en-IN')}` : '',
-      `*Total Paid: â‚¹${total.toLocaleString('en-IN')}*`,
-      'â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
+      '─────────────────',
+      ...state.cart.map(i => `${i.name}${i.qty > 1 ? ' ×' + i.qty : ''} — ₹${(i.price * i.qty).toLocaleString('en-IN')}`),
+      '─────────────────',
+      sub !== total ? `Subtotal: ₹${sub.toLocaleString('en-IN')}` : '',
+      disc ? `Discount: −₹${disc.toLocaleString('en-IN')}` : '',
+      gst ? `GST (${config.gstRate}%): ₹${gst.toLocaleString('en-IN')}` : '',
+      `*Total Paid: ₹${total.toLocaleString('en-IN')}*`,
+      '─────────────────',
       config.receiptFooter,
       `Date: ${state.todayStr} | ${timeStr}`,
     ].filter(Boolean).join('\n');
@@ -2379,7 +2379,7 @@ async function finaliseTransaction(phone) {
   // Show the saved doc id briefly so the staff can refer to it.
   const sub2 = document.getElementById('confirm-sub');
   if (sub2) {
-    sub2.textContent = `Bill ${newId.slice(-6).toUpperCase()} saved Â· â‚¹${total.toLocaleString('en-IN')} Â· Counter ready for next customer.`;
+    sub2.textContent = `Bill ${newId.slice(-6).toUpperCase()} saved · ₹${total.toLocaleString('en-IN')} · Counter ready for next customer.`;
   }
 
   // Clear in-flight guard & re-enable buttons (in case user comes back)
@@ -2398,9 +2398,9 @@ function resetAndGoHome() {
   showScreen('staff');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: ENTRY
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function exitAdmin() { showScreen('landing'); }
 
 function setAdminTab(t) {
@@ -2442,17 +2442,17 @@ function setAdminTab(t) {
   document.getElementById('admin-top-date').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: DASHBOARD (P&L)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function renderAdminDashboard() {
   const host = document.getElementById('admin-tab-dashboard');
   const ym = state.todayStr.slice(0, 7); // YYYY-MM
   host.innerHTML = `
     <div class="admin-section-title">
-      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} â€” P&L
+      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} — P&L
     </div>
-    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching numbersâ€¦</div>
+    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching numbers…</div>
   `;
 
   let txs, variable, fixed, salaries, emi, footfalls, advances;
@@ -2467,7 +2467,7 @@ async function renderAdminDashboard() {
       fbQueryByMonth(COL.ADVANCES, ym),
     ]);
   } catch(e) {
-    host.innerHTML += '<div class="muted-text center" style="margin-top:12px">âš  Could not load. Check internet connection.</div>';
+    host.innerHTML += '<div class="muted-text center" style="margin-top:12px">⚠️  Could not load. Check internet connection.</div>';
     return;
   }
 
@@ -2479,7 +2479,7 @@ async function renderAdminDashboard() {
   const salaryPaid = (salaries || [])
     .filter(s => String(s.month) === mm && String(s.year) === yy)
     .reduce((a, s) => a + (parseFloat(s.amount) || 0), 0);
-  // Projected total payroll if not yet paid: base + commissions âˆ’ advances
+  // Projected total payroll if not yet paid: base + commissions − advances
   const baseTotal = (config.staff || []).reduce((a,s) => a + (parseFloat(s.salary)||0), 0);
   const commTotal = sumOf(txs, 'commissionAmount');
   const advTotal  = sumOf(advances, 'amount');
@@ -2505,60 +2505,60 @@ async function renderAdminDashboard() {
 
   host.innerHTML = `
     <div class="admin-section-title">
-      Today Â· ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
+      Today · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
     </div>
     <div class="erp-grid">
       <div class="erp-card gold full">
         <div class="erp-label">Today's Revenue</div>
-        <div class="erp-value gold">â‚¹${fmt(todayRevenue)}</div>
-        <div class="erp-sub">${todayCount} bills Â· ${todayFootfall} customers</div>
+        <div class="erp-value gold">₹${fmt(todayRevenue)}</div>
+        <div class="erp-sub">${todayCount} bills · ${todayFootfall} customers</div>
       </div>
     </div>
 
     <div class="admin-section-title" style="margin-top:18px">
-      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} Â· P&L
+      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} · P&L
     </div>
     <div class="erp-grid">
       <div class="erp-card gold full">
         <div class="erp-label">Total Revenue</div>
-        <div class="erp-value gold">â‚¹${fmt(revenue)}</div>
-        <div class="erp-sub">${txCount} transactions Â· ${footfall} customers</div>
+        <div class="erp-value gold">₹${fmt(revenue)}</div>
+        <div class="erp-sub">${txCount} transactions · ${footfall} customers</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">${salaryPaid > 0 ? 'Salaries Paid' : 'Payroll (proj.)'}</div>
-        <div class="erp-value">â‚¹${fmt(salaryTotal)}</div>
-        <div class="erp-sub">${salaryPaid > 0 ? '' : 'Base + Comm âˆ’ Adv'}</div>
+        <div class="erp-value">₹${fmt(salaryTotal)}</div>
+        <div class="erp-sub">${salaryPaid > 0 ? '' : 'Base + Comm − Adv'}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Fixed Expenses</div>
-        <div class="erp-value">â‚¹${fmt(fixedTotal)}</div>
+        <div class="erp-value">₹${fmt(fixedTotal)}</div>
         <div class="erp-sub">Rent, Electricity</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Variable Expenses</div>
-        <div class="erp-value">â‚¹${fmt(varExpenses)}</div>
+        <div class="erp-value">₹${fmt(varExpenses)}</div>
         <div class="erp-sub">Products, Misc</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">EMI Payments</div>
-        <div class="erp-value">â‚¹${fmt(emiTotal)}</div>
+        <div class="erp-value">₹${fmt(emiTotal)}</div>
       </div>
       <div class="erp-card ${isProfit ? 'green' : 'red'} full">
         <div class="erp-label">Net ${isProfit ? 'Profit' : 'Loss'} This Month</div>
-        <div class="erp-value ${isProfit ? 'green' : 'red'}">â‚¹${fmt(Math.abs(netPL))}</div>
+        <div class="erp-value ${isProfit ? 'green' : 'red'}">₹${fmt(Math.abs(netPL))}</div>
         <div class="pl-bar">
           <div class="pl-bar-fill ${isProfit ? '' : 'negative'}" style="width:${plPct}%"></div>
         </div>
         <div class="erp-sub" style="margin-top:8px">Revenue covers ${plPct}% of expenses</div>
       </div>
     </div>
-    <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="renderAdminDashboard()">â†» Refresh</button>
+    <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="renderAdminDashboard()">↻ Refresh</button>
   `;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: SALES
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function renderAdminSales() {
   const host = document.getElementById('admin-tab-sales');
   const ym = state.todayStr.slice(0, 7);
@@ -2575,7 +2575,7 @@ async function renderAdminSales() {
 async function loadSales() {
   const ym = document.getElementById('sales-month').value;
   const host = document.getElementById('sales-list');
-  host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loadingâ€¦</div>';
+  host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loading…</div>';
   let txs;
   try { txs = await fbQueryByMonth(COL.TRANSACTIONS, ym); }
   catch(e) { host.innerHTML = '<div class="muted-text center">Could not load. Check connection.</div>'; return; }
@@ -2595,12 +2595,12 @@ async function loadSales() {
       <div class="tx-row">
         <div class="tx-row-top">
           <div class="tx-services">${esc(String(tx.services || ''))}</div>
-          <div class="tx-amount">â‚¹${fmt(parseFloat(tx.total)||0)}</div>
+          <div class="tx-amount">₹${fmt(parseFloat(tx.total)||0)}</div>
         </div>
         <div class="tx-meta">
           <span>${tx.date} ${tx.time || ''}</span>
           <span>${tx.staffName || ''}</span>
-          ${parseFloat(tx.discount) > 0 ? `<span>Disc: â‚¹${tx.discount}</span>` : ''}
+          ${parseFloat(tx.discount) > 0 ? `<span>Disc: ₹${tx.discount}</span>` : ''}
         </div>
       </div>
     `;
@@ -2608,13 +2608,13 @@ async function loadSales() {
   host.innerHTML = `
     <div class="erp-card gold" style="margin-bottom:12px">
       <div class="erp-label">Month Total</div>
-      <div class="erp-value gold">â‚¹${fmt(total)}</div>
+      <div class="erp-value gold">₹${fmt(total)}</div>
       <div class="erp-sub">${sorted.length} transactions</div>
     </div>
     <div class="export-row">
-      <button class="btn btn-primary" onclick='exportSalesAs("${ym}","pdf")'>ðŸ“„ PDF</button>
-      <button class="btn btn-gold" onclick='exportSalesAs("${ym}","xlsx")'>ðŸ“Š Excel</button>
-      <button class="btn btn-secondary" onclick='exportSalesAs("${ym}","csv")'>ðŸ“‹ CSV</button>
+      <button class="btn btn-primary" onclick='exportSalesAs("${ym}","pdf")'>📄 PDF</button>
+      <button class="btn btn-gold" onclick='exportSalesAs("${ym}","xlsx")'>📊 Excel</button>
+      <button class="btn btn-secondary" onclick='exportSalesAs("${ym}","csv")'>📋 CSV</button>
     </div>
     ${html}
   `;
@@ -2636,7 +2636,7 @@ function shapeSalesRows(rows) {
     Payment:     r.paymentMethod || '',
     Staff:       r.staffName || '',
     'Comm %':    parseFloat(r.commissionPct) || 0,
-    'Comm â‚¹':    parseFloat(r.commissionAmount) || 0,
+    'Comm ₹':    parseFloat(r.commissionAmount) || 0,
     'Logged By': r.createdBy || '',
   }));
 }
@@ -2650,16 +2650,16 @@ function exportSalesAs(ym, fmt) {
   const comm  = rows.reduce((s,r) => s + (parseFloat(r.commissionAmount)||0), 0);
   const summary = [
     `Total Bills: ${rows.length}`,
-    `Total Revenue: â‚¹${fmtPlain(total)}`,
-    `Total Discounts: â‚¹${fmtPlain(disc)}`,
-    `Total Commissions: â‚¹${fmtPlain(comm)}`,
-    `Average Bill: â‚¹${fmtPlain(rows.length ? total/rows.length : 0)}`,
+    `Total Revenue: ₹${fmtPlain(total)}`,
+    `Total Discounts: ₹${fmtPlain(disc)}`,
+    `Total Commissions: ₹${fmtPlain(comm)}`,
+    `Average Bill: ₹${fmtPlain(rows.length ? total/rows.length : 0)}`,
   ];
   const base = `ozone-sales-${ym}`;
   if (fmt === 'csv')  exportCSV(`${base}.csv`, shaped);
   if (fmt === 'xlsx') exportExcel(`${base}.xlsx`, shaped, null, `Sales ${ym}`);
   if (fmt === 'pdf')  exportPDF(`${base}.pdf`,
-    `Sales Report â€” ${ym}`,
+    `Sales Report — ${ym}`,
     `${rows.length} transactions`,
     shaped, null, summary);
   logAudit('export.sales.' + fmt, null, { month: ym, count: rows.length });
@@ -2676,9 +2676,9 @@ function downloadFile(filename, contents, mime) {
   setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    GENERIC EXPORT HELPERS (CSV / Excel / PDF)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 
 // rows: array of plain objects. headers: optional ordered array of keys.
 function rowsToCSV(rows, headers) {
@@ -2703,7 +2703,7 @@ function exportCSV(filename, rows, headers) {
 function exportExcel(filename, rows, headers, sheetName) {
   if (!rows || !rows.length) { toast('Nothing to export'); return; }
   if (typeof XLSX === 'undefined') {
-    toast('âš  Excel library still loading â€” try again');
+    toast('⚠ Excel library still loading — try again');
     return;
   }
   // SheetJS auto-detects keys but we want a stable column order.
@@ -2722,7 +2722,7 @@ function exportExcel(filename, rows, headers, sheetName) {
 function exportPDF(filename, title, subtitle, rows, headers, summary) {
   if (!rows || !rows.length) { toast('Nothing to export'); return; }
   if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
-    toast('âš  PDF library still loading â€” try again');
+    toast('⚠ PDF library still loading — try again');
     return;
   }
   const { jsPDF } = window.jspdf;
@@ -2769,7 +2769,7 @@ function exportPDF(filename, title, subtitle, rows, headers, summary) {
       doc.setFontSize(8);
       doc.setTextColor(150, 150, 150);
       const ts = new Date().toLocaleString('en-IN');
-      doc.text(`Generated ${ts} Â· Page ${doc.internal.getNumberOfPages()}`, 24, pageH - 16);
+      doc.text(`Generated ${ts} · Page ${doc.internal.getNumberOfPages()}`, 24, pageH - 16);
     },
   });
 
@@ -2810,9 +2810,9 @@ function openExportSheet(opts) {
   const body = m.querySelector('#export-sheet-body');
   body.innerHTML = `
     <div class="muted-text" style="margin-bottom:14px;font-size:13px;">${esc(opts.title || 'Export this report')}</div>
-    <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" id="exp-pdf-btn">ðŸ“„ Download PDF</button>
-    <button class="btn btn-gold" style="width:100%;margin-bottom:8px;" id="exp-xls-btn">ðŸ“Š Download Excel (.xlsx)</button>
-    <button class="btn btn-secondary" style="width:100%;" id="exp-csv-btn">ðŸ“‹ Download CSV</button>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" id="exp-pdf-btn">📄 Download PDF</button>
+    <button class="btn btn-gold" style="width:100%;margin-bottom:8px;" id="exp-xls-btn">📊 Download Excel (.xlsx)</button>
+    <button class="btn btn-secondary" style="width:100%;" id="exp-csv-btn">📋 Download CSV</button>
   `;
   body.querySelector('#exp-pdf-btn').onclick = () => {
     closeModal(id);
@@ -2832,9 +2832,9 @@ function openExportSheet(opts) {
   openModal(id);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: EXPENSES
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function renderAdminExpenses() {
   const host = document.getElementById('admin-tab-expenses');
   const ym = state.todayStr.slice(0, 7);
@@ -2846,8 +2846,8 @@ async function renderAdminExpenses() {
       <div class="exp-row">
         <div class="exp-left"><div class="exp-name">${esc(fe.name)}</div><div class="exp-meta">Monthly</div></div>
         <div style="display:flex;align-items:center;gap:10px;">
-          <div class="exp-amount">â‚¹${fmt(parseFloat(fe.amount)||0)}</div>
-          <button class="del-btn" onclick="deleteFixedExpense('${fe.id}')">Ã—</button>
+          <div class="exp-amount">₹${fmt(parseFloat(fe.amount)||0)}</div>
+          <button class="del-btn" onclick="deleteFixedExpense('${fe.id}')">×</button>
         </div>
       </div>
     `;
@@ -2886,16 +2886,16 @@ async function saveExpense() {
   const row = { date, category, description: desc || category, amount };
   const newId = await fbAppendDoc(COL.EXPENSES, row);
   state.expInFlight = false;
-  if (!newId) { toast('âš  Could not save expense'); return; }
+  if (!newId) { toast('⚠️  Could not save expense'); return; }
   logAudit('expense.create', `${COL.EXPENSES}/${newId}`, { amount, category, date });
-  toast('Expense saved âœ“');
+  toast('Expense saved ✓');
   loadExpenses();
 }
 
 async function loadExpenses() {
   const ym = document.getElementById('exp-month').value;
   const host = document.getElementById('var-expenses-list');
-  host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loadingâ€¦</div>';
+  host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loading…</div>';
   let exps;
   try { exps = await fbQueryByMonth(COL.EXPENSES, ym); }
   catch(e) { host.innerHTML = '<div class="muted-text center">Could not load.</div>'; return; }
@@ -2908,21 +2908,21 @@ async function loadExpenses() {
       <div class="exp-row">
         <div class="exp-left">
           <div class="exp-name">${esc(String(e.description||e.category))}</div>
-          <div class="exp-meta">${e.date} Â· ${e.category}</div>
+          <div class="exp-meta">${e.date} · ${e.category}</div>
         </div>
-        <div class="exp-amount">â‚¹${fmt(parseFloat(e.amount)||0)}</div>
+        <div class="exp-amount">₹${fmt(parseFloat(e.amount)||0)}</div>
       </div>
     `;
   });
   host.innerHTML = `
     <div class="erp-card" style="margin-bottom:10px">
       <div class="erp-label">Month Total</div>
-      <div class="erp-value">â‚¹${fmt(total)}</div>
+      <div class="erp-value">₹${fmt(total)}</div>
     </div>
     <div class="export-row">
-      <button class="btn btn-primary" onclick='exportExpensesAs("${ym}","pdf")'>ðŸ“„ PDF</button>
-      <button class="btn btn-gold" onclick='exportExpensesAs("${ym}","xlsx")'>ðŸ“Š Excel</button>
-      <button class="btn btn-secondary" onclick='exportExpensesAs("${ym}","csv")'>ðŸ“‹ CSV</button>
+      <button class="btn btn-primary" onclick='exportExpensesAs("${ym}","pdf")'>📄 PDF</button>
+      <button class="btn btn-gold" onclick='exportExpensesAs("${ym}","xlsx")'>📊 Excel</button>
+      <button class="btn btn-secondary" onclick='exportExpensesAs("${ym}","csv")'>📋 CSV</button>
     </div>
     ${html}
   `;
@@ -2947,13 +2947,13 @@ function exportExpensesAs(ym, fmt) {
   // Group by category for summary
   const byCat = {};
   rows.forEach(r => { byCat[r.category||'Other'] = (byCat[r.category||'Other']||0) + (parseFloat(r.amount)||0); });
-  const summary = [`Total Expenses: â‚¹${fmtPlain(total)}`,'']
-    .concat(Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([c,v]) => `${c}: â‚¹${fmtPlain(v)}`));
+  const summary = [`Total Expenses: ₹${fmtPlain(total)}`,'']
+    .concat(Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([c,v]) => `${c}: ₹${fmtPlain(v)}`));
   const base = `ozone-expenses-${ym}`;
   if (fmt === 'csv')  exportCSV(`${base}.csv`, shaped);
   if (fmt === 'xlsx') exportExcel(`${base}.xlsx`, shaped, null, `Expenses ${ym}`);
   if (fmt === 'pdf')  exportPDF(`${base}.pdf`,
-    `Expenses Report â€” ${ym}`,
+    `Expenses Report — ${ym}`,
     `${rows.length} entries`,
     shaped, null, summary);
   logAudit('export.expenses.' + fmt, null, { month: ym, count: rows.length });
@@ -2968,7 +2968,7 @@ async function saveFixedExpense() {
   saveConfig();
   await fbReplaceCollection(COL.FIXED, config.fixedExpenses);
   closeModal('modal-add-fixed');
-  toast('Fixed expense added âœ“');
+  toast('Fixed expense added ✓');
   renderAdminExpenses();
 }
 
@@ -2980,9 +2980,9 @@ function deleteFixedExpense(id) {
   renderAdminExpenses();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: PAYROLL
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function renderAdminPayroll() {
   const host = document.getElementById('admin-tab-payroll');
   const now = new Date();
@@ -2992,13 +2992,13 @@ async function renderAdminPayroll() {
   const monthName = now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
 
   if (!config.staff || !config.staff.length) {
-    host.innerHTML = `<div class="admin-section-title">Payroll Â· ${monthName}</div><div class="muted-text center" style="padding:24px">No staff added yet. Go to Setup â†’ Staff.</div>`;
+    host.innerHTML = `<div class="admin-section-title">Payroll · ${monthName}</div><div class="muted-text center" style="padding:24px">No staff added yet. Go to Setup → Staff.</div>`;
     return;
   }
 
   host.innerHTML = `
-    <div class="admin-section-title">Payroll Â· ${monthName}</div>
-    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Calculating commissions, advances, attendanceâ€¦</div>
+    <div class="admin-section-title">Payroll · ${monthName}</div>
+    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Calculating commissions, advances, attendance…</div>
   `;
 
   // Pull this month's transactions, salaries, advances, attendance in parallel
@@ -3028,7 +3028,7 @@ async function renderAdminPayroll() {
     advByStaff[k] = (advByStaff[k] || 0) + (parseFloat(a.amount) || 0);
   });
 
-  // Index attendance days by staff (this month) â€” count unique dates checked-in
+  // Index attendance days by staff (this month) — count unique dates checked-in
   const attByStaff = {};
   attendance.forEach(a => {
     const k = String(a.staffName || '');
@@ -3042,7 +3042,7 @@ async function renderAdminPayroll() {
     if (String(s.month) === month && String(s.year) === year) paid.add(String(s.staffName));
   });
 
-  let html = `<div class="admin-section-title">Payroll Â· ${monthName}</div>`;
+  let html = `<div class="admin-section-title">Payroll · ${monthName}</div>`;
   let totalNet = 0, totalBase = 0, totalCom = 0, totalAdv = 0;
   const payrollRowsForExport = [];
   config.staff.forEach(s => {
@@ -3058,9 +3058,9 @@ async function renderAdminPayroll() {
       'Days Present': days,
       'Base Salary': base,
       'Commission %': commPct,
-      'Commission â‚¹': com,
-      'Advances â‚¹': adv,
-      'Net Payable â‚¹': net,
+      'Commission ₹': com,
+      'Advances ₹': adv,
+      'Net Payable ₹': net,
       'Status': paid.has(s.name) ? 'Paid' : 'Pending',
     });
     const isPaid = paid.has(s.name);
@@ -3070,36 +3070,36 @@ async function renderAdminPayroll() {
           <div>
             <div class="payroll-name">${esc(s.name)}</div>
             <div class="muted-text" style="font-size:12px;margin-top:4px">
-              ${commPct ? commPct + '% commission Â· ' : ''}${days} days present
+              ${commPct ? commPct + '% commission · ' : ''}${days} days present
             </div>
           </div>
           ${isPaid
-            ? `<div class="paid-badge">âœ“ Paid</div>`
+            ? `<div class="paid-badge">✓ Paid</div>`
             : ''
           }
         </div>
         <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <div style="background:var(--ivory);border-radius:8px;padding:8px 10px;">
             <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">Base</div>
-            <div style="font-family:var(--serif);font-size:15px;color:var(--charcoal);">â‚¹${fmt(base)}</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--charcoal);">₹${fmt(base)}</div>
           </div>
           <div style="background:rgba(122,152,118,.12);border-radius:8px;padding:8px 10px;">
             <div style="font-size:10px;color:var(--success);letter-spacing:.1em;text-transform:uppercase;">+ Comm</div>
-            <div style="font-family:var(--serif);font-size:15px;color:var(--success);">â‚¹${fmt(com)}</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--success);">₹${fmt(com)}</div>
           </div>
           <div style="background:rgba(197,106,106,.10);border-radius:8px;padding:8px 10px;">
-            <div style="font-size:10px;color:var(--danger);letter-spacing:.1em;text-transform:uppercase;">âˆ’ Adv</div>
-            <div style="font-family:var(--serif);font-size:15px;color:var(--danger);">â‚¹${fmt(adv)}</div>
+            <div style="font-size:10px;color:var(--danger);letter-spacing:.1em;text-transform:uppercase;">− Adv</div>
+            <div style="font-family:var(--serif);font-size:15px;color:var(--danger);">₹${fmt(adv)}</div>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);">
           <div>
             <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">Net Payable</div>
-            <div style="font-family:var(--serif);font-size:22px;color:var(--gold);">â‚¹${fmt(net)}</div>
+            <div style="font-family:var(--serif);font-size:22px;color:var(--gold);">₹${fmt(net)}</div>
           </div>
           ${isPaid
-            ? `<div class="paid-badge">âœ“ Paid this month</div>`
-            : `<button class="pay-btn" onclick="markSalaryPaid('${escAttr(s.name)}','${escAttr(s.id || '')}',${net},'${month}','${year}',${base},${com},${adv})">Mark Paid â‚¹${fmt(net)}</button>`
+            ? `<div class="paid-badge">✓ Paid this month</div>`
+            : `<button class="pay-btn" onclick="markSalaryPaid('${escAttr(s.name)}','${escAttr(s.id || '')}',${net},'${month}','${year}',${base},${com},${adv})">Mark Paid ₹${fmt(net)}</button>`
           }
         </div>
       </div>
@@ -3107,14 +3107,14 @@ async function renderAdminPayroll() {
   });
   html += `
     <div class="erp-card gold full" style="margin-top:14px">
-      <div class="erp-label">Total Net Payout Â· ${monthName}</div>
-      <div class="erp-value gold">â‚¹${fmt(totalNet)}</div>
-      <div class="erp-sub">Base â‚¹${fmt(totalBase)} + Commission â‚¹${fmt(totalCom)} âˆ’ Advances â‚¹${fmt(totalAdv)}</div>
+      <div class="erp-label">Total Net Payout · ${monthName}</div>
+      <div class="erp-value gold">₹${fmt(totalNet)}</div>
+      <div class="erp-sub">Base ₹${fmt(totalBase)} + Commission ₹${fmt(totalCom)} − Advances ₹${fmt(totalAdv)}</div>
     </div>
     <div class="export-row" style="margin-top:14px">
-      <button class="btn btn-primary" onclick='exportPayrollAs("pdf")'>ðŸ“„ PDF</button>
-      <button class="btn btn-gold" onclick='exportPayrollAs("xlsx")'>ðŸ“Š Excel</button>
-      <button class="btn btn-secondary" onclick='exportPayrollAs("csv")'>ðŸ“‹ CSV</button>
+      <button class="btn btn-primary" onclick='exportPayrollAs("pdf")'>📄 PDF</button>
+      <button class="btn btn-gold" onclick='exportPayrollAs("xlsx")'>📊 Excel</button>
+      <button class="btn btn-secondary" onclick='exportPayrollAs("csv")'>📋 CSV</button>
     </div>
   `;
   window.__lastPayrollRows  = payrollRowsForExport;
@@ -3129,20 +3129,20 @@ function exportPayrollAs(fmt) {
   const ym = window.__lastPayrollMonth || state.todayStr.slice(0,7);
   const t  = window.__lastPayrollTotals || {};
   const summary = [
-    `Total Net Payout: â‚¹${fmtPlain(t.totalNet||0)}`,
-    `Base: â‚¹${fmtPlain(t.totalBase||0)}`,
-    `Commission: â‚¹${fmtPlain(t.totalCom||0)}`,
-    `Advances Deducted: â‚¹${fmtPlain(t.totalAdv||0)}`,
+    `Total Net Payout: ₹${fmtPlain(t.totalNet||0)}`,
+    `Base: ₹${fmtPlain(t.totalBase||0)}`,
+    `Commission: ₹${fmtPlain(t.totalCom||0)}`,
+    `Advances Deducted: ₹${fmtPlain(t.totalAdv||0)}`,
   ];
   const base = `ozone-payroll-${ym}`;
   if (fmt === 'csv')  exportCSV(`${base}.csv`, rows);
   if (fmt === 'xlsx') exportExcel(`${base}.xlsx`, rows, null, `Payroll ${ym}`);
-  if (fmt === 'pdf')  exportPDF(`${base}.pdf`, `Payroll â€” ${ym}`, `${rows.length} staff members`, rows, null, summary);
+  if (fmt === 'pdf')  exportPDF(`${base}.pdf`, `Payroll — ${ym}`, `${rows.length} staff members`, rows, null, summary);
   logAudit('export.payroll.' + fmt, null, { month: ym, count: rows.length });
 }
 
 async function markSalaryPaid(name, staffId, amount, month, year, base, com, adv) {
-  if (!confirm(`Pay ${name} â‚¹${fmt(amount)} now?\n\nBase â‚¹${fmt(base)} + Commission â‚¹${fmt(com)} âˆ’ Advances â‚¹${fmt(adv)}`)) return;
+  if (!confirm(`Pay ${name} ₹${fmt(amount)} now?\n\nBase ₹${fmt(base)} + Commission ₹${fmt(com)} − Advances ₹${fmt(adv)}`)) return;
   const today = state.todayStr;
   // Idempotency: if a salary entry for the same staff/month/year already exists,
   // do not create a duplicate.
@@ -3158,7 +3158,7 @@ async function markSalaryPaid(name, staffId, amount, month, year, base, com, adv
       renderAdminPayroll();
       return;
     }
-  } catch(e) { /* network failure â€” proceed and let server enforce */ }
+  } catch(e) { /* network failure — proceed and let server enforce */ }
   const row = {
     staffId, staffName: name, month, year,
     amount,            // net paid
@@ -3166,22 +3166,22 @@ async function markSalaryPaid(name, staffId, amount, month, year, base, com, adv
     paidDate: today,
   };
   const newId = await fbAppendDoc(COL.SALARIES, row);
-  if (!newId) { toast('âš  Could not save salary'); return; }
+  if (!newId) { toast('⚠️  Could not save salary'); return; }
   logAudit('salary.paid', `${COL.SALARIES}/${newId}`, { staffName: name, month, year, amount, base, com, adv });
-  toast(name + ' salary marked paid âœ“');
+  toast(name + ' salary marked paid ✓');
   renderAdminPayroll();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: ADVANCES (cash given to staff, deducted from salary)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function renderAdminAdvances() {
   const host = document.getElementById('admin-tab-advances');
   const ym = state.todayStr.slice(0, 7);
 
   if (!config.staff || !config.staff.length) {
     host.innerHTML = `<div class="admin-section-title">Staff Advances</div>
-      <div class="muted-text center" style="padding:24px">Add staff first in Setup â†’ Staff.</div>`;
+      <div class="muted-text center" style="padding:24px">Add staff first in Setup → Staff.</div>`;
     return;
   }
 
@@ -3209,7 +3209,7 @@ function openAddAdvance() {
   document.getElementById('adv-amount').value = '';
   document.getElementById('adv-note').value = '';
   const sel = document.getElementById('adv-staff');
-  sel.innerHTML = '<option value="">â€” Select staff â€”</option>';
+  sel.innerHTML = '<option value="">— Select staff —</option>';
   config.staff.forEach(s => {
     const o = document.createElement('option');
     o.value = s.name; o.textContent = s.name;
@@ -3233,9 +3233,9 @@ async function saveAdvance() {
     staffId:   staffRec ? (staffRec.id || '') : '',
     staffName,
   });
-  if (!newId) { toast('âš  Could not save advance'); return; }
+  if (!newId) { toast('⚠️  Could not save advance'); return; }
   logAudit('advance.create', `${COL.ADVANCES}/${newId}`, { staffName, amount, date });
-  toast(`â‚¹${fmt(amount)} advance to ${staffName} âœ“`);
+  toast(`₹${fmt(amount)} advance to ${staffName} ✓`);
   loadAdvances();
 }
 
@@ -3244,7 +3244,7 @@ async function loadAdvances() {
   if (!ymInput) return;
   const ym = ymInput.value;
   const host = document.getElementById('advances-list');
-  host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loadingâ€¦</div>';
+  host.innerHTML = '<div class="center muted-text" style="padding:16px"><div class="spinner" style="margin:0 auto 8px"></div>Loading…</div>';
   let rows;
   try { rows = await fbQueryByMonth(COL.ADVANCES, ym); }
   catch(e) { host.innerHTML = '<div class="muted-text center">Could not load.</div>'; return; }
@@ -3254,7 +3254,7 @@ async function loadAdvances() {
   const byStaff = {};
   let monthTotal = 0;
   sorted.forEach(r => {
-    const k = r.staffName || 'â€”';
+    const k = r.staffName || '—';
     if (!byStaff[k]) byStaff[k] = { total: 0, items: [] };
     byStaff[k].total += parseFloat(r.amount) || 0;
     byStaff[k].items.push(r);
@@ -3262,14 +3262,14 @@ async function loadAdvances() {
   });
   let html = `
     <div class="erp-card gold" style="margin-bottom:12px">
-      <div class="erp-label">Month Total Â· ${ym}</div>
-      <div class="erp-value gold">â‚¹${fmt(monthTotal)}</div>
+      <div class="erp-label">Month Total · ${ym}</div>
+      <div class="erp-value gold">₹${fmt(monthTotal)}</div>
       <div class="erp-sub">${sorted.length} advances across ${Object.keys(byStaff).length} staff</div>
     </div>
     <div class="export-row">
-      <button class="btn btn-primary" onclick='exportAdvancesAs("${ym}","pdf")'>ðŸ“„ PDF</button>
-      <button class="btn btn-gold" onclick='exportAdvancesAs("${ym}","xlsx")'>ðŸ“Š Excel</button>
-      <button class="btn btn-secondary" onclick='exportAdvancesAs("${ym}","csv")'>ðŸ“‹ CSV</button>
+      <button class="btn btn-primary" onclick='exportAdvancesAs("${ym}","pdf")'>📄 PDF</button>
+      <button class="btn btn-gold" onclick='exportAdvancesAs("${ym}","xlsx")'>📊 Excel</button>
+      <button class="btn btn-secondary" onclick='exportAdvancesAs("${ym}","csv")'>📋 CSV</button>
     </div>
   `;
   window.__lastAdvancesRows = sorted;
@@ -3277,17 +3277,17 @@ async function loadAdvances() {
     const grp = byStaff[name];
     html += `
       <div style="font-weight:500;font-size:14px;margin:14px 0 6px;color:var(--charcoal);letter-spacing:.04em;display:flex;justify-content:space-between;">
-        <span>${esc(name)}</span><span style="color:var(--gold);font-family:var(--serif);">â‚¹${fmt(grp.total)}</span>
+        <span>${esc(name)}</span><span style="color:var(--gold);font-family:var(--serif);">₹${fmt(grp.total)}</span>
       </div>
     `;
     grp.items.forEach(r => {
       html += `
         <div class="exp-row">
           <div class="exp-left">
-            <div class="exp-name">â‚¹${fmt(parseFloat(r.amount)||0)}${r.note ? ' Â· ' + esc(r.note) : ''}</div>
-            <div class="exp-meta">${esc(r.date)}${r.createdBy ? ' Â· by ' + esc(r.createdBy) : ''}</div>
+            <div class="exp-name">₹${fmt(parseFloat(r.amount)||0)}${r.note ? ' · ' + esc(r.note) : ''}</div>
+            <div class="exp-meta">${esc(r.date)}${r.createdBy ? ' · by ' + esc(r.createdBy) : ''}</div>
           </div>
-          <button class="del-btn" onclick="deleteAdvance('${r.id}','${escAttr(r.staffName||'')}',${r.amount||0})">Ã—</button>
+          <button class="del-btn" onclick="deleteAdvance('${r.id}','${escAttr(r.staffName||'')}',${r.amount||0})">×</button>
         </div>
       `;
     });
@@ -3306,16 +3306,16 @@ function exportAdvancesAs(ym, fmt) {
     'Logged By': r.createdBy || '',
   }));
   const total = rows.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
-  const summary = [`Total Advances: â‚¹${fmtPlain(total)}`, `Records: ${rows.length}`];
+  const summary = [`Total Advances: ₹${fmtPlain(total)}`, `Records: ${rows.length}`];
   const base = `ozone-advances-${ym}`;
   if (fmt === 'csv')  exportCSV(`${base}.csv`, shaped);
   if (fmt === 'xlsx') exportExcel(`${base}.xlsx`, shaped, null, `Advances ${ym}`);
-  if (fmt === 'pdf')  exportPDF(`${base}.pdf`, `Staff Advances â€” ${ym}`, `${rows.length} records`, shaped, null, summary);
+  if (fmt === 'pdf')  exportPDF(`${base}.pdf`, `Staff Advances — ${ym}`, `${rows.length} records`, shaped, null, summary);
   logAudit('export.advances.' + fmt, null, { month: ym, count: rows.length });
 }
 
 async function deleteAdvance(id, staffName, amount) {
-  if (!confirm(`Delete â‚¹${fmt(amount)} advance for ${staffName}?`)) return;
+  if (!confirm(`Delete ₹${fmt(amount)} advance for ${staffName}?`)) return;
   if (!db) return;
   try {
     await db.collection(COL.ADVANCES).doc(id).delete();
@@ -3323,13 +3323,13 @@ async function deleteAdvance(id, staffName, amount) {
     toast('Advance removed');
     loadAdvances();
   } catch(e) {
-    toast('âš  Could not delete');
+    toast('⚠️  Could not delete');
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: ANALYTICS
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 async function renderAdminAnalytics() {
   const host = document.getElementById('admin-tab-analytics');
   const now  = new Date();
@@ -3341,8 +3341,8 @@ async function renderAdminAnalytics() {
   const prevMonthLabel = prev.toLocaleDateString('en-IN', { month:'short' });
 
   host.innerHTML = `
-    <div class="admin-section-title">Analytics Â· ${now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
-    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching dataâ€¦</div>
+    <div class="admin-section-title">Analytics · ${now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
+    <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching data…</div>
   `;
 
   let txs = [], txsPrev = [], footfalls = [];
@@ -3353,7 +3353,7 @@ async function renderAdminAnalytics() {
       fbGetCollection(COL.FOOTFALL),
     ]);
   } catch(e) {
-    host.innerHTML += `<div class="muted-text center">âš  Failed to load analytics.</div>`;
+    host.innerHTML += `<div class="muted-text center">⚠️  Failed to load analytics.</div>`;
     return;
   }
 
@@ -3379,9 +3379,9 @@ async function renderAdminAnalytics() {
 
   // Trend deltas
   function deltaPill(now, prev) {
-    if (!prev) return prev === 0 && now > 0 ? '<span class="compare-up">â–² NEW</span>' : '<span class="muted-text" style="font-size:12px">â€”</span>';
+    if (!prev) return prev === 0 && now > 0 ? '<span class="compare-up">▲ NEW</span>' : '<span class="muted-text" style="font-size:12px">—</span>';
     const d = ((now - prev) / prev) * 100;
-    const arrow = d >= 0 ? 'â–²' : 'â–¼';
+    const arrow = d >= 0 ? '▲' : '▼';
     const cls = d >= 0 ? 'compare-up' : 'compare-down';
     return `<span class="${cls}">${arrow} ${Math.abs(d).toFixed(0)}%</span>`;
   }
@@ -3389,7 +3389,7 @@ async function renderAdminAnalytics() {
   // By staff
   const byStaff = {};
   txs.forEach(t => {
-    const k = String(t.staffName || 'â€”');
+    const k = String(t.staffName || '—');
     if (!byStaff[k]) byStaff[k] = { revenue: 0, count: 0, comm: 0 };
     byStaff[k].revenue += parseFloat(t.total) || 0;
     byStaff[k].count   += 1;
@@ -3402,13 +3402,13 @@ async function renderAdminAnalytics() {
   txs.forEach(t => {
     if (Array.isArray(t.items)) {
       t.items.forEach(it => {
-        const k = String(it.name || 'â€”');
+        const k = String(it.name || '—');
         if (!byService[k]) byService[k] = { qty: 0, revenue: 0 };
         byService[k].qty     += parseInt(it.qty) || 0;
         byService[k].revenue += (parseFloat(it.price)||0) * (parseInt(it.qty)||0);
       });
     } else if (t.services) {
-      const k = String(t.services).split(',')[0].trim() || 'â€”';
+      const k = String(t.services).split(',')[0].trim() || '—';
       if (!byService[k]) byService[k] = { qty: 0, revenue: 0 };
       byService[k].qty     += 1;
       byService[k].revenue += parseFloat(t.total) || 0;
@@ -3417,7 +3417,7 @@ async function renderAdminAnalytics() {
   const topServices = Object.entries(byService).sort((a,b) => b[1].revenue - a[1].revenue).slice(0,8);
   const totalServiceRevenue = Object.values(byService).reduce((s,v) => s + v.revenue, 0);
 
-  // By service category (using config.services to map name â†’ category)
+  // By service category (using config.services to map name → category)
   const nameToCategory = {};
   Object.entries(config.services || {}).forEach(([cat, items]) => {
     (items || []).forEach(svc => { nameToCategory[svc.name] = cat; });
@@ -3461,7 +3461,7 @@ async function renderAdminAnalytics() {
     const m = tm.match(/^(\d{1,2})/);
     if (!m) return;
     let hr = parseInt(m[1]); if (isNaN(hr)) return;
-    // 12-hour format heuristic â€” Indian times often "10:32 AM" etc.
+    // 12-hour format heuristic — Indian times often "10:32 AM" etc.
     if (/PM/i.test(tm) && hr < 12) hr += 12;
     if (/AM/i.test(tm) && hr === 12) hr = 0;
     if (hr >= 0 && hr < 24) hourBuckets[hr] += parseFloat(t.total) || 0;
@@ -3471,7 +3471,7 @@ async function renderAdminAnalytics() {
     const ratio = v / maxHour;
     if (!v) return `<div class="heatmap-cell" style="background:var(--line)"></div>`;
     const alpha = 0.15 + ratio * 0.85;
-    return `<div class="heatmap-cell" style="background:rgba(212,165,165,${alpha});" title="${v ? 'â‚¹'+fmt(v) : '0'}"></div>`;
+    return `<div class="heatmap-cell" style="background:rgba(212,165,165,${alpha});" title="${v ? '₹'+fmt(v) : '0'}"></div>`;
   }).join('');
 
   // Sparkline
@@ -3514,38 +3514,38 @@ async function renderAdminAnalytics() {
   };
 
   let html = `
-    <div class="admin-section-title">Analytics Â· ${now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
+    <div class="admin-section-title">Analytics · ${now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
 
     <div class="export-row">
-      <button class="btn btn-primary" onclick='exportAnalyticsAs("pdf")'>ðŸ“„ PDF</button>
-      <button class="btn btn-gold" onclick='exportAnalyticsAs("xlsx")'>ðŸ“Š Excel</button>
-      <button class="btn btn-secondary" onclick='exportAnalyticsAs("csv")'>ðŸ“‹ CSV</button>
+      <button class="btn btn-primary" onclick='exportAnalyticsAs("pdf")'>📄 PDF</button>
+      <button class="btn btn-gold" onclick='exportAnalyticsAs("xlsx")'>📊 Excel</button>
+      <button class="btn btn-secondary" onclick='exportAnalyticsAs("csv")'>📋 CSV</button>
     </div>
 
     <div class="erp-grid">
       <div class="erp-card gold full">
-        <div class="erp-label">Revenue Â· this month</div>
-        <div class="erp-value gold">â‚¹${fmt(totalRevenue)}</div>
-        <div class="erp-sub">${txCount} bills Â· Avg â‚¹${fmt(avgBill)} ${deltaPill(totalRevenue, totalRevenuePrev)} vs ${prevMonthLabel}</div>
+        <div class="erp-label">Revenue · this month</div>
+        <div class="erp-value gold">₹${fmt(totalRevenue)}</div>
+        <div class="erp-sub">${txCount} bills · Avg ₹${fmt(avgBill)} ${deltaPill(totalRevenue, totalRevenuePrev)} vs ${prevMonthLabel}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Footfall</div>
         <div class="erp-value">${footfallTotal}</div>
-        <div class="erp-sub">${conversion}% conv Â· ${deltaPill(footfallTotal, footfallPrev)}</div>
+        <div class="erp-sub">${conversion}% conv · ${deltaPill(footfallTotal, footfallPrev)}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Avg Bill</div>
-        <div class="erp-value">â‚¹${fmt(avgBill)}</div>
+        <div class="erp-value">₹${fmt(avgBill)}</div>
         <div class="erp-sub">${deltaPill(avgBill, avgBillPrev)} vs ${prevMonthLabel}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Commissions</div>
-        <div class="erp-value">â‚¹${fmt(totalCommission)}</div>
+        <div class="erp-value">₹${fmt(totalCommission)}</div>
         <div class="erp-sub">earned by staff</div>
       </div>
       <div class="erp-card red">
         <div class="erp-label">Discounts</div>
-        <div class="erp-value red">â‚¹${fmt(totalDiscount)}</div>
+        <div class="erp-value red">₹${fmt(totalDiscount)}</div>
         <div class="erp-sub">${totalRevenue ? Math.round(totalDiscount*100/totalRevenue) : 0}% of revenue</div>
       </div>
     </div>
@@ -3553,7 +3553,7 @@ async function renderAdminAnalytics() {
     <div class="erp-card full" style="margin-bottom:16px;">
       <div class="erp-label">Daily revenue trend</div>
       ${sparkHtml || '<div class="muted-text" style="padding:12px 0">No transactions yet this month.</div>'}
-      <div class="erp-sub">Peak day: â‚¹${fmt(maxDay)} Â· ${dailyEntries.length} active days</div>
+      <div class="erp-sub">Peak day: ₹${fmt(maxDay)} · ${dailyEntries.length} active days</div>
     </div>
 
     <div class="erp-card full" style="margin-bottom:16px;">
@@ -3566,46 +3566,46 @@ async function renderAdminAnalytics() {
       <div class="erp-label">By day of week</div>
       ${dowNames.map((n,i) => `
         <div class="metric-row">
-          <div class="metric-row-label">${n} <span class="muted-text" style="font-size:11px">Â· ${cntDow[i]} bills</span></div>
+          <div class="metric-row-label">${n} <span class="muted-text" style="font-size:11px">· ${cntDow[i]} bills</span></div>
           <div style="flex:1;margin:0 12px;">
             <div class="donut-bar"><div class="donut-bar-fill" style="width:${(byDow[i]/maxDow*100).toFixed(0)}%"></div></div>
           </div>
-          <div class="metric-row-value">â‚¹${fmt(byDow[i])}</div>
+          <div class="metric-row-value">₹${fmt(byDow[i])}</div>
         </div>
       `).join('')}
     </div>
 
-    <div class="admin-section-title" style="margin-top:8px;">ðŸ† Top performers</div>
+    <div class="admin-section-title" style="margin-top:8px;">🏆 Top performers</div>
     ${topStaff.length ? topStaff.map(([name, d], i) => `
       <div class="exp-row">
         <div class="exp-left">
           <div class="exp-name">${i+1}. ${esc(name)}</div>
-          <div class="exp-meta">${d.count} bills Â· Avg â‚¹${fmt(d.count?d.revenue/d.count:0)} Â· Comm â‚¹${fmt(d.comm)}</div>
+          <div class="exp-meta">${d.count} bills · Avg ₹${fmt(d.count?d.revenue/d.count:0)} · Comm ₹${fmt(d.comm)}</div>
         </div>
-        <div class="exp-amount">â‚¹${fmt(d.revenue)}</div>
+        <div class="exp-amount">₹${fmt(d.revenue)}</div>
       </div>
     `).join('') : '<div class="muted-text" style="padding:12px 0">No transactions.</div>'}
 
-    <div class="admin-section-title" style="margin-top:18px;">ðŸ“¦ By Category</div>
+    <div class="admin-section-title" style="margin-top:18px;">📦 By Category</div>
     ${categoryEntries.length ? categoryEntries.map(([name, d]) => `
       <div class="erp-card" style="margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="font-weight:500">${esc(name)}</div>
-          <div class="metric-row-value">â‚¹${fmt(d.revenue)}</div>
+          <div class="metric-row-value">₹${fmt(d.revenue)}</div>
         </div>
         <div class="donut-bar"><div class="donut-bar-fill" style="width:${totalServiceRevenue?Math.round(d.revenue/totalServiceRevenue*100):0}%"></div></div>
-        <div class="muted-text" style="font-size:11px;margin-top:4px">${d.qty} sold Â· ${totalServiceRevenue?Math.round(d.revenue/totalServiceRevenue*100):0}% share</div>
+        <div class="muted-text" style="font-size:11px;margin-top:4px">${d.qty} sold · ${totalServiceRevenue?Math.round(d.revenue/totalServiceRevenue*100):0}% share</div>
       </div>
     `).join('') : '<div class="muted-text" style="padding:12px 0">No category data.</div>'}
 
-    <div class="admin-section-title" style="margin-top:18px;">â­ Top services</div>
+    <div class="admin-section-title" style="margin-top:18px;">⭐ Top services</div>
     ${topServices.length ? topServices.map(([name, d], i) => `
       <div class="exp-row">
         <div class="exp-left">
           <div class="exp-name">${i+1}. ${esc(name)}</div>
           <div class="exp-meta">${d.qty} sold</div>
         </div>
-        <div class="exp-amount">â‚¹${fmt(d.revenue)}</div>
+        <div class="exp-amount">₹${fmt(d.revenue)}</div>
       </div>
     `).join('') : '<div class="muted-text" style="padding:12px 0">No service data yet.</div>'}
   `;
@@ -3640,7 +3640,7 @@ function exportAnalyticsAs(fmt) {
   }
 
   if (fmt === 'xlsx') {
-    if (typeof XLSX === 'undefined') { toast('âš  Excel library still loading'); return; }
+    if (typeof XLSX === 'undefined') { toast('⚠️  Excel library still loading'); return; }
     const wb = XLSX.utils.book_new();
     const sheets = [
       ['Summary', a.summary],
@@ -3667,7 +3667,7 @@ function exportAnalyticsAs(fmt) {
   }
 
   if (fmt === 'pdf') {
-    if (typeof window.jspdf === 'undefined') { toast('âš  PDF library still loading'); return; }
+    if (typeof window.jspdf === 'undefined') { toast('⚠️  PDF library still loading'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:'pt' });
     const pageW = doc.internal.pageSize.getWidth();
@@ -3681,7 +3681,7 @@ function exportAnalyticsAs(fmt) {
     doc.text(config.location || '', 24, 40);
     doc.setTextColor(44,44,44);
     doc.setFont('helvetica','bold'); doc.setFontSize(14);
-    doc.text(`Analytics â€” ${ym}`, 24, 80);
+    doc.text(`Analytics — ${ym}`, 24, 80);
 
     const sections = [
       ['Summary', a.summary],
@@ -3715,7 +3715,7 @@ function exportAnalyticsAs(fmt) {
     for (let i = 1; i <= total; i++) {
       doc.setPage(i);
       doc.setFontSize(8); doc.setTextColor(150,150,150);
-      doc.text(`Generated ${new Date().toLocaleString('en-IN')} Â· Page ${i}/${total}`, 24, doc.internal.pageSize.getHeight() - 16);
+      doc.text(`Generated ${new Date().toLocaleString('en-IN')} · Page ${i}/${total}`, 24, doc.internal.pageSize.getHeight() - 16);
     }
     doc.save(`${base}.pdf`);
     logAudit('export.analytics.pdf', null, { month: ym });
@@ -3723,9 +3723,9 @@ function exportAnalyticsAs(fmt) {
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: EMI
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderAdminEMI() {
   const host = document.getElementById('admin-tab-emi');
   const emiList = config.emi || [];
@@ -3748,19 +3748,19 @@ function renderAdminEMI() {
         <div class="emi-row-card">
           <div class="emi-name">${esc(e.name)}</div>
           <div class="emi-details">
-            <div class="emi-detail">Monthly EMI <strong>â‚¹${fmt(monthly)}</strong></div>
-            <div class="emi-detail">Total <strong>â‚¹${fmt(total)}</strong></div>
+            <div class="emi-detail">Monthly EMI <strong>₹${fmt(monthly)}</strong></div>
+            <div class="emi-detail">Total <strong>₹${fmt(total)}</strong></div>
             <div class="emi-detail">Paid <strong>${paid}/${totalMos} months</strong></div>
             <div class="emi-detail">Remaining <strong>${remaining} months</strong></div>
           </div>
           <div class="emi-progress">
             <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
-              <span>â‚¹${fmt(paidAmt)} paid</span><span>${pct}% complete</span>
+              <span>₹${fmt(paidAmt)} paid</span><span>${pct}% complete</span>
             </div>
             <div class="emi-bar"><div class="emi-bar-fill" style="width:${pct}%"></div></div>
           </div>
           <div class="emi-actions">
-            <button class="del-btn" onclick="deleteEMI('${e.id}')">Ã—</button>
+            <button class="del-btn" onclick="deleteEMI('${e.id}')">×</button>
             <button class="btn btn-primary" style="padding:10px 16px;font-size:13px" onclick="markEMIPaid('${e.id}','${esc(e.name)}')">Mark Month Paid</button>
           </div>
         </div>
@@ -3769,7 +3769,7 @@ function renderAdminEMI() {
     html += `
       <div class="erp-card gold">
         <div class="erp-label">Total Monthly EMI Outflow</div>
-        <div class="erp-value gold">â‚¹${fmt(monthlyTotal)}</div>
+        <div class="erp-value gold">₹${fmt(monthlyTotal)}</div>
       </div>
     `;
   }
@@ -3789,7 +3789,7 @@ async function saveEMI() {
   saveConfig();
   await fbReplaceCollection(COL.EMI, config.emi);
   closeModal('modal-add-emi');
-  toast('EMI added âœ“');
+  toast('EMI added ✓');
   renderAdminEMI();
 }
 
@@ -3798,7 +3798,7 @@ async function markEMIPaid(emiId, name) {
   const e = (config.emi || []).find(x => x.id === emiId);
   if (e) { e.monthsPaid = (parseInt(e.monthsPaid) || 0) + 1; saveConfig(); }
   await fbIncrementEMIPaid(emiId);
-  toast(name + ' â€” month marked paid âœ“');
+  toast(name + ' — month marked paid ✓');
   renderAdminEMI();
 }
 
@@ -3810,9 +3810,9 @@ function deleteEMI(id) {
   renderAdminEMI();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: SETUP (Staff + Services + Shop)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderAdminSetup() {
   const host = document.getElementById('admin-tab-setup');
   host.innerHTML = `
@@ -3845,16 +3845,16 @@ function renderSetupStaff(host) {
       <div class="staff-setup-row" style="flex-wrap:wrap;">
         <input type="text" placeholder="Name" value="${escAttr(s.name)}" onchange="updateStaff(${i},'name',this.value)" style="flex:2 1 100%;">
         <div style="display:flex;gap:8px;width:100%;">
-          <input type="number" placeholder="Salary â‚¹" value="${s.salary||''}" onchange="updateStaff(${i},'salary',this.value)" style="flex:2;">
+          <input type="number" placeholder="Salary ₹" value="${s.salary||''}" onchange="updateStaff(${i},'salary',this.value)" style="flex:2;">
           <input type="number" placeholder="Comm %" value="${s.commissionPct||''}" min="0" max="100" step="0.5" onchange="updateStaff(${i},'commissionPct',this.value)" style="flex:1;">
-          <button class="del-btn" onclick="deleteStaff(${i})">Ã—</button>
+          <button class="del-btn" onclick="deleteStaff(${i})">×</button>
         </div>
       </div>
     `;
   });
   html += `
     <button class="add-btn-row" onclick="addStaff()">+ Add Staff Member</button>
-    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveStaffList()">Save Staff â†’</button>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveStaffList()">Save Staff →</button>
   `;
   host.innerHTML = html;
 }
@@ -3884,7 +3884,7 @@ function deleteStaff(idx) {
 async function saveStaffList() {
   saveConfig();
   const ok = await fbReplaceCollection(COL.STAFF, config.staff);
-  toast(ok ? 'Staff saved âœ“' : 'âš  Could not save staff');
+  toast(ok ? 'Staff saved ✓' : '⚠ Could not save staff');
 }
 
 function renderSetupServices(host) {
@@ -3898,7 +3898,7 @@ function renderSetupServices(host) {
       </div>
     `;
   });
-  html += `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveServicesList()">Save Services â†’</button>`;
+  html += `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveServicesList()">Save Services →</button>`;
   host.innerHTML = html;
   // Render rows
   Object.keys(config.services).forEach(cat => {
@@ -3910,7 +3910,7 @@ function renderSetupServices(host) {
       r.innerHTML = `
         <input type="text" value="${escAttr(svc.name)}" placeholder="Service name">
         <input type="number" value="${svc.price}" placeholder="Price">
-        <button class="del-btn">Ã—</button>
+        <button class="del-btn">×</button>
       `;
       const [ni, pi, db] = r.children;
       ni.onchange = () => { svc.name = ni.value.trim() || svc.name; };
@@ -3934,7 +3934,7 @@ function addService(cat) {
 async function saveServicesList() {
   saveConfig();
   const ok = await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
-  toast(ok ? 'Services saved âœ“' : 'âš  Could not save services');
+  toast(ok ? 'Services saved ✓' : '⚠ Could not save services');
 }
 
 function renderSetupShop(host) {
@@ -3968,7 +3968,7 @@ function renderSetupShop(host) {
       <label class="setting-label">Receipt Footer</label>
       <textarea id="set-footer" rows="2">${esc(config.receiptFooter)}</textarea>
     </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="saveShopSettings()">Save Settings â†’</button>
+    <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="saveShopSettings()">Save Settings →</button>
   `;
 }
 
@@ -3979,7 +3979,7 @@ function handleQrUpload(input) {
     config.qrImage = e.target.result;
     saveConfig();
     renderSetupShop(document.getElementById('setup-sub-content'));
-    toast('QR saved âœ“');
+    toast('QR saved ✓');
   };
   r.readAsDataURL(f);
 }
@@ -3999,12 +3999,12 @@ async function saveShopSettings() {
     qrImage: config.qrImage,
     receiptFooter: config.receiptFooter,
   });
-  toast('Settings saved âœ“');
+  toast('Settings saved ✓');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: TEAM (Google account access control)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderAdminTeam() {
   const host        = document.getElementById('admin-tab-team');
   const isSupervisor = currentUser && currentUser.role === 'supervisor';
@@ -4012,7 +4012,7 @@ function renderAdminTeam() {
   const supervisors = (config.supervisorEmails || []).slice();
   const staff       = (config.staffEmails      || []).slice();
 
-  // â”€â”€ Admins section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Admins section ──────────────────────────────
   let adminsHtml = '';
   admins.forEach((em, i) => {
     const isYou = currentUser && normEmail(em) === normEmail(currentUser.email);
@@ -4020,14 +4020,14 @@ function renderAdminTeam() {
       <div class="team-row">
         <div class="team-row-info">
           <div class="team-row-email">${esc(em)}${isYou ? ' <span style="color:var(--champagne);font-size:10px;font-weight:600;letter-spacing:.06em">(you)</span>' : ''}</div>
-          <div class="team-row-role">Full access Â· Owner</div>
+          <div class="team-row-role">Full access · Owner</div>
         </div>
         <span class="team-role-pill admin">Admin</span>
-        ${(!isSupervisor && !isYou) ? `<button class="del-btn" onclick="removeAdminEmail(${i})">Ã—</button>` : ''}
+        ${(!isSupervisor && !isYou) ? `<button class="del-btn" onclick="removeAdminEmail(${i})">×</button>` : ''}
       </div>`;
   });
 
-  // â”€â”€ Supervisors section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Supervisors section ─────────────────────────
   let supervisorsHtml = '';
   supervisors.forEach((em, i) => {
     const isYou = currentUser && normEmail(em) === normEmail(currentUser.email);
@@ -4035,14 +4035,14 @@ function renderAdminTeam() {
       <div class="team-row">
         <div class="team-row-info">
           <div class="team-row-email">${esc(em)}${isYou ? ' <span style="color:var(--champagne);font-size:10px;font-weight:600;letter-spacing:.06em">(you)</span>' : ''}</div>
-          <div class="team-row-role">Dashboard Â· Sales Â· Team management</div>
+          <div class="team-row-role">Dashboard · Sales · Team management</div>
         </div>
         <span class="team-role-pill supervisor">Supervisor</span>
-        ${(!isSupervisor) ? `<button class="del-btn" onclick="removeSupervisorEmail(${i})">Ã—</button>` : ''}
+        ${(!isSupervisor) ? `<button class="del-btn" onclick="removeSupervisorEmail(${i})">×</button>` : ''}
       </div>`;
   });
 
-  // â”€â”€ Staff section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Staff section ───────────────────────────────
   let staffHtml = '';
   staff.forEach((em, i) => {
     staffHtml += `
@@ -4052,7 +4052,7 @@ function renderAdminTeam() {
           <div class="team-row-role">Counter billing only</div>
         </div>
         <span class="team-role-pill staff">Staff</span>
-        <button class="del-btn" onclick="removeStaffEmail(${i})">Ã—</button>
+        <button class="del-btn" onclick="removeStaffEmail(${i})">×</button>
       </div>`;
   });
 
@@ -4061,7 +4061,7 @@ function renderAdminTeam() {
     host.innerHTML = `
       <div class="admin-section-title">Team Access</div>
       <div class="role-notice">
-        <div class="role-notice-icon">ðŸ‘¤</div>
+        <div class="role-notice-icon">👤</div>
         <div>
           <div style="font-weight:600;font-size:13px;margin-bottom:3px;color:var(--ink)">Supervisor Access</div>
           <div style="font-size:12px;color:var(--muted);line-height:1.5">You can add and manage <strong>Staff</strong> accounts. Contact an Admin to change Supervisor or Admin roles.</div>
@@ -4076,7 +4076,7 @@ function renderAdminTeam() {
       </div>
 
       <div class="team-info-box">
-        ðŸ’¡ Staff accounts can access the billing counter only. Each person signs in with their own Google account.
+        💡 Staff accounts can access the billing counter only. Each person signs in with their own Google account.
       </div>`;
     return;
   }
@@ -4110,7 +4110,7 @@ function renderAdminTeam() {
     </div>
 
     <div class="team-info-box">
-      ðŸ’¡ Removing an email revokes access on next sign-in. Each person must sign in with the exact Google account email listed here.
+      💡 Removing an email revokes access on next sign-in. Each person must sign in with the exact Google account email listed here.
     </div>`;
 }
 
@@ -4130,7 +4130,7 @@ async function addAdminEmail() {
   await fbSetConfig({ adminEmails: config.adminEmails, supervisorEmails: config.supervisorEmails, staffEmails: config.staffEmails });
   logAudit('team.addAdmin', null, { email: em });
   inp.value = '';
-  toast('Admin added âœ“');
+  toast('Admin added ✓');
   renderAdminTeam();
 }
 
@@ -4160,7 +4160,7 @@ async function addSupervisorEmail() {
   await fbSetConfig({ supervisorEmails: config.supervisorEmails, staffEmails: config.staffEmails });
   logAudit('team.addSupervisor', null, { email: em });
   inp.value = '';
-  toast('Supervisor added âœ“');
+  toast('Supervisor added ✓');
   renderAdminTeam();
 }
 
@@ -4187,7 +4187,7 @@ async function addStaffEmail() {
   await fbSetConfig({ staffEmails: config.staffEmails });
   logAudit('team.addStaff', null, { email: em });
   inp.value = '';
-  toast('Staff added âœ“');
+  toast('Staff added ✓');
   renderAdminTeam();
 }
 
@@ -4201,9 +4201,9 @@ async function removeStaffEmail(idx) {
   renderAdminTeam();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    ADMIN: SECURITY
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function renderAdminSecurity() {
   const host = document.getElementById('admin-tab-security');
   host.innerHTML = `
@@ -4230,7 +4230,7 @@ function renderAdminSecurity() {
     <div class="separator"></div>
     <div class="setting-row">
       <label class="setting-label">Firebase Config</label>
-      <div class="muted-text">Replace your Firebase project config (advanced â€” only if you migrate projects).</div>
+      <div class="muted-text">Replace your Firebase project config (advanced — only if you migrate projects).</div>
       <textarea id="update-fb-config" class="setup-input" rows="6" style="margin-top:10px;font-family:monospace;font-size:12px;resize:vertical;">${esc(JSON.stringify(fbConfig() || {}, null, 2))}</textarea>
       <button class="btn btn-secondary" style="margin-top:10px;width:100%" onclick="updateFirebaseConfig()">Update Firebase Config</button>
     </div>
@@ -4244,7 +4244,7 @@ async function changeStaffPin() {
   saveConfig();
   await fbSetConfig({ staffPin: p });
   logAudit('security.staffPinChanged');
-  toast('Staff PIN updated âœ“');
+  toast('Staff PIN updated ✓');
 }
 
 async function changeAdminPin() {
@@ -4254,7 +4254,7 @@ async function changeAdminPin() {
   saveConfig();
   await fbSetConfig({ adminPin: p });
   logAudit('security.adminPinChanged');
-  toast('Admin PIN updated âœ“');
+  toast('Admin PIN updated ✓');
 }
 
 function togglePinDiscount(el) {
@@ -4269,13 +4269,13 @@ function updateFirebaseConfig() {
   const cfg = parseFirebaseConfig(raw);
   if (!cfg) { toast('Invalid Firebase config'); return; }
   localStorage.setItem(SK.FB_CONFIG, JSON.stringify(cfg));
-  toast('Firebase config updated. Reloadingâ€¦');
+  toast('Firebase config updated. Reloading…');
   setTimeout(() => location.reload(), 800);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    PIN SYSTEM
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function openPin(title) {
   document.getElementById('pin-title').textContent = title || 'Enter PIN';
   state.pinBuffer = '';
@@ -4335,15 +4335,15 @@ function handlePinComplete() {
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    MODAL HELPERS
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    TOAST
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 let toastTimer;
 function toast(msg) {
   const t = document.getElementById('save-toast');
@@ -4352,20 +4352,20 @@ function toast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('visible'), 1800);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    UTILITIES
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 function uid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function fmt(n) { return Math.round(n).toLocaleString('en-IN'); }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escAttr(s) { return esc(s); }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ────────────────────────────────────────────────────
    PWA
    Firestore SDK handles offline persistence + write
    queue automatically (via IndexedDB). No manual sync.
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+──────────────────────────────────────────────────── */
 // Activate the waiting SW (called from the in-app update banner).
 function applyAppUpdate() {
   if (window.__pendingWorker) {
@@ -4381,10 +4381,10 @@ if ('serviceWorker' in navigator) {
         if (!t) return;
         window.__pendingWorker = worker;
         t.innerHTML =
-          '<span style="margin-right:10px">â¤´ New version ready</span>' +
+          '<span style="margin-right:10px">⤴ New version ready</span>' +
           '<button type="button" onclick="applyAppUpdate()" style="background:white;color:var(--success);border:none;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">UPDATE</button>';
         t.classList.add('visible');
-        // Persist banner â€” do NOT auto-hide.
+        // Persist banner — do NOT auto-hide.
         clearTimeout(toastTimer);
       }
       if (reg.waiting) showUpdateBanner(reg.waiting);
@@ -4411,7 +4411,7 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('online',  () => showSync('ok'));
 window.addEventListener('offline', () => showSync('error'));
 
-// â”€â”€ START â”€â”€
+// ── START ──
 init();
 </script>
 </body>
