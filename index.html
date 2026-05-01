@@ -195,8 +195,35 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .att-btn{padding:9px 16px;border-radius:8px;font-size:11.5px;font-weight:600;letter-spacing:.08em;background:var(--ink);color:#FFF;text-transform:uppercase;}
 .att-btn:active{background:#000;}
 .att-btn.checked{background:transparent;color:var(--sage);border:1px solid var(--sage);pointer-events:none;font-weight:500;letter-spacing:.06em;}
-.new-bill-cta{width:100%;padding:18px;border-radius:14px;background:var(--ink);color:#FFF;font-size:13px;font-weight:600;text-align:center;letter-spacing:.16em;text-transform:uppercase;margin-top:8px;}
+.new-bill-cta{width:100%;padding:18px;border-radius:14px;background:var(--ink);color:#FFF;font-size:13px;font-weight:600;text-align:center;letter-spacing:.16em;text-transform:uppercase;margin-top:8px;box-shadow:var(--shadow-card);}
 .new-bill-cta:active{background:#000;}
+
+/* STAFF HERO BANNER */
+.staff-hero{position:relative;height:200px;margin:0 16px 0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-card);background:linear-gradient(135deg,#2a1f1a 0%,#3d2a20 100%);background-image:linear-gradient(135deg,rgba(26,18,14,.55) 0%,rgba(40,28,22,.35) 100%),url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1080&q=80');background-size:cover;background-position:center;margin-top:18px;}
+.staff-hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.45) 100%);}
+.staff-hero-content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 22px 20px;color:#FFF;}
+.staff-hero-tag{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:8px;}
+.staff-hero-title{font-family:var(--serif);font-size:24px;line-height:1.15;font-weight:500;letter-spacing:-.01em;text-shadow:0 1px 8px rgba(0,0,0,.35);}
+.staff-hero-sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:10px;opacity:.85;font-weight:500;}
+
+/* BILLING HERO STRIP */
+.billing-hero{position:relative;height:120px;overflow:hidden;background:linear-gradient(135deg,#1a1a1a 0%,#2d2018 100%);background-image:linear-gradient(135deg,rgba(17,17,17,.6) 0%,rgba(45,32,24,.4) 100%),url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1080&q=80');background-size:cover;background-position:center;}
+.billing-hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 60%);}
+.billing-hero-content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 22px;color:#FFF;}
+.billing-hero-eyebrow{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champagne-soft);font-weight:600;margin-bottom:6px;}
+.billing-hero-title{font-family:var(--serif);font-size:22px;font-weight:500;letter-spacing:-.005em;text-shadow:0 1px 6px rgba(0,0,0,.3);}
+
+/* Premium service item with subtle gradient hover */
+#screen-home .service-item{position:relative;overflow:hidden;}
+#screen-home .service-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--champagne) 0%,var(--champagne-soft) 100%);opacity:0;transition:opacity .2s;}
+#screen-home .service-item:active::before{opacity:1;}
+
+@media (max-width:380px){
+  .staff-hero{height:170px;margin:14px 12px 0;}
+  .staff-hero-title{font-size:21px;}
+  .billing-hero{height:100px;}
+  .billing-hero-title{font-size:19px;}
+}
 
 /* BILLING: TABS + SERVICES */
 .tabs{display:flex;background:var(--surface);padding:0 16px;border-bottom:1px solid var(--line-soft);position:sticky;top:73px;z-index:9;overflow-x:auto;}
@@ -717,6 +744,16 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div style="width:44px"></div>
   </div>
 
+  <!-- Hero banner with salon imagery -->
+  <div class="staff-hero">
+    <div class="staff-hero-overlay"></div>
+    <div class="staff-hero-content">
+      <div class="staff-hero-tag">Premium Salon &amp; Spa</div>
+      <div class="staff-hero-title">Welcome,<br>let's begin a beautiful day</div>
+      <div class="staff-hero-sub" id="staff-hero-date"></div>
+    </div>
+  </div>
+
   <div class="staff-section">
     <!-- Footfall counter -->
     <div class="footfall-card">
@@ -726,7 +763,9 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       </div>
       <div class="footfall-controls">
         <button class="fc-btn" onclick="changeFootfall(-1)">−</button>
-        <button class="fc-btn" onclick="changeFootfall(1)">+</New Customer Bill</div>
+        <button class="fc-btn" onclick="changeFootfall(1)">+</button>
+      </div>
+    </div>
 
     <!-- New bill button -->
     <button class="new-bill-cta" onclick="showScreen('home')">
@@ -755,6 +794,14 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <div class="brand-tag">New Bill</div>
     </div>
     <div style="width:44px"></div>
+  </div>
+  <!-- Billing hero strip -->
+  <div class="billing-hero">
+    <div class="billing-hero-overlay"></div>
+    <div class="billing-hero-content">
+      <div class="billing-hero-eyebrow">Curated Services</div>
+      <div class="billing-hero-title">Choose &amp; build the bill</div>
+    </div>
   </div>
   <div class="tabs" id="service-tabs"></div>
   <div class="service-list" id="service-list"></div>
@@ -2024,6 +2071,12 @@ function enterAdmin() {
 function renderStaffDashboard() {
   // Footfall
   document.getElementById('footfall-count').textContent = state.footfallCount;
+
+  // Hero date
+  const heroDate = document.getElementById('staff-hero-date');
+  if (heroDate) {
+    heroDate.textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
+  }
 
   // Attendance list
   const host = document.getElementById('attendance-list');
