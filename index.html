@@ -2216,6 +2216,8 @@ let state = {
   attendanceCache: {},  // staffName → checkInTime
   footfallCount: 0,
   paymentMethod: 'UPI',
+  dashboardMonth: todayISO().slice(0, 7),
+  dashboardStaff: 'all',
   txInFlight: false,    // guard against double-submit on receipt screen
   expInFlight: false,   // guard for expense save
 };
@@ -2233,10 +2235,13 @@ function loadConfig() {
         merged.servicesVersion = DEFAULTS.servicesVersion;
         try { localStorage.setItem(SK.CONFIG, JSON.stringify(merged)); } catch(e){}
       }
+      merged.supervisorPermissions = getNormalizedSupervisorPermissions(merged.supervisorPermissions);
       return merged;
     }
   } catch(e){}
-  return JSON.parse(JSON.stringify(DEFAULTS));
+  const fresh = JSON.parse(JSON.stringify(DEFAULTS));
+  fresh.supervisorPermissions = getNormalizedSupervisorPermissions(fresh.supervisorPermissions);
+  return fresh;
 }
 function saveConfig() {
   localStorage.setItem(SK.CONFIG, JSON.stringify(config));
@@ -2378,7 +2383,7 @@ async function handleAuthStateChange(user) {
       if (Array.isArray(shopCfg.adminEmails))          config.adminEmails          = shopCfg.adminEmails;
       if (Array.isArray(shopCfg.supervisorEmails))     config.supervisorEmails     = shopCfg.supervisorEmails;
       if (Array.isArray(shopCfg.staffEmails))          config.staffEmails          = shopCfg.staffEmails;
-      if (Array.isArray(shopCfg.supervisorPermissions)) config.supervisorPermissions = shopCfg.supervisorPermissions;
+      config.supervisorPermissions = getNormalizedSupervisorPermissions(shopCfg.supervisorPermissions || config.supervisorPermissions);
       if (shopCfg.adminWhatsappNumber !== undefined)    config.adminWhatsappNumber  = shopCfg.adminWhatsappNumber;
       if (Array.isArray(shopCfg.expenseCategories))     config.expenseCategories     = shopCfg.expenseCategories;
       if (shopCfg.codOpeningBalances && typeof shopCfg.codOpeningBalances === 'object') config.codOpeningBalances = shopCfg.codOpeningBalances;
@@ -2678,6 +2683,7 @@ function subscribeLiveCollections() {
       if (Array.isArray(d.adminEmails))      config.adminEmails      = d.adminEmails;
       if (Array.isArray(d.supervisorEmails))  config.supervisorEmails = d.supervisorEmails;
       if (Array.isArray(d.staffEmails))       config.staffEmails      = d.staffEmails;
+      config.supervisorPermissions = getNormalizedSupervisorPermissions(d.supervisorPermissions || config.supervisorPermissions);
       if (JSON.stringify(config) !== before) {
         saveConfig();
         rerenderActive();
@@ -2922,6 +2928,7 @@ async function init() {
       if (Array.isArray(shopCfg.adminEmails))      config.adminEmails      = shopCfg.adminEmails;
       if (Array.isArray(shopCfg.supervisorEmails))  config.supervisorEmails = shopCfg.supervisorEmails;
       if (Array.isArray(shopCfg.staffEmails))       config.staffEmails      = shopCfg.staffEmails;
+      config.supervisorPermissions = getNormalizedSupervisorPermissions(shopCfg.supervisorPermissions || config.supervisorPermissions);
     }
     if (staff && staff.length)         config.staff = staff;
     if (fixed && fixed.length)         config.fixedExpenses = fixed;
@@ -3138,9 +3145,7 @@ function enterAdmin() {
   showScreen('admin');
   // Supervisors land on their first allowed tab; admins on Dashboard
   if (hasRoleSupervisor()) {
-    const allowedTabs = config.supervisorPermissions && config.supervisorPermissions.length
-      ? config.supervisorPermissions
-      : ['team'];
+    const allowedTabs = getSupervisorPermissions();
     setAdminTab(allowedTabs[0]);
   } else {
     setAdminTab('dashboard');
@@ -4127,9 +4132,7 @@ document.addEventListener('click', (evt) => {
 
 function setAdminTab(t) {
   // Tabs visible to each role — admin-configurable via config.supervisorPermissions
-  const SUPERVISOR_TABS = config.supervisorPermissions && config.supervisorPermissions.length
-    ? config.supervisorPermissions
-    : ['dashboard', 'sales', 'attendance', 'team'];
+  const SUPERVISOR_TABS = getSupervisorPermissions();
   const isSupervisor = hasRoleSupervisor();
 
   // If supervisor tries to access a restricted tab, redirect to first allowed tab
@@ -4235,17 +4238,35 @@ function updateAdminHero(tab) {
 ──────────────────────────────────────────────────── */
 async function renderAdminDashboard() {
   const host = document.getElementById('admin-tab-dashboard');
-  const ym = state.todayStr.slice(0, 7); // YYYY-MM
+  const ym = state.dashboardMonth || state.todayStr.slice(0, 7); // YYYY-MM
+  const selectedStaff = state.dashboardStaff || 'all';
+  state.dashboardMonth = ym;
+  state.dashboardStaff = selectedStaff;
+  const monthLabel = toMonthName(ym);
   host.innerHTML = `
+    <div class="admin-section-title">Dashboard Filters</div>
+    <div class="month-picker" style="margin-bottom:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:180px;">
+        <div class="form-label" style="margin-bottom:6px;">Report Month</div>
+        <input type="month" id="dash-month" value="${ym}" class="setup-input" onchange="onDashboardFiltersChanged()">
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <div class="form-label" style="margin-bottom:6px;">Staff Scope</div>
+        <select id="dash-staff" class="setup-input" onchange="onDashboardFiltersChanged()">
+          <option value="all">All Staff</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary" style="flex:none;padding:12px 16px;" onclick="exportDashboardMonthlyReport()">Monthly Report CSV</button>
+    </div>
     <div class="admin-section-title">
-      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} — P&L
+      ${monthLabel} — P&L
     </div>
     <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching numbers…</div>
   `;
 
-  let txs, variable, fixed, salaries, emi, footfalls, advances;
+  let txs, variable, fixed, salaries, emi, footfalls, advances, attendanceRows;
   try {
-    [txs, variable, fixed, salaries, emi, footfalls, advances] = await Promise.all([
+    [txs, variable, fixed, salaries, emi, footfalls, advances, attendanceRows] = await Promise.all([
       fbQueryByMonth(COL.TRANSACTIONS, ym),
       fbQueryByMonth(COL.EXPENSES, ym),
       fbGetCollection(COL.FIXED),
@@ -4253,15 +4274,37 @@ async function renderAdminDashboard() {
       fbGetCollection(COL.EMI),
       fbGetCollection(COL.FOOTFALL),
       fbQueryByMonth(COL.ADVANCES, ym),
+      fbQueryByMonth(COL.ATTENDANCE, ym),
     ]);
   } catch(e) {
     host.innerHTML += '<div class="muted-text center" style="margin-top:12px">⚠️  Could not load. Check internet connection.</div>';
     return;
   }
 
+  const allStaffNames = Array.from(new Set((config.staff || []).map(s => String(s.name || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+  const staffSel = document.getElementById('dash-staff');
+  if (staffSel) {
+    staffSel.innerHTML = '<option value="all">All Staff</option>';
+    allStaffNames.forEach(name => {
+      const op = document.createElement('option');
+      op.value = name;
+      op.textContent = name;
+      staffSel.appendChild(op);
+    });
+    if (selectedStaff !== 'all' && allStaffNames.includes(selectedStaff)) {
+      staffSel.value = selectedStaff;
+    } else {
+      staffSel.value = 'all';
+      state.dashboardStaff = 'all';
+    }
+  }
+
   const sumOf = (arr, key) => arr.reduce((s, r) => s + (parseFloat(r[key]) || 0), 0);
-  const [yy, mm] = ym.split('-');
-  const revenue     = sumOf(txs, 'total');
+  const scopedTxs = state.dashboardStaff === 'all'
+    ? txs
+    : txs.filter(t => normText(t.staffName) === normText(state.dashboardStaff));
+
+  const revenue     = sumOf(scopedTxs, 'total');
   const varExpenses = sumOf(variable, 'amount');
   const inventoryPurchaseTotal = (variable || []).filter(v => v.productName || isInventoryCategory(v.category)).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
   const expenseMode = { Cash: 0, UPI: 0, Card: 0, Credit: 0 };
@@ -4273,7 +4316,7 @@ async function renderAdminDashboard() {
   const fixedTotal  = sumOf((fixed || []).filter(r => r.active !== false), 'amount');
   const payrollAccrual = buildMonthlyPayrollAccrual({
     ym,
-    txs,
+    txs: scopedTxs,
     advances,
     salariesAll: salaries,
     staffList: config.staff || [],
@@ -4284,11 +4327,11 @@ async function renderAdminDashboard() {
   const emiTotal    = sumOf((emi || []).filter(r => r.active !== false), 'monthlyEMI');
   const totalExpenses = varExpenses + fixedTotal + salaryTotal + emiTotal;
   const netPL       = revenue - totalExpenses;
-  const txCount     = txs.length;
+  const txCount     = scopedTxs.length;
   // Count UNIQUE customers for the month (those who provided phone #)
-  const uniqueCustomers = new Set(txs.filter(t => t.customerId).map(t => t.customerId)).size;
+  const uniqueCustomers = new Set(scopedTxs.filter(t => t.customerId).map(t => t.customerId)).size;
   const paymentMonth = { UPI: 0, Cash: 0, Card: 0 };
-  txs.forEach(t => {
+  scopedTxs.forEach(t => {
     const m = normalizePaymentMethod(t.paymentMethod);
     paymentMonth[m] += parseFloat(t.total) || 0;
   });
@@ -4299,7 +4342,7 @@ async function renderAdminDashboard() {
   const isProfit = netPL >= 0;
 
   // Today's snapshot
-  const todayTxs = txs.filter(t => String(t.date) === state.todayStr);
+  const todayTxs = scopedTxs.filter(t => String(t.date) === state.todayStr);
   const todayRevenue = sumOf(todayTxs, 'total');
   const todayCount   = todayTxs.length;
   const paymentToday = { UPI: 0, Cash: 0, Card: 0 };
@@ -4310,7 +4353,61 @@ async function renderAdminDashboard() {
   // Count UNIQUE customers today (those who provided phone #)
   const todayCustomers = new Set(todayTxs.filter(t => t.customerId).map(t => t.customerId)).size;
 
+  const staffMonthMap = {};
+  (txs || []).forEach(t => {
+    const sn = String(t.staffName || 'Unassigned').trim() || 'Unassigned';
+    if (!staffMonthMap[sn]) staffMonthMap[sn] = { revenue: 0, bills: 0 };
+    staffMonthMap[sn].revenue += parseFloat(t.total) || 0;
+    staffMonthMap[sn].bills += 1;
+  });
+  const staffTopRows = Object.entries(staffMonthMap)
+    .sort((a, b) => b[1].revenue - a[1].revenue)
+    .slice(0, 5)
+    .map(([name, d], i) => `
+      <div class="exp-row">
+        <div class="exp-left">
+          <div class="exp-name">${i + 1}. ${esc(name)}</div>
+          <div class="exp-meta">${d.bills} bill${d.bills !== 1 ? 's' : ''}</div>
+        </div>
+        <div class="exp-amount">₹${fmt(d.revenue)}</div>
+      </div>
+    `)
+    .join('');
+
+  const activityCount = (scopedTxs || []).length + (variable || []).length + (attendanceRows || []).length + (advances || []).length;
+  const scopeLabel = state.dashboardStaff === 'all' ? 'All Staff' : state.dashboardStaff;
+  window.__dashboardMonthlyReportRows = [
+    { Metric: 'Month', Value: ym },
+    { Metric: 'Scope', Value: scopeLabel },
+    { Metric: 'Revenue', Value: Math.round(revenue) },
+    { Metric: 'Transactions', Value: txCount },
+    { Metric: 'Tracked Customers', Value: uniqueCustomers },
+    { Metric: 'Payroll Expense (Accrual)', Value: Math.round(salaryTotal) },
+    { Metric: 'Fixed Expenses', Value: Math.round(fixedTotal) },
+    { Metric: 'Variable Expenses', Value: Math.round(varExpenses) },
+    { Metric: 'EMI Expenses', Value: Math.round(emiTotal) },
+    { Metric: 'Total Expenses', Value: Math.round(totalExpenses) },
+    { Metric: 'Net P/L', Value: Math.round(netPL) },
+    { Metric: 'Total Activities', Value: activityCount },
+  ];
+
   host.innerHTML = `
+    <div class="admin-section-title">Dashboard Filters</div>
+    <div class="month-picker" style="margin-bottom:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:180px;">
+        <div class="form-label" style="margin-bottom:6px;">Report Month</div>
+        <input type="month" id="dash-month" value="${ym}" class="setup-input" onchange="onDashboardFiltersChanged()">
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <div class="form-label" style="margin-bottom:6px;">Staff Scope</div>
+        <select id="dash-staff" class="setup-input" onchange="onDashboardFiltersChanged()">
+          <option value="all">All Staff</option>
+          ${allStaffNames.map(n => `<option value="${escAttr(n)}" ${state.dashboardStaff === n ? 'selected' : ''}>${esc(n)}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn btn-secondary" style="flex:none;padding:12px 16px;" onclick="exportDashboardMonthlyReport()">Monthly Report CSV</button>
+    </div>
+
     <div class="admin-section-title">
       Today · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
     </div>
@@ -4327,7 +4424,7 @@ async function renderAdminDashboard() {
     </div>
 
     <div class="admin-section-title" style="margin-top:18px">
-      ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})} · P&L
+      ${monthLabel} · P&L (${esc(scopeLabel)})
     </div>
     <div class="erp-grid">
       <div class="erp-card gold full">
@@ -4367,8 +4464,44 @@ async function renderAdminDashboard() {
         <div class="erp-sub" style="margin-top:8px">Revenue covers ${plPct}% of expenses</div>
       </div>
     </div>
+
+    <div class="admin-section-title" style="margin-top:16px">Monthly Activities Snapshot</div>
+    <div class="erp-grid">
+      <div class="erp-card">
+        <div class="erp-label">Total Activities</div>
+        <div class="erp-value">${fmt(activityCount)}</div>
+        <div class="erp-sub">Sales + Expenses + Attendance + Advances</div>
+      </div>
+      <div class="erp-card">
+        <div class="erp-label">Attendance Entries</div>
+        <div class="erp-value">${fmt((attendanceRows || []).length)}</div>
+        <div class="erp-sub">Marked check-ins for ${monthLabel}</div>
+      </div>
+    </div>
+
+    <div class="admin-section-title" style="margin-top:10px">Staff-Level Monthly Sales</div>
+    ${staffTopRows || '<div class="muted-text" style="padding:12px 0">No staff sales yet this month.</div>'}
     <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="renderAdminDashboard()">↻ Refresh</button>
   `;
+}
+
+function onDashboardFiltersChanged() {
+  const monthEl = document.getElementById('dash-month');
+  const staffEl = document.getElementById('dash-staff');
+  if (monthEl && monthEl.value) state.dashboardMonth = monthEl.value;
+  state.dashboardStaff = staffEl && staffEl.value ? staffEl.value : 'all';
+  renderAdminDashboard();
+}
+
+function exportDashboardMonthlyReport() {
+  const rows = window.__dashboardMonthlyReportRows || [];
+  if (!rows.length) {
+    toast('Load dashboard data first');
+    return;
+  }
+  const ym = state.dashboardMonth || state.todayStr.slice(0, 7);
+  exportCSV(`ozone-dashboard-report-${ym}.csv`, rows, ['Metric', 'Value']);
+  logAudit('export.dashboard.csv', null, { month: ym, scope: state.dashboardStaff || 'all', count: rows.length });
 }
 
 /* ────────────────────────────────────────────────────
@@ -4671,6 +4804,203 @@ function getExpenseCategories() {
 function isInventoryCategory(cat) {
   const c = String(cat || '').toLowerCase();
   return c.includes('product purchase') || c.includes('color/chemical') || c.includes('consumables');
+}
+
+function triggerExpenseImport() {
+  const fileInput = document.getElementById('exp-import-file');
+  if (!fileInput) {
+    toast('Import control unavailable');
+    return;
+  }
+  fileInput.value = '';
+  fileInput.click();
+}
+
+function downloadExpenseImportTemplate() {
+  const baseDate = state.todayStr || todayISO();
+  const cats = getExpenseCategories();
+  const invCat = cats.find(c => isInventoryCategory(c)) || 'Product Purchase - Hair Care';
+  const rows = [
+    {
+      Date: baseDate,
+      Category: 'Utilities (Power, Water, Internet)',
+      Description: 'Electricity bill',
+      Amount: 3500,
+      'Payment Mode': 'UPI',
+      Product: '',
+      Vendor: '',
+      Invoice: '',
+      Quantity: '',
+      'Unit Cost': '',
+      'Stock Impact': '',
+    },
+    {
+      Date: baseDate,
+      Category: invCat,
+      Description: 'Hair color stock purchase',
+      Amount: 2400,
+      'Payment Mode': 'Cash',
+      Product: 'Loreal Majirel 6.0',
+      Vendor: 'Beauty Wholesale Hyderabad',
+      Invoice: 'INV-2026-0019',
+      Quantity: 12,
+      'Unit Cost': 200,
+      'Stock Impact': 12,
+    },
+  ];
+  const headers = ['Date','Category','Description','Amount','Payment Mode','Product','Vendor','Invoice','Quantity','Unit Cost','Stock Impact'];
+  const ym = (document.getElementById('exp-month') || {}).value || baseDate.slice(0, 7);
+  exportCSV(`ozone-expense-import-template-${ym}.csv`, rows, headers);
+  logAudit('export.expenseImportTemplate.csv', null, { month: ym, rows: rows.length });
+  toast('Sample template downloaded ✓');
+}
+
+function parseCsvLine(line) {
+  const out = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else {
+        inQuote = !inQuote;
+      }
+      continue;
+    }
+    if (ch === ',' && !inQuote) {
+      out.push(cur.trim());
+      cur = '';
+      continue;
+    }
+    cur += ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
+
+function parseCsvTable(text) {
+  const lines = String(text || '').replace(/\r/g, '').split('\n').filter(l => l.trim() !== '');
+  if (!lines.length) return { headers: [], rows: [] };
+  const headers = parseCsvLine(lines[0]);
+  const rows = lines.slice(1).map(parseCsvLine);
+  return { headers, rows };
+}
+
+function normalizeExpenseCsvHeader(v) {
+  return String(v || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function normalizeImportDate(v) {
+  const raw = String(v || '').trim();
+  if (!raw) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const m = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+  const dt = new Date(raw);
+  if (!Number.isNaN(dt.getTime())) return dt.toISOString().slice(0, 10);
+  return '';
+}
+
+function parseCurrencyLike(v) {
+  const n = parseFloat(String(v || '').replace(/,/g, '').replace(/[^0-9.+-]/g, ''));
+  return Number.isFinite(n) ? n : 0;
+}
+
+function normalizeExpensePaymentMode(v) {
+  const x = String(v || '').trim().toLowerCase();
+  if (x === 'upi') return 'UPI';
+  if (x === 'card') return 'Card';
+  if (x === 'credit') return 'Credit';
+  return 'Cash';
+}
+
+async function handleExpenseImportInput(inputEl) {
+  const file = inputEl && inputEl.files && inputEl.files[0];
+  if (!file) return;
+  const ym = (document.getElementById('exp-month') || {}).value || state.todayStr.slice(0, 7);
+  const raw = await file.text();
+  const parsed = parseCsvTable(raw);
+  if (!parsed.headers.length || !parsed.rows.length) {
+    toast('CSV is empty or invalid');
+    return;
+  }
+
+  const headerIdx = {};
+  parsed.headers.forEach((h, i) => { headerIdx[normalizeExpenseCsvHeader(h)] = i; });
+  const pick = (row, candidates) => {
+    for (let i = 0; i < candidates.length; i++) {
+      const idx = headerIdx[candidates[i]];
+      if (idx !== undefined) return String(row[idx] || '').trim();
+    }
+    return '';
+  };
+
+  let imported = 0;
+  let skipped = 0;
+  const reasons = [];
+  for (let i = 0; i < parsed.rows.length; i++) {
+    const row = parsed.rows[i];
+    const date = normalizeImportDate(pick(row, ['date']));
+    const category = pick(row, ['category']) || 'Miscellaneous';
+    const description = pick(row, ['description', 'note']) || category;
+    const amount = parseCurrencyLike(pick(row, ['amount', 'total']));
+    const paymentMode = normalizeExpensePaymentMode(pick(row, ['paymentmode', 'payment']));
+    const productName = pick(row, ['product', 'productname']);
+    const vendor = pick(row, ['vendor']);
+    const invoiceNo = pick(row, ['invoice', 'invoiceno']);
+    const quantity = parseCurrencyLike(pick(row, ['quantity', 'qty']));
+    const unitCost = parseCurrencyLike(pick(row, ['unitcost', 'unitprice']));
+    const stockImpactUnits = parseCurrencyLike(pick(row, ['stockimpact', 'stockimpactunits']));
+
+    if (!date || !String(date).startsWith(ym)) {
+      skipped++;
+      reasons.push(`Row ${i + 2}: date must be in selected month ${ym}`);
+      continue;
+    }
+    if (!(amount > 0)) {
+      skipped++;
+      reasons.push(`Row ${i + 2}: amount missing/invalid`);
+      continue;
+    }
+    if (isDayCloseLocked(date)) {
+      skipped++;
+      reasons.push(`Row ${i + 2}: day is locked (${date})`);
+      continue;
+    }
+
+    const isInventory = !!productName || isInventoryCategory(category);
+    const doc = {
+      date,
+      category,
+      description,
+      amount,
+      paymentMode,
+      immutable: true,
+      isInventory,
+    };
+    if (isInventory) {
+      doc.productName = productName || category;
+      doc.vendor = vendor || '';
+      doc.invoiceNo = invoiceNo || '';
+      doc.quantity = quantity || 0;
+      doc.unitCost = unitCost || 0;
+      doc.stockImpactSign = (stockImpactUnits || 0) < 0 ? '-' : '+';
+      doc.stockImpactUnits = stockImpactUnits || quantity || 0;
+    }
+
+    const id = await fbAppendDoc(COL.EXPENSES, doc);
+    if (id) imported++;
+    else skipped++;
+  }
+
+  const topReasons = reasons.slice(0, 3);
+  const reasonText = topReasons.length ? ' · ' + topReasons.join(' | ') : '';
+  toast(`Imported ${imported} expense${imported !== 1 ? 's' : ''}, skipped ${skipped}${reasonText}`);
+  logAudit('expense.import.csv', null, { month: ym, imported, skipped, filename: file.name });
+  loadExpenses();
 }
 
 function onExpenseCategoryChange() {
@@ -4976,7 +5306,13 @@ async function renderAdminExpenses() {
       <input type="month" id="exp-month" value="${ym}" class="setup-input" style="flex:1">
       <button class="btn btn-primary" style="flex:none;padding:12px 18px" onclick="loadExpenses()">Load</button>
     </div>
-    <button class="btn btn-rose" style="width:100%;margin-bottom:12px" onclick="openAddExpense()">+ Add Expense</button>
+    <div class="export-row" style="margin-bottom:12px;">
+      <button class="btn btn-rose" style="margin-bottom:0" onclick="openAddExpense()">+ Add Expense</button>
+      <button class="btn btn-secondary" style="margin-bottom:0" onclick="triggerExpenseImport()">Import Expenses (CSV)</button>
+    </div>
+    <button class="btn btn-secondary" style="width:100%;margin-bottom:10px" onclick="downloadExpenseImportTemplate()">Download Sample CSV Template</button>
+    <div class="muted-text" style="margin:-2px 0 12px;font-size:12px;line-height:1.5">Template supports both normal and inventory expense rows. Keep Date in selected month and use Payment Mode as Cash/UPI/Card/Credit.</div>
+    <input type="file" id="exp-import-file" accept=".csv,text/csv" style="display:none" onchange="handleExpenseImportInput(this)">
     <div id="var-expenses-list"><div class="muted-text center" style="padding:16px">Tap Load to view expenses.</div></div>
   `;
   refreshCODPanel();
@@ -4993,6 +5329,7 @@ function openAddExpense() {
   const qy = document.getElementById('exp-qty'); if (qy) qy.value = '';
   const uc = document.getElementById('exp-unit-cost'); if (uc) uc.value = '';
   const sg = document.getElementById('exp-stock-impact-sign'); if (sg) sg.value = '+';
+  const imp = document.getElementById('exp-import-file'); if (imp) imp.value = '';
   renderExpenseCategoryOptions();
   openModal('modal-add-expense');
 }
@@ -6804,9 +7141,7 @@ function renderAdminTeam() {
   });
 
   // ── Supervisors section ─────────────────────────
-  const permsForDisplay = config.supervisorPermissions && config.supervisorPermissions.length
-    ? config.supervisorPermissions
-    : ['dashboard', 'sales', 'attendance', 'team'];
+  const permsForDisplay = getSupervisorPermissions();
   const permLabels = { dashboard:'Dashboard', analytics:'Analytics', sales:'Sales', customers:'Customers', attendance:'Attendance', expenses:'Expenses', payroll:'Payroll', advances:'Advances', emi:'EMI', setup:'Setup', team:'Team' };
   const permSummary = permsForDisplay.map(p => permLabels[p] || p).join(' · ');
   let supervisorsHtml = '';
@@ -6876,7 +7211,7 @@ function renderAdminTeam() {
     { id:'setup',      label:'⚙️ Setup',       desc:'Services, staff setup, shop settings' },
     { id:'team',       label:'🧑‍💼 Team',       desc:'Manage user access roles' },
   ];
-  const perms = config.supervisorPermissions || ['dashboard', 'sales', 'attendance', 'team'];
+  const perms = getSupervisorPermissions();
 
   const permRowsHtml = ALL_TABS.map(tab => {
     const checked = perms.includes(tab.id);
@@ -6994,13 +7329,18 @@ async function removeSupervisorEmail(idx) {
 }
 
 async function toggleSupervisorPerm(tabId, switchEl) {
-  if (!config.supervisorPermissions) config.supervisorPermissions = ['dashboard', 'sales', 'attendance', 'team'];
-  const has = config.supervisorPermissions.includes(tabId);
-  if (has) {
-    config.supervisorPermissions = config.supervisorPermissions.filter(p => p !== tabId);
-  } else {
-    config.supervisorPermissions.push(tabId);
+  const currentPerms = getSupervisorPermissions();
+  const has = currentPerms.includes(tabId);
+  if (has && currentPerms.length <= 1) {
+    toast('At least one supervisor tab is required');
+    return;
   }
+  if (has) {
+    config.supervisorPermissions = currentPerms.filter(p => p !== tabId);
+  } else {
+    config.supervisorPermissions = currentPerms.concat(tabId);
+  }
+  config.supervisorPermissions = getNormalizedSupervisorPermissions(config.supervisorPermissions);
   // Toggle the switch UI + row highlight immediately (no full re-render)
   switchEl.classList.toggle('on', !has);
   const row = document.getElementById('perm-row-' + tabId);
@@ -7014,7 +7354,7 @@ async function toggleSupervisorPerm(tabId, switchEl) {
 }
 
 async function resetSupervisorPerms() {
-  config.supervisorPermissions = ['dashboard', 'sales', 'attendance', 'team'];
+  config.supervisorPermissions = defaultSupervisorTabs();
   saveConfig();
   await fbSetConfig({ supervisorPermissions: config.supervisorPermissions });
   renderAdminTeam();
@@ -7209,6 +7549,27 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&
 function escAttr(s) { return esc(s); }
 
 function normText(v) { return String(v || '').trim().toLowerCase(); }
+
+function defaultSupervisorTabs() {
+  return ['dashboard', 'sales', 'attendance', 'team'];
+}
+
+function getNormalizedSupervisorPermissions(raw) {
+  const allTabIds = ['dashboard', 'analytics', 'sales', 'customers', 'attendance', 'expenses', 'payroll', 'advances', 'emi', 'setup', 'team', 'security'];
+  const fallback = defaultSupervisorTabs();
+  const src = Array.isArray(raw) ? raw : [];
+  const normalized = src
+    .map(v => normText(v))
+    .filter(v => allTabIds.includes(v));
+  const unique = Array.from(new Set(normalized));
+  if (!unique.length) return fallback;
+  return allTabIds.filter(id => unique.includes(id));
+}
+
+function getSupervisorPermissions() {
+  config.supervisorPermissions = getNormalizedSupervisorPermissions(config.supervisorPermissions);
+  return config.supervisorPermissions;
+}
 
 function currentRole() {
   return normText(currentUser && currentUser.role);
