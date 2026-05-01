@@ -1,15 +1,14 @@
 // Ozone Salon & Spa — ERP Service Worker (Firebase edition)
 // Bump the cache version on every release so installed PWAs auto-update.
-const CACHE = 'ozone-erp-v9-css-hotfix';
+const CACHE = 'ozone-erp-v10-network-first-nav';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(ASSETS))
   );
-  // Do NOT call skipWaiting() here. We want the page to be notified that an
-  // update is ready and to choose when to activate it (so users finishing a
-  // bill don't get the rug pulled mid-flow).
+  // Activate immediately so users are not pinned to stale cached shells.
+  self.skipWaiting();
 });
 
 self.addEventListener('message', e => {
@@ -27,6 +26,7 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const req = e.request;
   const url = e.request.url;
   // Never intercept Firebase / Google API traffic — Firestore manages its own
   // offline persistence via IndexedDB and must talk to the network directly.
@@ -41,13 +41,30 @@ self.addEventListener('fetch', e => {
   // Only cache same-origin assets
   if (!url.startsWith(self.location.origin)) return;
 
+  // For HTML/doc navigations, always prefer network so stale cached shells
+  // cannot keep resurfacing. Fallback to cache only when offline.
+  if (req.mode === 'navigate' || req.destination === 'document') {
+    e.respondWith(
+      fetch(req, { cache: 'no-store' })
+        .then(res => {
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(req, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req).then(cached => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
   e.respondWith(
-    caches.match(e.request).then(cached => {
+    caches.match(req).then(cached => {
       if (cached) return cached;
-      return fetch(e.request).then(res => {
+      return fetch(req).then(res => {
         if (res && res.status === 200) {
           const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+          caches.open(CACHE).then(c => c.put(req, clone));
         }
         return res;
       }).catch(() => caches.match('./index.html'));
