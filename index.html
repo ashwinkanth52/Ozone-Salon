@@ -2972,6 +2972,7 @@ async function changeStaffPin() {
   if (p.length !== 4) { toast('PIN must be 4 digits'); return; }
   config.staffPin = p;
   saveConfig();
+  await fbSetConfig({ staffPin: p });
   logAudit('security.staffPinChanged');
   toast('Staff PIN updated ✓');
 }
@@ -2982,8 +2983,7 @@ async function changeAdminPin() {
   config.adminPin = p;
   saveConfig();
   await fbSetConfig({ adminPin: p });
-  logAudit('security.adminPinChanged'
-  await fbSetConfig({ adminPin: p });
+  logAudit('security.adminPinChanged');
   toast('Admin PIN updated ✓');
 }
 
