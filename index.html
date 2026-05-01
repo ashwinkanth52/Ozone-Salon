@@ -1771,17 +1771,19 @@ async function init() {
     return;
   }
 
-  // Pull latest data from Firestore. Reads BEFORE Google sign-in will fail
-  // under strict rules, but the SDK serves cached data from IndexedDB so the
-  // app stays usable. We attempt the load and ignore individual failures.
+  // Pull latest data from Firestore (from IndexedDB cache if available).
+  // Pre-auth reads may hang if security rules require auth, so race with a 3s timeout.
+  const _timeout = ms => new Promise(res => setTimeout(() => res(null), ms));
   try {
-    const [shopCfg, staff, services, fixed, emi] = await Promise.all([
+    const _reads = Promise.all([
       fbGetConfigDoc().catch(() => ({})),
       fbGetCollection(COL.STAFF).catch(() => []),
       fbGetCollection(COL.SERVICES).catch(() => []),
       fbGetCollection(COL.FIXED).catch(() => []),
       fbGetCollection(COL.EMI).catch(() => []),
     ]);
+    const _result = await Promise.race([_reads, _timeout(3000)]);
+    const [shopCfg, staff, services, fixed, emi] = _result || [{}, [], [], [], []];
 
     if (shopCfg) {
       if (shopCfg.shopName)         config.shopName = shopCfg.shopName;
