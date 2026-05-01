@@ -5064,37 +5064,3 @@ init();
 </body>
 </html>
 
-// ── START ──
-init();
-</script>
-</body>
-</html>
-
-window.addEventListener('offline', () => showSync('error'));
-
-// ── START ──
-init();
-</script>
-</body>
-</html>
-
-      // Reload once the new SW activates and takes control.
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (refreshing) return;
-        refreshing = true;
-        window.location.reload();
-      });
-    }).catch(() => {});
-  });
-}
-
-window.addEventListener('online',  () => showSync('ok'));
-window.addEventListener('offline', () => showSync('error'));
-
-// ── START ──
-init();
-</script>
-</body>
-</html>
-
