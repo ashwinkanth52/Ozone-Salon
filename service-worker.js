@@ -1,6 +1,6 @@
 // Ozone Salon & Spa — ERP Service Worker (Firebase edition)
 // Bump the cache version on every release so installed PWAs auto-update.
-const CACHE = 'ozone-erp-v10-network-first-nav';
+const CACHE = 'ozone-erp-v11-css-restore';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
