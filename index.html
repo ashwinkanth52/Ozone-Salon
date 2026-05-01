@@ -4643,12 +4643,13 @@ function getPayrollPeriodDays(year, month) {
   const y = parseInt(year, 10);
   const m = parseInt(month, 10);
   if (!y || !m) return 0;
-  const daysInMonth = new Date(y, m, 0).getDate();
-  const now = new Date();
-  if (now.getFullYear() === y && (now.getMonth() + 1) === m) {
-    return Math.min(now.getDate(), daysInMonth);
-  }
-  return daysInMonth;
+  return new Date(y, m, 0).getDate();
+}
+
+function getDefaultPayrollYM() {
+  const d = new Date();
+  d.setMonth(d.getMonth() - 1);
+  return d.toISOString().slice(0, 7);
 }
 
 function getStaffAttendanceMetrics(staffRec, ym, payrollDays) {
@@ -4683,7 +4684,7 @@ function downloadSalarySlip(payrollKey) {
   const rows = [
     { Item: 'Staff', Value: details.staffName },
     { Item: 'Month', Value: details.monthName },
-    { Item: 'Revenue Generated', Value: '₹' + fmtPlain(details.revenueGenerated || 0) },
+    { Item: 'Revenue Generated', Value: 'INR ' + fmtPlain(details.revenueGenerated || 0) },
     { Item: 'Payroll Days', Value: details.payrollDays },
     { Item: 'Present Units', Value: details.presentUnits },
     { Item: 'Full Days', Value: details.fullDays },
@@ -4691,22 +4692,22 @@ function downloadSalarySlip(payrollKey) {
     { Item: 'Leave Days', Value: details.leaveDays },
     { Item: 'Paid Leave Allowance', Value: details.paidLeaves },
     { Item: 'Excess Leaves', Value: details.excessLeaveDays },
-    { Item: 'Base Salary', Value: '₹' + fmtPlain(details.base || 0) },
-    { Item: 'Leave Deduction', Value: '₹' + fmtPlain(details.leaveDeduction || 0) },
-    { Item: 'Salary After Leave Cut', Value: '₹' + fmtPlain(details.baseAfterLeave || 0) },
-    { Item: 'Commission', Value: '₹' + fmtPlain(details.commission || 0) },
-    { Item: 'Advances Deducted', Value: '₹' + fmtPlain(details.advance || 0) },
-    { Item: 'Net Payable', Value: '₹' + fmtPlain(details.netPayable || 0) },
+    { Item: 'Base Salary', Value: 'INR ' + fmtPlain(details.base || 0) },
+    { Item: 'Leave Deduction', Value: 'INR ' + fmtPlain(details.leaveDeduction || 0) },
+    { Item: 'Salary After Leave Cut', Value: 'INR ' + fmtPlain(details.baseAfterLeave || 0) },
+    { Item: 'Commission', Value: 'INR ' + fmtPlain(details.commission || 0) },
+    { Item: 'Advances Deducted', Value: 'INR ' + fmtPlain(details.advance || 0) },
+    { Item: 'Net Payable', Value: 'INR ' + fmtPlain(details.netPayable || 0) },
     { Item: 'Status', Value: details.isPaid ? 'Paid' : 'Pending' },
   ];
   const summary = [
-    `Sales handled: ₹${fmtPlain(details.revenueGenerated || 0)}`,
-    `Net payable: ₹${fmtPlain(details.netPayable || 0)}`,
+    `Sales handled: INR ${fmtPlain(details.revenueGenerated || 0)}`,
+    `Net payable: INR ${fmtPlain(details.netPayable || 0)}`,
     `Leave cut applied on ${details.excessLeaveDays || 0} excess leave day(s)`,
   ];
   exportPDF(
     `salary-slip-${(details.ym || state.todayStr.slice(0,7))}-${details.staffName.replace(/[^a-z0-9]+/gi,'-').toLowerCase()}.pdf`,
-    `Salary Slip — ${details.staffName}`,
+    `Salary Slip - ${details.staffName}`,
     details.monthName,
     rows,
     null,
@@ -4716,11 +4717,10 @@ function downloadSalarySlip(payrollKey) {
 
 async function renderAdminPayroll() {
   const host = document.getElementById('admin-tab-payroll');
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2,'0');
-  const year  = String(now.getFullYear());
-  const ym    = `${year}-${month}`;
-  const monthName = now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  const ym = state._payrollYM || getDefaultPayrollYM();
+  const [year, month] = ym.split('-');
+  const monthName = new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1)
+    .toLocaleDateString('en-IN',{month:'long',year:'numeric'});
 
   if (!config.staff || !config.staff.length) {
     host.innerHTML = `<div class="admin-section-title">Payroll · ${monthName}</div><div class="muted-text center" style="padding:24px">No staff added yet. Go to Setup → Staff.</div>`;
@@ -4772,7 +4772,13 @@ async function renderAdminPayroll() {
   const emiTotal = (emi || []).reduce((a, r) => a + (parseFloat(r.monthlyEMI) || 0), 0);
   const operatingBeforePayroll = variableTotal + fixedTotal + emiTotal;
 
-  let html = `<div class="admin-section-title">Payroll · ${monthName}</div>`;
+  let html = `
+    <div class="admin-section-title">Payroll · ${monthName}</div>
+    <div class="month-picker" style="margin-top:-4px;">
+      <input type="month" id="payroll-month" value="${ym}" class="setup-input" style="flex:1">
+      <button class="btn btn-primary" style="flex:none;padding:12px 18px" onclick="loadPayrollMonth()">Load</button>
+    </div>
+  `;
   html += `
     <div class="erp-grid" style="margin-bottom:14px;">
       <div class="erp-card gold">
@@ -4948,6 +4954,13 @@ async function renderAdminPayroll() {
   window.__lastPayrollMonth = ym;
   window.__lastPayrollTotals = { totalNet, totalBase, totalCom, totalAdv, totalLeaveDeduction, projectedProfit };
   host.innerHTML = html;
+}
+
+function loadPayrollMonth() {
+  const inp = document.getElementById('payroll-month');
+  if (!inp || !inp.value) return;
+  state._payrollYM = inp.value;
+  renderAdminPayroll();
 }
 
 function exportPayrollAs(fmt) {
