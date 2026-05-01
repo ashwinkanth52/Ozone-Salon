@@ -273,7 +273,10 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
   .billing-hero-title{font-size:19px;}
 }
 
-/* BILLING: TABS + SERVICES */
+/* BILLING: SEGMENT (Men / Women / Combo) + TABS + SERVICES */
+.segment-row{display:flex;gap:8px;padding:14px 16px 8px;background:var(--surface);}
+.segment-btn{flex:1;padding:11px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--muted);}
+.segment-btn.active{background:var(--ink);border-color:var(--ink);color:#FFF;}
 .tabs{display:flex;background:var(--surface);padding:0 16px;border-bottom:1px solid var(--line-soft);position:sticky;top:73px;z-index:9;overflow-x:auto;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{flex-shrink:0;padding:15px 14px;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.12em;border-bottom:1.5px solid transparent;transition:all .18s;white-space:nowrap;text-transform:uppercase;}
@@ -885,6 +888,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
       <div class="billing-hero-title">Choose &amp; build the bill</div>
     </div>
   </div>
+  <div class="segment-row" id="segment-row"></div>
   <div class="tabs" id="service-tabs"></div>
   <div class="service-list" id="service-list"></div>
   <div class="cart-float" id="cart-float" onclick="showScreen('cart')">
@@ -1302,45 +1306,181 @@ const DEFAULTS = {
   staff: [],
   fixedExpenses: [],
   emi: [],
+  // Menu version — bump this when DEFAULTS.services changes to force-refresh stale local caches.
+  servicesVersion: 'v2026-04-full-menu',
   services: {
-    'Hair Essentials': [
-      {name:'Haircut', price:200},
-      {name:'Kids Haircut (below 12)', price:150},
+    // ─── MEN'S SERVICES ───
+    "Men · Hair Essentials": [
+      {name:'Haircut (Adult)', price:200},
+      {name:'Haircut (Kids — under 12)', price:150},
       {name:'Beard Trim / Styling', price:100},
       {name:'Shaving (Clean)', price:100},
+      {name:'Shaving (Shape / Style)', price:150},
       {name:'Hair Wash (Normal)', price:150},
-      {name:'Hair Wash (Keratin)', price:300},
-      {name:'Blow Dry', price:250},
+      {name:'Hair Wash (Keratin / Deep Conditioning)', price:350},
+      {name:'Blow Dry', price:200},
+      {name:'Underarm Hair Removal', price:50},
     ],
-    'Hair Treatments': [
-      {name:'Hair Colour (Global)', price:2000},
-      {name:'Hair Colour (Black)', price:275},
+    "Men · Hair Treatments": [
+      {name:'Hair Colour — Beard / Mustache (Black)', price:250},
+      {name:'Hair Colour — Hair + Wash (Black)', price:300},
+      {name:'Hair Colour — Global (Full Head)', price:2000},
+      {name:'Highlights — Per Streak', price:200},
+      {name:'Highlights — Full Head', price:1200},
       {name:'Hair Spa', price:1000},
       {name:'Head Massage (Oil)', price:200},
-      {name:'Henna', price:500},
+      {name:'Hair Protein Pack / Deep Conditioning', price:500},
+      {name:'Dandruff Treatment (Scalp)', price:500},
+      {name:'Henna', price:400},
     ],
-    'Skin & Face': [
-      {name:'Face & Neck De-tan', price:600},
-      {name:'Oxylife D-Tan', price:850},
-      {name:'Bleach (Face & Neck)', price:175},
+    "Men · Skin & Face": [
+      {name:'Face & Neck De-Tan', price:600},
       {name:'Clean Up (Basic)', price:400},
-      {name:'Facial (Vitamin C / O3)', price:1500},
+      {name:'D-Tan Cleanup (Oxylife)', price:850},
+      {name:'Bleach — Face & Neck (Basic)', price:150},
+      {name:'Bleach — Face & Neck (Oxylife)', price:200},
+      {name:'Facial — Vitamin C', price:600},
+      {name:'Facial — Premium / Gold', price:1000},
+      {name:'O3 Facial', price:1500},
       {name:'Korean Glass Facial', price:1500},
     ],
-    'Body & Spa': [
+    "Men · Body & Spa": [
+      {name:'Head & Shoulder Massage (20 min)', price:250},
+      {name:'Back & Neck Massage (30 min)', price:400},
+      {name:'Full Body Massage (45 min)', price:700},
+      {name:'Foot Massage (20 min)', price:250},
+      {name:'Body Scrub / Full Arm Scrub', price:300},
+      {name:'Manicure (Basic)', price:300},
       {name:'Pedicure (Basic)', price:600},
-      {name:'Manicure (Basic)', price:400},
-      {name:'Spa Pedicure (Premium)', price:1000},
-      {name:'Full Body Massage (45 min)', price:1200},
-      {name:'Back & Neck Massage (30 min)', price:600},
-      {name:'Foot Massage (20 min)', price:300},
+      {name:'Spa Pedicure (Premium)', price:800},
+      {name:'Feet Bleach', price:200},
     ],
-    'Combo Packages': [
+    // ─── WOMEN'S SERVICES ───
+    "Women · Hair Essentials & Haircuts": [
+      {name:'Haircut — Straight / Basic (Adult)', price:300},
+      {name:'Haircut — U Cut', price:350},
+      {name:'Haircut — Boy Cut / Layers', price:350},
+      {name:'Haircut — Blend Cut', price:350},
+      {name:'Haircut — Front Cut Only', price:250},
+      {name:'Haircut — Butterfly Cut', price:800},
+      {name:'Haircut — Laser Cut', price:800},
+      {name:'Haircut — Step Cut', price:800},
+      {name:'Haircut — Baby Cut (under 12)', price:200},
+      {name:'Haircut — Blunt Cut (Kids)', price:250},
+      {name:'Blow Dry (Upto Shoulder)', price:400},
+      {name:'Blow Dry (Below Shoulder)', price:600},
+      {name:'Hair Styling — Tongs / Iron', price:500},
+      {name:'Hair Crimping', price:500},
+      {name:'Hair Wash (Normal)', price:250},
+      {name:'Hair Wash (Keratin)', price:450},
+    ],
+    "Women · Hair Treatments & Colour": [
+      {name:'Hair Colour — Basic (Upto Shoulder)', price:600},
+      {name:'Hair Colour — Basic (Below Shoulder)', price:900},
+      {name:"Hair Colour — L'Oreal / Matrix (Upto Shoulder)", price:1000},
+      {name:"Hair Colour — L'Oreal / Matrix (Below Shoulder)", price:1300},
+      {name:'Hair Colour — Root Touchup', price:700},
+      {name:'Hair Colour — Global (Full Head)', price:2000},
+      {name:'Highlights — Per Streak', price:250},
+      {name:'Highlights — Full Head', price:1200},
+      {name:'Hair Spa (Upto Shoulder)', price:800},
+      {name:'Hair Spa (Below Shoulder)', price:1100},
+      {name:'Keratin Hair Mask', price:1500},
+      {name:'Hair Protein Pack', price:500},
+      {name:'Dandruff Treatment (Scalp)', price:500},
+      {name:'Permanent Hair Straightening', price:4500},
+      {name:'Temporary Hair Straightening', price:800},
+      {name:'Henna (with Wash)', price:500},
+      {name:'Head Massage (Oil)', price:400},
+    ],
+    "Women · Threading & Cleanups": [
+      {name:'Eyebrow Threading', price:50},
+      {name:'Upper Lip Threading', price:30},
+      {name:'Forehead Threading', price:30},
+      {name:'Chin Threading', price:30},
+      {name:'Full Face Threading', price:250},
+      {name:'Face & Neck De-Tan', price:500},
+      {name:'Clean Up — Basic / Premium', price:400},
+      {name:'Cleanup — D-Tan', price:450},
+      {name:'Cleanup — Oxylife D-Tan', price:600},
+      {name:'Cleanup — Gold', price:550},
+      {name:'Cleanup — Pearl', price:550},
+    ],
+    "Women · Bleach & Facials": [
+      {name:'Bleach — Basic Face', price:200},
+      {name:'Bleach — Golden Fem', price:300},
+      {name:'Bleach — Oxylife', price:350},
+      {name:'Bleach — Pimple', price:250},
+      {name:'Bleach — Underarm', price:200},
+      {name:'Bleach — Feet', price:250},
+      {name:'Bleach — Full Body', price:900},
+      {name:'Bleach — Full Body Oxylife', price:1500},
+      {name:'Facial — Premium', price:600},
+      {name:'Facial — Fruit', price:700},
+      {name:'Facial — Natural Gold', price:1000},
+      {name:'Facial — Natural Pearl', price:1100},
+      {name:'Facial — D-Tan Oxylife', price:1100},
+      {name:'Facial — O3', price:1500},
+      {name:'Facial — Shahnaz', price:2000},
+      {name:'Bridal — O3 Facial', price:2500},
+      {name:'Bridal — FIC Korean Glass Facial', price:1800},
+      {name:'Bridal — Rice Water Korean Glass Facial', price:1500},
+      {name:'Bridal — Full Package', price:4500},
+    ],
+    "Women · Waxing": [
+      {name:'Full Arms Wax — Honey', price:300},
+      {name:'Half Arms Wax — Honey', price:150},
+      {name:'Full Legs Wax — Honey', price:500},
+      {name:'Half Legs Wax — Honey', price:250},
+      {name:'Underarm Wax — Honey', price:100},
+      {name:'Full Face Wax — Honey', price:250},
+      {name:'Full Body Wax — Honey', price:1100},
+      {name:'Full Arms Wax — Rica (Premium)', price:500},
+      {name:'Full Legs Wax — Rica (Premium)', price:1000},
+      {name:'Underarm Wax — Rica (Premium)', price:250},
+      {name:'Full Face Wax — Rica (Premium)', price:400},
+      {name:'Full Body Wax — Rica (Premium)', price:1700},
+    ],
+    "Women · Body & Spa": [
+      {name:'Head & Shoulder Massage (20 min)', price:350},
+      {name:'Back & Neck Massage (30 min)', price:500},
+      {name:'Full Body Massage (45 min)', price:900},
+      {name:'Foot Massage (20 min)', price:300},
+      {name:'Body Scrub / Full Arm Scrub', price:400},
+      {name:'Manicure — Basic / Premium', price:350},
+      {name:'Manicure — Spa', price:700},
+      {name:'Manicure — D-Tan', price:900},
+      {name:'Pedicure — Basic / Premium', price:500},
+      {name:'Pedicure — Spa', price:800},
+      {name:'Pedicure — Crystal', price:1200},
+      {name:'Pedicure — Ice', price:1200},
+      {name:'Pedicure — D-Tan', price:900},
+    ],
+    // ─── COMBO PACKAGES ───
+    "Combo · Men": [
       {name:'M1 — Quick Trim (Haircut + Beard + Wash)', price:399},
-      {name:'M2 — Clean Slate (Haircut + Beard + Wash + De-tan)', price:799},
-      {name:'M3 — Fresh Face (+ Head Massage)', price:999},
-      {name:'M5 — Glow Up (Haircut + Beard + Facial + De-tan + Wash)', price:2299},
-      {name:'M7 — Spa Day (Full Premium)', price:3499},
+      {name:'M2 — Clean Slate (Haircut + Beard + Wash + De-Tan)', price:899},
+      {name:'M3 — Fresh Face (+ Head Massage)', price:1099},
+      {name:'M4 — Colour Pop (Haircut + Beard + Black Colour + Wash)', price:649},
+      {name:'M5 — Glow Up (Haircut + Beard + Vitamin C Facial + De-Tan + Wash)', price:1399},
+      {name:'M6 — Style King (Haircut + Beard + Black Colour + De-Tan + Head Massage)', price:1199},
+      {name:'M7 — Spa Day (Haircut + Beard + Hair Spa + De-Tan + Facial + Foot Massage)', price:2399},
+      {name:'M8 — The Royal (Premium full package)', price:3199},
+    ],
+    "Combo · Women": [
+      {name:'W1 — Quick Touch Up (Eyebrows + Upper Lip + De-Tan)', price:499},
+      {name:'W2 — Fresh Glow (Brows + Lip + De-Tan + Wash + Massage)', price:1049},
+      {name:'W3 — Skin Treat (Brightening Facial + De-Tan + Body Scrub + Pedicure)', price:1699},
+      {name:'W4 — Hair & Glow (Haircut + Blow Dry + De-Tan + Brows + Wash)', price:1299},
+      {name:'W5 — Pamper Pack (Premium Facial + De-Tan + Arms Wax + Pedicure + Head Massage)', price:2199},
+      {name:'W6 — Wax & Glow (Arms + Legs + Underarm Wax + De-Tan + Brows + Lip)', price:1299},
+      {name:'W7 — Bridal Lite (Haircut + Blow Dry + Premium Facial + De-Tan + Pedicure + Wax + Brows + Lip)', price:2649},
+      {name:'W8 — Queen\u2019s Package (Premium full package)', price:3799},
+    ],
+    "Combo · Couple": [
+      {name:'C1 — Quick Duo (His + Hers — quick care)', price:1099},
+      {name:'C2 — Date Night (His + Hers — premium evening package)', price:2549},
+      {name:'C3 — Power Couple (His + Hers — full bridal-grade package)', price:4749},
     ],
   }
 };
@@ -1446,12 +1586,38 @@ const SERVICE_META = {
 };
 
 const CATEGORY_IMG = {
+  // Legacy keys (kept for back-compat with old configs)
   'Hair Essentials': _IMG.cat_hair_ess,
   'Hair Treatments': _IMG.cat_hair_treat,
   'Skin & Face':     _IMG.cat_skin_face,
   'Body & Spa':      _IMG.cat_body_spa,
   'Combo Packages':  _IMG.cat_combo,
+  // New men's categories
+  "Men · Hair Essentials": _IMG.cat_hair_ess,
+  "Men · Hair Treatments": _IMG.cat_hair_treat,
+  "Men · Skin & Face":     _IMG.cat_skin_face,
+  "Men · Body & Spa":      _IMG.cat_body_spa,
+  // New women's categories
+  "Women · Hair Essentials & Haircuts": _IMG.cat_hair_ess,
+  "Women · Hair Treatments & Colour":   _IMG.cat_hair_treat,
+  "Women · Threading & Cleanups":       _IMG.cat_skin_face,
+  "Women · Bleach & Facials":           _IMG.cat_skin_face,
+  "Women · Waxing":                     _IMG.cat_body_spa,
+  "Women · Body & Spa":                 _IMG.cat_body_spa,
+  // Combo categories
+  "Combo · Men":    _IMG.cat_combo,
+  "Combo · Women":  _IMG.cat_combo,
+  "Combo · Couple": _IMG.cat_combo,
 };
+
+// Segmented top-level filter (Men / Women / Combo) shown above category tabs.
+function getServiceSegment(category) {
+  const c = String(category || '');
+  if (c.startsWith('Men · '))    return 'Men';
+  if (c.startsWith('Women · '))  return 'Women';
+  if (c.startsWith('Combo · '))  return 'Combo';
+  return 'Other';
+}
 
 function getServiceMeta(name, category) {
   // 1. Admin-edited mins/desc on the actual service record beats the static catalogue.
@@ -1510,6 +1676,7 @@ function fmtDur(mins){
 let config = loadConfig();
 let state = {
   screen: 'loading',
+  segment: 'Men',       // Men / Women / Combo top-level filter for billing screen
   tab: '',
   cart: [],
   discount: null,
@@ -1520,6 +1687,7 @@ let state = {
   todayStr: todayISO(),
   attendanceCache: {},  // staffName → checkInTime
   footfallCount: 0,
+  paymentMethod: 'UPI',
   txInFlight: false,    // guard against double-submit on receipt screen
   expInFlight: false,   // guard for expense save
 };
@@ -1527,7 +1695,18 @@ let state = {
 function loadConfig() {
   try {
     const s = localStorage.getItem(SK.CONFIG);
-    if (s) return Object.assign({}, DEFAULTS, JSON.parse(s));
+    if (s) {
+      const saved = JSON.parse(s);
+      const merged = Object.assign({}, DEFAULTS, saved);
+      // Menu migration: if the saved services menu is older than current DEFAULTS,
+      // replace local services with the new menu so the app shows fresh categories.
+      if (saved.servicesVersion !== DEFAULTS.servicesVersion) {
+        merged.services = JSON.parse(JSON.stringify(DEFAULTS.services));
+        merged.servicesVersion = DEFAULTS.servicesVersion;
+        try { localStorage.setItem(SK.CONFIG, JSON.stringify(merged)); } catch(e){}
+      }
+      return merged;
+    }
   } catch(e){}
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
@@ -1690,6 +1869,18 @@ async function handleAuthStateChange(user) {
 
   // Subscribe to real-time collection updates now that the user is authorized.
   subscribeLiveCollections();
+
+  // Menu migration: if cloud has older menu version, the admin signs in once
+  // and we push the new menu to Firestore. This auto-updates every device.
+  if (window.__menuNeedsCloudPush && role === 'admin') {
+    window.__menuNeedsCloudPush = false;
+    try {
+      await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
+      await fbSetConfig({ servicesVersion: DEFAULTS.servicesVersion });
+      console.log('Menu migrated to', DEFAULTS.servicesVersion);
+      toast('Service menu updated to latest version ✓');
+    } catch (e) { console.warn('Menu migration write failed:', e); }
+  }
 
   // Authorized: render landing, but restrict admin button for staff role
   showScreen('landing');
@@ -1948,6 +2139,9 @@ function subscribeLiveCollections() {
         });
       });
       if (Object.keys(svcs).length) {
+        // Skip applying stale cloud data while a menu migration is pending —
+        // the admin's migration push will re-broadcast the fresh menu.
+        if (window.__menuNeedsCloudPush) return;
         config.services = svcs;
         saveConfig();
         rerenderActive();
@@ -2166,7 +2360,21 @@ async function init() {
           desc:  s.desc || '',
         });
       });
-      if (Object.keys(svcs).length) config.services = svcs;
+      if (Object.keys(svcs).length) {
+        // Menu migration: if cloud menu is older than current DEFAULTS, replace it
+        // with the new menu (Men/Women/Combo). Only the admin can trigger the
+        // overwrite (and only once per version) to avoid every device hammering
+        // the write.
+        const cloudVersion = (shopCfg && shopCfg.servicesVersion) || '';
+        if (cloudVersion !== DEFAULTS.servicesVersion) {
+          console.log('Menu migration: cloud=' + cloudVersion + ' default=' + DEFAULTS.servicesVersion);
+          config.services = JSON.parse(JSON.stringify(DEFAULTS.services));
+          // Lazy migrate: only admin overwrites cloud copy.
+          window.__menuNeedsCloudPush = true;
+        } else {
+          config.services = svcs;
+        }
+      }
     }
   } catch(e) {
     console.warn('Firestore load failed, using local cache:', e);
@@ -2424,8 +2632,10 @@ function changeFootfall(delta) {
 ──────────────────────────────────────────────────── */
 function renderHome() {
   document.getElementById('home-shop-name').textContent = config.shopName;
-  const categories = Object.keys(config.services);
-  if (!categories.length) {
+  const allCategories = Object.keys(config.services);
+  const segRow = document.getElementById('segment-row');
+  if (!allCategories.length) {
+    if (segRow) segRow.innerHTML = '';
     document.getElementById('service-tabs').innerHTML = '';
     document.getElementById('service-list').innerHTML =
       '<div class="muted-text center" style="padding:40px 20px;line-height:1.6">' +
@@ -2436,15 +2646,53 @@ function renderHome() {
       '</div>';
     return;
   }
-  if (!state.tab || !config.services[state.tab]) state.tab = categories[0];
 
-  // Tabs
+  // Available segments based on actual categories present
+  const SEGMENT_ORDER = ['Men', 'Women', 'Combo'];
+  const segmentsAvailable = SEGMENT_ORDER.filter(seg =>
+    allCategories.some(cat => getServiceSegment(cat) === seg)
+  );
+  // Include 'Other' as fallback for legacy/custom categories
+  const hasOther = allCategories.some(cat => getServiceSegment(cat) === 'Other');
+  if (hasOther) segmentsAvailable.push('Other');
+
+  if (!state.segment || !segmentsAvailable.includes(state.segment)) {
+    state.segment = segmentsAvailable[0] || 'Men';
+  }
+
+  // Render segment buttons (only if more than one segment exists)
+  if (segRow) {
+    if (segmentsAvailable.length > 1) {
+      segRow.style.display = '';
+      segRow.innerHTML = '';
+      segmentsAvailable.forEach(seg => {
+        const btn = document.createElement('button');
+        btn.className = 'segment-btn' + (seg === state.segment ? ' active' : '');
+        btn.textContent = seg === 'Combo' ? 'Combos' : seg + "'s";
+        if (seg === 'Other') btn.textContent = 'Other';
+        btn.onclick = () => { state.segment = seg; state.tab = null; renderHome(); };
+        segRow.appendChild(btn);
+      });
+    } else {
+      segRow.style.display = 'none';
+    }
+  }
+
+  // Filter categories by active segment
+  const categories = allCategories.filter(cat => getServiceSegment(cat) === state.segment);
+  if (!state.tab || !categories.includes(state.tab)) state.tab = categories[0];
+
+  // Tabs (show only short label, e.g. "Hair Essentials" instead of "Men · Hair Essentials")
+  const shortLabel = (cat) => {
+    const parts = String(cat).split(' · ');
+    return parts.length > 1 ? parts.slice(1).join(' · ') : cat;
+  };
   const tabsEl = document.getElementById('service-tabs');
   tabsEl.innerHTML = '';
   categories.forEach(cat => {
     const b = document.createElement('button');
     b.className = 'tab' + (cat === state.tab ? ' active' : '');
-    b.textContent = cat;
+    b.textContent = shortLabel(cat);
     b.onclick = () => { state.tab = cat; renderHome(); };
     tabsEl.appendChild(b);
   });
