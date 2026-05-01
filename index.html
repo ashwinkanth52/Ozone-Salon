@@ -1532,54 +1532,247 @@ const DEFAULTS = {
    both the billing screen and cart for staff guidance.
 ──────────────────────────────────────────────────── */
 // Pexels-hosted premium salon images (free CC0 licence, fast CDN, high quality).
-// Each service has a UNIQUE photograph that shows the actual treatment / tool / outcome.
+// Gender-aware: male model photos for Men's services, female model photos for
+// Women's services, couple photos for couple combos. Image picker below
+// (`pickServiceImage`) decides which set to use based on category prefix.
 const _IMG = {
-  // Hair – cuts & shaves
+  /* ─── MEN — male model / barber imagery ─── */
+  men_haircut:        'https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_haircut_kids:   'https://images.pexels.com/photos/3993134/pexels-photo-3993134.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_beard:          'https://images.pexels.com/photos/1319460/pexels-photo-1319460.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_shaving:        'https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_wash:           'https://images.pexels.com/photos/2061820/pexels-photo-2061820.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_blowdry:        'https://images.pexels.com/photos/1813346/pexels-photo-1813346.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_colour:         'https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_hairspa:        'https://images.pexels.com/photos/3998415/pexels-photo-3998415.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_headmassage:    'https://images.pexels.com/photos/3998421/pexels-photo-3998421.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_facial:         'https://images.pexels.com/photos/4937218/pexels-photo-4937218.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_detan:          'https://images.pexels.com/photos/4937449/pexels-photo-4937449.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_cleanup:        'https://images.pexels.com/photos/4046316/pexels-photo-4046316.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_pedicure:       'https://images.pexels.com/photos/3997984/pexels-photo-3997984.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_manicure:       'https://images.pexels.com/photos/3997386/pexels-photo-3997386.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_massage:        'https://images.pexels.com/photos/3997983/pexels-photo-3997983.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_back_massage:   'https://images.pexels.com/photos/3865792/pexels-photo-3865792.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_foot_massage:   'https://images.pexels.com/photos/6663577/pexels-photo-6663577.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  // Men's combos
+  men_combo_quick:    'https://images.pexels.com/photos/1453005/pexels-photo-1453005.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_combo_clean:    'https://images.pexels.com/photos/1805600/pexels-photo-1805600.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_combo_fresh:    'https://images.pexels.com/photos/3998415/pexels-photo-3998415.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_combo_colour:   'https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_combo_glow:     'https://images.pexels.com/photos/4046316/pexels-photo-4046316.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_combo_style:    'https://images.pexels.com/photos/2068975/pexels-photo-2068975.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_combo_spaday:   'https://images.pexels.com/photos/3998421/pexels-photo-3998421.jpeg?auto=compress&cs=tinysrgb&w=400',
+  men_combo_royal:    'https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  /* ─── WOMEN — female model / salon imagery ─── */
+  women_haircut:      'https://images.pexels.com/photos/3993454/pexels-photo-3993454.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_haircut_kids: 'https://images.pexels.com/photos/3331093/pexels-photo-3331093.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_blowdry:      'https://images.pexels.com/photos/3993456/pexels-photo-3993456.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_iron:         'https://images.pexels.com/photos/3992871/pexels-photo-3992871.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_wash:         'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_colour:       'https://images.pexels.com/photos/3993469/pexels-photo-3993469.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_highlights:   'https://images.pexels.com/photos/3993325/pexels-photo-3993325.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_hairspa:      'https://images.pexels.com/photos/7755515/pexels-photo-7755515.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_keratin:      'https://images.pexels.com/photos/3993467/pexels-photo-3993467.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_headmassage:  'https://images.pexels.com/photos/3997381/pexels-photo-3997381.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_henna:        'https://images.pexels.com/photos/2698935/pexels-photo-2698935.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_threading:    'https://images.pexels.com/photos/3985330/pexels-photo-3985330.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_eyebrow:      'https://images.pexels.com/photos/3985328/pexels-photo-3985328.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_detan:        'https://images.pexels.com/photos/3997385/pexels-photo-3997385.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_cleanup:      'https://images.pexels.com/photos/3985322/pexels-photo-3985322.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_oxylife:      'https://images.pexels.com/photos/3985317/pexels-photo-3985317.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_bleach:       'https://images.pexels.com/photos/3997383/pexels-photo-3997383.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_facial:       'https://images.pexels.com/photos/3985338/pexels-photo-3985338.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_facial_korean:'https://images.pexels.com/photos/3985316/pexels-photo-3985316.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_facial_gold:  'https://images.pexels.com/photos/3985320/pexels-photo-3985320.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_facial_pearl: 'https://images.pexels.com/photos/3985364/pexels-photo-3985364.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_facial_o3:    'https://images.pexels.com/photos/3985342/pexels-photo-3985342.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_bridal:       'https://images.pexels.com/photos/3992872/pexels-photo-3992872.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_waxing_legs:  'https://images.pexels.com/photos/6724325/pexels-photo-6724325.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_waxing_arms:  'https://images.pexels.com/photos/6724311/pexels-photo-6724311.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_waxing_face:  'https://images.pexels.com/photos/6724355/pexels-photo-6724355.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_pedicure:     'https://images.pexels.com/photos/3997984/pexels-photo-3997984.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_pedicure_spa: 'https://images.pexels.com/photos/3997389/pexels-photo-3997389.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_manicure:     'https://images.pexels.com/photos/3997386/pexels-photo-3997386.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_massage:      'https://images.pexels.com/photos/3865792/pexels-photo-3865792.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_back_massage: 'https://images.pexels.com/photos/3865711/pexels-photo-3865711.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_foot_massage: 'https://images.pexels.com/photos/6663577/pexels-photo-6663577.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_scrub:        'https://images.pexels.com/photos/3865676/pexels-photo-3865676.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  // Women's combos
+  women_combo_quick:  'https://images.pexels.com/photos/3985364/pexels-photo-3985364.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_combo_glow:   'https://images.pexels.com/photos/3985338/pexels-photo-3985338.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_combo_skin:   'https://images.pexels.com/photos/3985316/pexels-photo-3985316.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_combo_hair:   'https://images.pexels.com/photos/3993454/pexels-photo-3993454.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_combo_pamper: 'https://images.pexels.com/photos/3997389/pexels-photo-3997389.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_combo_wax:    'https://images.pexels.com/photos/6724325/pexels-photo-6724325.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_combo_bridal: 'https://images.pexels.com/photos/3992872/pexels-photo-3992872.jpeg?auto=compress&cs=tinysrgb&w=400',
+  women_combo_queen:  'https://images.pexels.com/photos/3992876/pexels-photo-3992876.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  /* ─── COUPLE — couple at spa imagery ─── */
+  couple_quick:       'https://images.pexels.com/photos/3865832/pexels-photo-3865832.jpeg?auto=compress&cs=tinysrgb&w=400',
+  couple_date:        'https://images.pexels.com/photos/3993458/pexels-photo-3993458.jpeg?auto=compress&cs=tinysrgb&w=400',
+  couple_power:       'https://images.pexels.com/photos/3865544/pexels-photo-3865544.jpeg?auto=compress&cs=tinysrgb&w=400',
+
+  /* ─── CATEGORY fallbacks (used by getServiceMeta when no specific match) ─── */
+  cat_men:            'https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=240',
+  cat_women:          'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=240',
+  cat_couple:         'https://images.pexels.com/photos/3993458/pexels-photo-3993458.jpeg?auto=compress&cs=tinysrgb&w=240',
+
+  /* ─── LEGACY keys (kept so old SERVICE_META entries below still resolve) ─── */
   haircut_men:        'https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=400',
   haircut_kids:       'https://images.pexels.com/photos/3993134/pexels-photo-3993134.jpeg?auto=compress&cs=tinysrgb&w=400',
-  beard_trim:         'https://images.pexels.com/photos/3998415/pexels-photo-3998415.jpeg?auto=compress&cs=tinysrgb&w=400',
-  shaving:            'https://images.pexels.com/photos/3998421/pexels-photo-3998421.jpeg?auto=compress&cs=tinysrgb&w=400',
+  beard_trim:         'https://images.pexels.com/photos/1319460/pexels-photo-1319460.jpeg?auto=compress&cs=tinysrgb&w=400',
+  shaving:            'https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=400',
   hair_wash:          'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=400',
   hair_wash_keratin:  'https://images.pexels.com/photos/3992871/pexels-photo-3992871.jpeg?auto=compress&cs=tinysrgb&w=400',
   blow_dry:           'https://images.pexels.com/photos/3993456/pexels-photo-3993456.jpeg?auto=compress&cs=tinysrgb&w=400',
-
-  // Hair – treatments
   colour_global:      'https://images.pexels.com/photos/3993454/pexels-photo-3993454.jpeg?auto=compress&cs=tinysrgb&w=400',
   colour_black:       'https://images.pexels.com/photos/3993469/pexels-photo-3993469.jpeg?auto=compress&cs=tinysrgb&w=400',
   hair_spa:           'https://images.pexels.com/photos/7755515/pexels-photo-7755515.jpeg?auto=compress&cs=tinysrgb&w=400',
   head_massage:       'https://images.pexels.com/photos/3997381/pexels-photo-3997381.jpeg?auto=compress&cs=tinysrgb&w=400',
   henna:              'https://images.pexels.com/photos/2698935/pexels-photo-2698935.jpeg?auto=compress&cs=tinysrgb&w=400',
-
-  // Skin & Face
   detan:              'https://images.pexels.com/photos/3997385/pexels-photo-3997385.jpeg?auto=compress&cs=tinysrgb&w=400',
   oxylife:            'https://images.pexels.com/photos/3985317/pexels-photo-3985317.jpeg?auto=compress&cs=tinysrgb&w=400',
   bleach:             'https://images.pexels.com/photos/3997383/pexels-photo-3997383.jpeg?auto=compress&cs=tinysrgb&w=400',
   cleanup:            'https://images.pexels.com/photos/3985322/pexels-photo-3985322.jpeg?auto=compress&cs=tinysrgb&w=400',
   facial_vitamin:     'https://images.pexels.com/photos/3985338/pexels-photo-3985338.jpeg?auto=compress&cs=tinysrgb&w=400',
   facial_korean:      'https://images.pexels.com/photos/3985316/pexels-photo-3985316.jpeg?auto=compress&cs=tinysrgb&w=400',
-
-  // Body & Spa
   pedicure:           'https://images.pexels.com/photos/3997984/pexels-photo-3997984.jpeg?auto=compress&cs=tinysrgb&w=400',
   manicure:           'https://images.pexels.com/photos/3997386/pexels-photo-3997386.jpeg?auto=compress&cs=tinysrgb&w=400',
   pedicure_premium:   'https://images.pexels.com/photos/3997389/pexels-photo-3997389.jpeg?auto=compress&cs=tinysrgb&w=400',
   full_body_massage:  'https://images.pexels.com/photos/3865792/pexels-photo-3865792.jpeg?auto=compress&cs=tinysrgb&w=400',
   back_neck_massage:  'https://images.pexels.com/photos/3865711/pexels-photo-3865711.jpeg?auto=compress&cs=tinysrgb&w=400',
   foot_massage:       'https://images.pexels.com/photos/6663577/pexels-photo-6663577.jpeg?auto=compress&cs=tinysrgb&w=400',
-
-  // Combos
   combo_quick:        'https://images.pexels.com/photos/1453005/pexels-photo-1453005.jpeg?auto=compress&cs=tinysrgb&w=400',
   combo_clean_slate:  'https://images.pexels.com/photos/1805600/pexels-photo-1805600.jpeg?auto=compress&cs=tinysrgb&w=400',
   combo_fresh_face:   'https://images.pexels.com/photos/4046317/pexels-photo-4046317.jpeg?auto=compress&cs=tinysrgb&w=400',
   combo_glow_up:      'https://images.pexels.com/photos/3992874/pexels-photo-3992874.jpeg?auto=compress&cs=tinysrgb&w=400',
   combo_spa_day:      'https://images.pexels.com/photos/3997983/pexels-photo-3997983.jpeg?auto=compress&cs=tinysrgb&w=400',
-
-  // Category fallbacks
   cat_hair_ess:       'https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=240',
   cat_hair_treat:     'https://images.pexels.com/photos/3992872/pexels-photo-3992872.jpeg?auto=compress&cs=tinysrgb&w=240',
   cat_skin_face:      'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=240',
   cat_body_spa:       'https://images.pexels.com/photos/3865676/pexels-photo-3865676.jpeg?auto=compress&cs=tinysrgb&w=240',
   cat_combo:          'https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=240',
 };
+
+// Pick the best image given service name + category. Honours gender:
+// - "Men · ..." categories  → male model imagery
+// - "Women · ..." categories → female model imagery
+// - "Combo · Couple" → couple imagery
+// - "Combo · Men" → male combo imagery, "Combo · Women" → female combo imagery
+function pickServiceImage(name, category) {
+  const n = String(name || '').toLowerCase();
+  const c = String(category || '');
+  const seg = (function () {
+    if (c.startsWith('Men · '))     return 'men';
+    if (c.startsWith('Women · '))   return 'women';
+    if (c === 'Combo · Couple')     return 'couple';
+    if (c === 'Combo · Men')        return 'men';
+    if (c === 'Combo · Women')      return 'women';
+    if (/^m\d/i.test(name))         return 'men';
+    if (/^w\d/i.test(name))         return 'women';
+    if (/^c\d/i.test(name))         return 'couple';
+    return 'women'; // sensible default
+  })();
+
+  // COUPLE combos get distinctive couple imagery
+  if (seg === 'couple') {
+    if (/quick|quick duo|c1/i.test(name))  return _IMG.couple_quick;
+    if (/date night|c2/i.test(name))       return _IMG.couple_date;
+    if (/power couple|c3/i.test(name))     return _IMG.couple_power;
+    return _IMG.couple_date;
+  }
+
+  // Combos
+  if (seg === 'men' && /^m\d/i.test(name)) {
+    if (/^m1/i.test(name)) return _IMG.men_combo_quick;
+    if (/^m2/i.test(name)) return _IMG.men_combo_clean;
+    if (/^m3/i.test(name)) return _IMG.men_combo_fresh;
+    if (/^m4/i.test(name)) return _IMG.men_combo_colour;
+    if (/^m5/i.test(name)) return _IMG.men_combo_glow;
+    if (/^m6/i.test(name)) return _IMG.men_combo_style;
+    if (/^m7/i.test(name)) return _IMG.men_combo_spaday;
+    if (/^m8/i.test(name)) return _IMG.men_combo_royal;
+    return _IMG.men_combo_quick;
+  }
+  if (seg === 'women' && /^w\d/i.test(name)) {
+    if (/^w1/i.test(name)) return _IMG.women_combo_quick;
+    if (/^w2/i.test(name)) return _IMG.women_combo_glow;
+    if (/^w3/i.test(name)) return _IMG.women_combo_skin;
+    if (/^w4/i.test(name)) return _IMG.women_combo_hair;
+    if (/^w5/i.test(name)) return _IMG.women_combo_pamper;
+    if (/^w6/i.test(name)) return _IMG.women_combo_wax;
+    if (/^w7/i.test(name)) return _IMG.women_combo_bridal;
+    if (/^w8/i.test(name)) return _IMG.women_combo_queen;
+    return _IMG.women_combo_glow;
+  }
+
+  // Specific service keywords (per gender bucket)
+  if (seg === 'men') {
+    if (n.includes('haircut') && (n.includes('kid') || n.includes('baby') || n.includes('under 12'))) return _IMG.men_haircut_kids;
+    if (n.includes('haircut'))   return _IMG.men_haircut;
+    if (n.includes('beard'))     return _IMG.men_beard;
+    if (n.includes('shav') || n.includes('mustache') || n.includes('moustache')) return _IMG.men_shaving;
+    if (n.includes('wash'))      return _IMG.men_wash;
+    if (n.includes('blow'))      return _IMG.men_blowdry;
+    if (n.includes('highlights') || (n.includes('colour') && n.includes('global'))) return _IMG.men_colour;
+    if (n.includes('colour'))    return _IMG.men_colour;
+    if (n.includes('hair spa') || n.includes('protein') || n.includes('dandruff') || n.includes('keratin')) return _IMG.men_hairspa;
+    if (n.includes('head massage')) return _IMG.men_headmassage;
+    if (n.includes('henna'))     return _IMG.men_hairspa;
+    if (n.includes('clean'))     return _IMG.men_cleanup;
+    if (n.includes('tan'))       return _IMG.men_detan;
+    if (n.includes('bleach'))    return _IMG.men_detan;
+    if (n.includes('facial') || n.includes('korean') || n.includes('o3')) return _IMG.men_facial;
+    if (n.includes('pedicure'))  return _IMG.men_pedicure;
+    if (n.includes('manicure'))  return _IMG.men_manicure;
+    if (n.includes('back') && n.includes('massage'))  return _IMG.men_back_massage;
+    if (n.includes('foot massage')) return _IMG.men_foot_massage;
+    if (n.includes('massage'))   return _IMG.men_massage;
+    if (n.includes('scrub'))     return _IMG.men_back_massage;
+    if (n.includes('underarm'))  return _IMG.men_detan;
+    return _IMG.cat_men;
+  }
+
+  // WOMEN bucket
+  if (n.includes('haircut') && (n.includes('kid') || n.includes('baby') || n.includes('under 12'))) return _IMG.women_haircut_kids;
+  if (n.includes('butterfly') || n.includes('laser cut') || n.includes('step cut') || n.includes('u cut') || n.includes('boy cut') || n.includes('blend cut') || n.includes('blunt') || n.includes('front cut') || n.includes('haircut')) return _IMG.women_haircut;
+  if (n.includes('blow'))                  return _IMG.women_blowdry;
+  if (n.includes('tongs') || n.includes('iron') || n.includes('crimp') || n.includes('styling')) return _IMG.women_iron;
+  if (n.includes('wash'))                  return _IMG.women_wash;
+  if (n.includes('highlights'))            return _IMG.women_highlights;
+  if (n.includes("l'oreal") || n.includes('matrix') || (n.includes('colour') && n.includes('global')) || n.includes('root touchup')) return _IMG.women_colour;
+  if (n.includes('colour'))                return _IMG.women_colour;
+  if (n.includes('keratin'))               return _IMG.women_keratin;
+  if (n.includes('hair spa') || n.includes('protein') || n.includes('dandruff') || n.includes('straighten')) return _IMG.women_hairspa;
+  if (n.includes('head massage'))          return _IMG.women_headmassage;
+  if (n.includes('henna'))                 return _IMG.women_henna;
+  if (n.includes('eyebrow'))               return _IMG.women_eyebrow;
+  if (n.includes('threading'))             return _IMG.women_threading;
+  if (n.includes('oxylife') && n.includes('tan')) return _IMG.women_oxylife;
+  if (n.includes('tan'))                   return _IMG.women_detan;
+  if (n.includes('bleach'))                return _IMG.women_bleach;
+  if (n.includes('clean'))                 return _IMG.women_cleanup;
+  if (n.includes('bridal'))                return _IMG.women_bridal;
+  if (n.includes('korean'))                return _IMG.women_facial_korean;
+  if (n.includes('o3'))                    return _IMG.women_facial_o3;
+  if (n.includes('shahnaz') || n.includes('gold')) return _IMG.women_facial_gold;
+  if (n.includes('pearl') || n.includes('fruit')) return _IMG.women_facial_pearl;
+  if (n.includes('facial'))                return _IMG.women_facial;
+  if (n.includes('wax') && n.includes('leg'))  return _IMG.women_waxing_legs;
+  if (n.includes('wax') && n.includes('face')) return _IMG.women_waxing_face;
+  if (n.includes('wax'))                   return _IMG.women_waxing_arms;
+  if (n.includes('pedicure') && (n.includes('spa') || n.includes('crystal') || n.includes('ice'))) return _IMG.women_pedicure_spa;
+  if (n.includes('pedicure'))              return _IMG.women_pedicure;
+  if (n.includes('manicure'))              return _IMG.women_manicure;
+  if (n.includes('back') && n.includes('massage')) return _IMG.women_back_massage;
+  if (n.includes('foot massage'))          return _IMG.women_foot_massage;
+  if (n.includes('massage'))               return _IMG.women_massage;
+  if (n.includes('scrub'))                 return _IMG.women_scrub;
+  return _IMG.cat_women;
+}
 
 const SERVICE_META = {
   // HAIR ESSENTIALS
@@ -1792,7 +1985,9 @@ function getServiceMeta(name, category) {
       return {
         mins: f.mins || stat.mins || 0,
         desc: f.desc || stat.desc || '',
-        img:  stat.img || CATEGORY_IMG[cat] || CATEGORY_IMG['Hair Essentials'],
+        // ALWAYS use gender-aware picker so men's services get male images,
+        // women's get female, couple combos get couple imagery.
+        img:  pickServiceImage(name, cat),
       };
     }
     return null;
@@ -1806,9 +2001,15 @@ function getServiceMeta(name, category) {
       if (hit) return hit;
     }
   }
-  if (SERVICE_META[name]) return SERVICE_META[name];
-  // Smart keyword inference for any service name (covers all 144+ services)
-  return inferServiceMeta(name, category);
+  // Static catalogue: keep its desc/mins but override image with gender-aware pick.
+  if (SERVICE_META[name]) {
+    const stat = SERVICE_META[name];
+    return { mins:stat.mins, desc:stat.desc, img:pickServiceImage(name, category) };
+  }
+  // Smart keyword inference for any service name (covers all 144+ services).
+  // Override img with gender-aware pick.
+  const inferred = inferServiceMeta(name, category);
+  return { mins:inferred.mins, desc:inferred.desc, img:pickServiceImage(name, category) };
 }
 
 function fmtDur(mins){
