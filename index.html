@@ -987,7 +987,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <button class="btn btn-rose" style="width:100%;margin-top:8px" onclick="sendWhatsAppReceipt()">
       Open WhatsApp &amp; Send Receipt
     </button>
-    <button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="finaliseTransaction(null)">
+      <button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="skipReceiptAndFinish()">
       Skip Receipt &amp; Finish
     </button>
   </div>
@@ -2663,6 +2663,12 @@ function sendWhatsAppReceipt() {
   finaliseTransaction(phone);
 }
 
+function skipReceiptAndFinish() {
+  const phone = document.getElementById('customer-phone').value.trim();
+  const validPhone = phone && phone.length === 10 ? phone : '';
+  finaliseTransaction(validPhone);
+}
+
 async function finaliseTransaction(phone) {
   // Guard against double-submit: if already finalising, ignore subsequent taps.
   if (state.txInFlight) return;
@@ -3069,6 +3075,8 @@ async function renderAdminDashboard() {
   const totalExpenses = varExpenses + fixedTotal + salaryTotal + emiTotal;
   const netPL       = revenue - totalExpenses;
   const txCount     = txs.length;
+  // Count UNIQUE customers for the month (those who provided phone #)
+  const uniqueCustomers = new Set(txs.filter(t => t.customerId).map(t => t.customerId)).size;
   const footfall    = (footfalls || [])
     .filter(r => String(r.date || '').startsWith(ym))
     .reduce((s, r) => s + (parseInt(r.count) || 0), 0);
@@ -3079,9 +3087,8 @@ async function renderAdminDashboard() {
   const todayTxs = txs.filter(t => String(t.date) === state.todayStr);
   const todayRevenue = sumOf(todayTxs, 'total');
   const todayCount   = todayTxs.length;
-  const todayFootfall = (footfalls || [])
-    .filter(r => String(r.date) === state.todayStr)
-    .reduce((s, r) => s + (parseInt(r.count) || 0), 0);
+  // Count UNIQUE customers today (those who provided phone #)
+  const todayCustomers = new Set(todayTxs.filter(t => t.customerId).map(t => t.customerId)).size;
 
   host.innerHTML = `
     <div class="admin-section-title">
@@ -3091,7 +3098,7 @@ async function renderAdminDashboard() {
       <div class="erp-card gold full">
         <div class="erp-label">Today's Revenue</div>
         <div class="erp-value gold">₹${fmt(todayRevenue)}</div>
-        <div class="erp-sub">${todayCount} bills · ${todayFootfall} customers</div>
+        <div class="erp-sub">${todayCount} bills · ${todayCustomers || todayFootfall} customer${todayCustomers !== 1 ? 's' : ''}</div>
       </div>
     </div>
 
@@ -3102,7 +3109,7 @@ async function renderAdminDashboard() {
       <div class="erp-card gold full">
         <div class="erp-label">Total Revenue</div>
         <div class="erp-value gold">₹${fmt(revenue)}</div>
-        <div class="erp-sub">${txCount} transactions · ${footfall} customers</div>
+        <div class="erp-sub">${txCount} transactions · ${uniqueCustomers} customer${uniqueCustomers !== 1 ? 's' : ''}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">${salaryPaid > 0 ? 'Salaries Paid' : 'Payroll (proj.)'}</div>
@@ -3948,6 +3955,10 @@ async function renderAdminAnalytics() {
   const totalDiscount   = sumKey(txs, 'discount');
   const totalCommission = sumKey(txs, 'commissionAmount');
 
+  // Count UNIQUE customers (those who provided phone #)
+  const uniqueCustomers = new Set(txs.filter(t => t.customerId).map(t => t.customerId)).size;
+  const uniqueCustomersPrev = new Set(txsPrev.filter(t => t.customerId).map(t => t.customerId)).size;
+
   // Footfall (current + prev)
   const ff = (m) => (footfalls||[])
     .filter(r => String(r.date||'').startsWith(m))
@@ -4079,6 +4090,7 @@ async function renderAdminAnalytics() {
     summary: [
       { Metric:'Revenue (this month)',    Value:totalRevenue,    Previous:totalRevenuePrev },
       { Metric:'Transactions',            Value:txCount,         Previous:txCountPrev },
+      { Metric:'Unique Customers',        Value:uniqueCustomers, Previous:uniqueCustomersPrev },
       { Metric:'Average Bill',            Value:avgBill,         Previous:avgBillPrev },
       { Metric:'Footfall',                Value:footfallTotal,   Previous:footfallPrev },
       { Metric:'Bill Conversion %',       Value:conversion,      Previous:conversionPrev },
@@ -4107,6 +4119,11 @@ async function renderAdminAnalytics() {
         <div class="erp-label">Revenue · this month</div>
         <div class="erp-value gold">₹${fmt(totalRevenue)}</div>
         <div class="erp-sub">${txCount} bills · Avg ₹${fmt(avgBill)} ${deltaPill(totalRevenue, totalRevenuePrev)} vs ${prevMonthLabel}</div>
+      </div>
+      <div class="erp-card">
+        <div class="erp-label">Unique Customers</div>
+        <div class="erp-value">${uniqueCustomers}</div>
+        <div class="erp-sub">${deltaPill(uniqueCustomers, uniqueCustomersPrev)} (with phone)</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Footfall</div>
