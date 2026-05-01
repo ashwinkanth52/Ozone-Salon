@@ -663,6 +663,23 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
 .role-notice{display:flex;gap:12px;align-items:flex-start;background:rgba(106,130,184,.06);border:1px solid rgba(106,130,184,.18);border-radius:12px;padding:14px 16px;margin-bottom:22px;}
 .role-notice-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
 .team-info-box{font-size:12px;line-height:1.65;padding:13px 16px;background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;color:var(--muted);margin-top:8px;}
+
+/* SUPERVISOR PERMISSION BOX */
+.perm-box{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;overflow:hidden;margin-bottom:6px;}
+.perm-box-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--line-soft);}
+.perm-box-title{font-size:13.5px;font-weight:600;color:var(--ink);letter-spacing:-.005em;}
+.perm-box-sub{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.perm-list{padding:6px 12px 12px;}
+.perm-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 8px;border-bottom:1px solid var(--line-soft);cursor:pointer;border-radius:8px;transition:background .15s;}
+.perm-row:last-child{border-bottom:none;}
+.perm-row.active{background:rgba(184,149,106,.05);}
+.perm-row-info{flex:1;min-width:0;}
+.perm-row-label{font-size:13.5px;font-weight:500;color:var(--ink);}
+.perm-row-desc{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.02em;}
+.toggle-switch{width:40px;height:22px;border-radius:11px;background:var(--line);flex-shrink:0;position:relative;transition:background .2s;cursor:pointer;}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#FFF;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle-switch.on{background:var(--ink);}
+.toggle-switch.on::after{transform:translateX(18px);}
 </style>
 </head>
 <body>
@@ -1375,6 +1392,8 @@ const DEFAULTS = {
   adminEmails: [],      // Google account emails with admin/owner access
   supervisorEmails: [], // Google account emails with limited admin rights
   staffEmails: [],      // Google account emails allowed staff access
+  // Which admin tabs supervisors can access — admin-configurable
+  supervisorPermissions: ['dashboard', 'sales', 'attendance', 'team'],
   staff: [],
   fixedExpenses: [],
   emi: [],
@@ -2219,9 +2238,10 @@ async function handleAuthStateChange(user) {
   try {
     const shopCfg = await fbGetConfigDoc();
     if (shopCfg) {
-      if (Array.isArray(shopCfg.adminEmails))      config.adminEmails      = shopCfg.adminEmails;
-      if (Array.isArray(shopCfg.supervisorEmails))  config.supervisorEmails = shopCfg.supervisorEmails;
-      if (Array.isArray(shopCfg.staffEmails))       config.staffEmails      = shopCfg.staffEmails;
+      if (Array.isArray(shopCfg.adminEmails))          config.adminEmails          = shopCfg.adminEmails;
+      if (Array.isArray(shopCfg.supervisorEmails))     config.supervisorEmails     = shopCfg.supervisorEmails;
+      if (Array.isArray(shopCfg.staffEmails))          config.staffEmails          = shopCfg.staffEmails;
+      if (Array.isArray(shopCfg.supervisorPermissions)) config.supervisorPermissions = shopCfg.supervisorPermissions;
       saveConfig();
     }
   } catch(e) { console.warn('Could not refresh team list:', e); }
@@ -3882,8 +3902,10 @@ function attDownloadCSV() {
 }
 
 function setAdminTab(t) {
-  // Tabs visible to each role
-  const SUPERVISOR_TABS = ['dashboard', 'sales', 'team'];
+  // Tabs visible to each role — admin-configurable via config.supervisorPermissions
+  const SUPERVISOR_TABS = config.supervisorPermissions && config.supervisorPermissions.length
+    ? config.supervisorPermissions
+    : ['dashboard', 'sales', 'attendance', 'team'];
   const isSupervisor = currentUser && currentUser.role === 'supervisor';
 
   // If supervisor tries to access a restricted tab, redirect to team
@@ -5754,6 +5776,11 @@ function renderAdminTeam() {
   });
 
   // ── Supervisors section ─────────────────────────
+  const permsForDisplay = config.supervisorPermissions && config.supervisorPermissions.length
+    ? config.supervisorPermissions
+    : ['dashboard', 'sales', 'attendance', 'team'];
+  const permLabels = { dashboard:'Dashboard', analytics:'Analytics', sales:'Sales', customers:'Customers', attendance:'Attendance', expenses:'Expenses', payroll:'Payroll', advances:'Advances', emi:'EMI', setup:'Setup', team:'Team' };
+  const permSummary = permsForDisplay.map(p => permLabels[p] || p).join(' · ');
   let supervisorsHtml = '';
   supervisors.forEach((em, i) => {
     const isYou = currentUser && normEmail(em) === normEmail(currentUser.email);
@@ -5761,7 +5788,7 @@ function renderAdminTeam() {
       <div class="team-row">
         <div class="team-row-info">
           <div class="team-row-email">${esc(em)}${isYou ? ' <span style="color:var(--champagne);font-size:10px;font-weight:600;letter-spacing:.06em">(you)</span>' : ''}</div>
-          <div class="team-row-role">Dashboard · Sales · Team management</div>
+          <div class="team-row-role">${permSummary}</div>
         </div>
         <span class="team-role-pill supervisor">Supervisor</span>
         ${(!isSupervisor) ? `<button class="del-btn" onclick="removeSupervisorEmail(${i})">×</button>` : ''}
@@ -5807,11 +5834,38 @@ function renderAdminTeam() {
     return;
   }
 
-  // Admin view: all three sections
+  // Admin view: all three sections + supervisor permissions config
+  const ALL_TABS = [
+    { id:'dashboard',  label:'📊 Dashboard',  desc:'Revenue, P&L, today\'s summary' },
+    { id:'analytics',  label:'📈 Analytics',  desc:'Trends, top services, busiest hours' },
+    { id:'sales',      label:'🧾 Sales',       desc:'Every transaction, filter & audit' },
+    { id:'customers',  label:'🙋 Customers',   desc:'Customer directory & visit history' },
+    { id:'attendance', label:'📋 Attendance',  desc:'Staff check-in/out, half-day marks' },
+    { id:'expenses',   label:'💸 Expenses',    desc:'Fixed & variable costs' },
+    { id:'payroll',    label:'👥 Payroll',     desc:'Salary payouts & commissions' },
+    { id:'advances',   label:'💵 Advances',    desc:'Staff cash advances' },
+    { id:'emi',        label:'📋 EMI',         desc:'Loans & equipment finance' },
+    { id:'setup',      label:'⚙️ Setup',       desc:'Services, staff setup, shop settings' },
+    { id:'team',       label:'🧑‍💼 Team',       desc:'Manage user access roles' },
+  ];
+  const perms = config.supervisorPermissions || ['dashboard', 'sales', 'attendance', 'team'];
+
+  const permRowsHtml = ALL_TABS.map(tab => {
+    const checked = perms.includes(tab.id);
+    return `
+      <label class="perm-row ${checked ? 'active' : ''}" id="perm-row-${tab.id}">
+        <div class="perm-row-info">
+          <div class="perm-row-label">${tab.label}</div>
+          <div class="perm-row-desc">${tab.desc}</div>
+        </div>
+        <div class="toggle-switch ${checked ? 'on' : ''}" onclick="toggleSupervisorPerm('${tab.id}', this)"></div>
+      </label>`;
+  }).join('');
+
   host.innerHTML = `
     <div class="admin-section-title">Team Access</div>
     <div class="muted-text" style="margin-bottom:22px;line-height:1.65;font-size:13px;">
-      Authorize Google accounts by role. <strong>Admins</strong> have full ERP access. <strong>Supervisors</strong> can view sales, dashboard, and manage staff. <strong>Staff</strong> access the billing counter only.
+      Authorize Google accounts by role. <strong>Admins</strong> have full ERP access. <strong>Supervisors</strong> get the tabs you configure below. <strong>Staff</strong> access the billing counter only.
     </div>
 
     <div class="team-section-header">ADMINS <span class="team-count">${admins.length}</span></div>
@@ -5823,12 +5877,23 @@ function renderAdminTeam() {
 
     <div class="team-section-header">SUPERVISORS <span class="team-count">${supervisors.length}</span></div>
     ${supervisorsHtml || '<div class="muted-text" style="padding:10px 0;font-size:13px">No supervisors yet.</div>'}
-    <div style="display:flex;gap:8px;margin:10px 0 26px;">
+    <div style="display:flex;gap:8px;margin:10px 0 14px;">
       <input type="email" id="new-supervisor-email" class="setup-input" placeholder="supervisor@gmail.com" style="flex:1">
       <button class="btn btn-secondary" style="flex:none;padding:0 16px;" onclick="addSupervisorEmail()">Add</button>
     </div>
 
-    <div class="team-section-header">STAFF <span class="team-count">${staff.length}</span></div>
+    <div class="perm-box">
+      <div class="perm-box-header">
+        <div>
+          <div class="perm-box-title">Supervisor Access Permissions</div>
+          <div class="perm-box-sub">Choose which tabs supervisors can see when they sign in</div>
+        </div>
+        <button class="svc-mini" onclick="resetSupervisorPerms()">Reset</button>
+      </div>
+      <div class="perm-list">${permRowsHtml}</div>
+    </div>
+
+    <div class="team-section-header" style="margin-top:26px">STAFF <span class="team-count">${staff.length}</span></div>
     ${staffHtml || '<div class="muted-text" style="padding:10px 0;font-size:13px">No staff added yet.</div>'}
     <div style="display:flex;gap:8px;margin:10px 0 26px;">
       <input type="email" id="new-staff-email" class="setup-input" placeholder="staff@gmail.com" style="flex:1">
@@ -5898,6 +5963,34 @@ async function removeSupervisorEmail(idx) {
   await fbSetConfig({ supervisorEmails: config.supervisorEmails });
   logAudit('team.removeSupervisor', null, { email: em });
   renderAdminTeam();
+}
+
+async function toggleSupervisorPerm(tabId, switchEl) {
+  if (!config.supervisorPermissions) config.supervisorPermissions = ['dashboard', 'sales', 'attendance', 'team'];
+  const has = config.supervisorPermissions.includes(tabId);
+  if (has) {
+    config.supervisorPermissions = config.supervisorPermissions.filter(p => p !== tabId);
+  } else {
+    config.supervisorPermissions.push(tabId);
+  }
+  // Toggle the switch UI + row highlight immediately (no full re-render)
+  switchEl.classList.toggle('on', !has);
+  const row = document.getElementById('perm-row-' + tabId);
+  if (row) row.classList.toggle('active', !has);
+
+  saveConfig();
+  await fbSetConfig({ supervisorPermissions: config.supervisorPermissions });
+  logAudit('team.supervisorPermChange', null, { tabId, granted: !has });
+  // Refresh supervisor pill descriptions
+  renderAdminTeam();
+}
+
+async function resetSupervisorPerms() {
+  config.supervisorPermissions = ['dashboard', 'sales', 'attendance', 'team'];
+  saveConfig();
+  await fbSetConfig({ supervisorPermissions: config.supervisorPermissions });
+  renderAdminTeam();
+  toast('Permissions reset to default ✓');
 }
 
 async function addStaffEmail() {
