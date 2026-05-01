@@ -342,6 +342,10 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .payment-amount-label{color:var(--muted);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;}
 .payment-amount{font-family:var(--serif);font-size:48px;color:var(--ink);margin-top:8px;font-weight:500;letter-spacing:-.02em;line-height:1;}
 .payment-amount .curr{color:var(--champagne);font-size:32px;font-weight:400;margin-right:2px;}
+.pay-method-row{display:flex;gap:8px;max-width:360px;margin:18px auto 8px;}
+.pay-method-btn{flex:1;padding:11px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--ink);}
+.pay-method-btn.active{background:var(--ink);border-color:var(--ink);color:#FFF;}
+.payment-note{font-size:12px;color:var(--muted);line-height:1.55;max-width:320px;margin:0 auto;}
 .qr-card{margin:28px auto 20px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-lg);padding:20px;max-width:300px;}
 .qr-card img{width:100%;height:auto;border-radius:8px;display:block;}
 .qr-placeholder{aspect-ratio:1;background:var(--surface-2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;padding:20px;text-align:center;border:1px dashed var(--line);}
@@ -929,11 +933,16 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
   <div class="payment-wrap">
     <div class="payment-amount-label">Amount to Collect</div>
     <div class="payment-amount"><span class="curr">₹</span><span id="payment-amount">0</span></div>
+    <div class="pay-method-row">
+      <button class="pay-method-btn" id="pay-btn-upi" onclick="setPaymentMethod('UPI')">UPI</button>
+      <button class="pay-method-btn" id="pay-btn-cash" onclick="setPaymentMethod('Cash')">Cash</button>
+      <button class="pay-method-btn" id="pay-btn-card" onclick="setPaymentMethod('Card')">Card</button>
+    </div>
     <div class="qr-card">
       <div id="qr-holder"></div>
       <div class="upi-id" id="upi-id-holder"></div>
     </div>
-    <p style="color:var(--muted);font-size:13px;max-width:280px;margin:0 auto;line-height:1.6;">Ask the customer to scan using PhonePe, GPay, or any UPI app. Tap below once payment reflects.</p>
+    <p class="payment-note" id="payment-note">Ask the customer to scan using PhonePe, GPay, or any UPI app. Tap below once payment reflects.</p>
   </div>
   <div class="cta-footer">
     <button class="btn btn-primary" onclick="showScreen('receipt')">Payment Received ✓</button>
@@ -2780,7 +2789,7 @@ async function finaliseTransaction(phone) {
   // Show the saved doc id briefly so the staff can refer to it.
   const sub2 = document.getElementById('confirm-sub');
   if (sub2) {
-    sub2.textContent = `Bill ${newId.slice(-6).toUpperCase()} saved · ₹${total.toLocaleString('en-IN')} · Counter ready for next customer.`;
+    sub2.textContent = `Bill ${newId.slice(-6).toUpperCase()} saved · ₹${total.toLocaleString('en-IN')} · ${txRow.paymentMethod} · Counter ready for next customer.`;
   }
 
   // Clear in-flight guard & re-enable buttons (in case user comes back)
@@ -2793,6 +2802,7 @@ async function finaliseTransaction(phone) {
 function resetAndGoHome() {
   state.cart = [];
   state.discount = null;
+  state.paymentMethod = 'UPI';
   state.txInFlight = false;
   const phEl = document.getElementById('customer-phone'); if (phEl) phEl.value = '';
   const nmEl = document.getElementById('customer-name');  if (nmEl) nmEl.value = '';
@@ -2999,9 +3009,9 @@ const ADMIN_HERO_META = {
   analytics: { eyebrow:'Analytics',  title:'Deep performance insights',  sub:'Trends, top services & busiest hours',
                img:'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   sales:     { eyebrow:'Sales',      title:'Every bill, every day',      sub:'Filter, export, audit transactions',
+               img:'https://images.pexels.com/photos/3962285/pexels-photo-3962285.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   customers: { eyebrow:'Customers',  title:'Your loyal regulars',        sub:'Search by phone or name · visits & spend',
                img:'https://images.pexels.com/photos/3993210/pexels-photo-3993210.jpeg?auto=compress&cs=tinysrgb&w=1280' },
-               img:'https://images.pexels.com/photos/3962285/pexels-photo-3962285.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   expenses:  { eyebrow:'Expenses',   title:'Where the money goes',       sub:'Fixed costs & variable spending',
                img:'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=1280' },
   payroll:   { eyebrow:'Payroll',    title:'Take care of your team',     sub:'Salaries, commissions, attendance',
@@ -3077,6 +3087,11 @@ async function renderAdminDashboard() {
   const txCount     = txs.length;
   // Count UNIQUE customers for the month (those who provided phone #)
   const uniqueCustomers = new Set(txs.filter(t => t.customerId).map(t => t.customerId)).size;
+  const paymentMonth = { UPI: 0, Cash: 0, Card: 0 };
+  txs.forEach(t => {
+    const m = normalizePaymentMethod(t.paymentMethod);
+    paymentMonth[m] += parseFloat(t.total) || 0;
+  });
   const footfall    = (footfalls || [])
     .filter(r => String(r.date || '').startsWith(ym))
     .reduce((s, r) => s + (parseInt(r.count) || 0), 0);
@@ -3098,7 +3113,11 @@ async function renderAdminDashboard() {
       <div class="erp-card gold full">
         <div class="erp-label">Today's Revenue</div>
         <div class="erp-value gold">₹${fmt(todayRevenue)}</div>
-        <div class="erp-sub">${todayCount} bills · ${todayCustomers || todayFootfall} customer${todayCustomers !== 1 ? 's' : ''}</div>
+        <div class="erp-sub">${todayCount} bills · ${todayCustomers} tracked customer${todayCustomers !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="erp-card full">
+        <div class="erp-label">Payment Mix · Today</div>
+        <div class="erp-sub">UPI ₹${fmt(paymentToday.UPI)} · Cash ₹${fmt(paymentToday.Cash)} · Card ₹${fmt(paymentToday.Card)}</div>
       </div>
     </div>
 
@@ -3110,6 +3129,10 @@ async function renderAdminDashboard() {
         <div class="erp-label">Total Revenue</div>
         <div class="erp-value gold">₹${fmt(revenue)}</div>
         <div class="erp-sub">${txCount} transactions · ${uniqueCustomers} customer${uniqueCustomers !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="erp-card full">
+        <div class="erp-label">Payment Mix · Month</div>
+        <div class="erp-sub">UPI ₹${fmt(paymentMonth.UPI)} · Cash ₹${fmt(paymentMonth.Cash)} · Card ₹${fmt(paymentMonth.Card)}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">${salaryPaid > 0 ? 'Salaries Paid' : 'Payroll (proj.)'}</div>
@@ -3175,9 +3198,12 @@ async function loadSales() {
     return (b.date + ' ' + (b.time || '')).localeCompare(a.date + ' ' + (a.time || ''));
   });
   let total = 0;
+  const paymentSplit = { UPI: 0, Cash: 0, Card: 0 };
   let html = '';
   sorted.forEach(tx => {
     total += parseFloat(tx.total) || 0;
+    const pm = normalizePaymentMethod(tx.paymentMethod);
+    paymentSplit[pm] += parseFloat(tx.total) || 0;
     html += `
       <div class="tx-row">
         <div class="tx-row-top">
@@ -3187,6 +3213,7 @@ async function loadSales() {
         <div class="tx-meta">
           <span>${tx.date} ${tx.time || ''}</span>
           <span>${tx.staffName || ''}</span>
+          <span>Pay: ${pm}</span>
           ${parseFloat(tx.discount) > 0 ? `<span>Disc: ₹${tx.discount}</span>` : ''}
         </div>
       </div>
@@ -3196,7 +3223,7 @@ async function loadSales() {
     <div class="erp-card gold" style="margin-bottom:12px">
       <div class="erp-label">Month Total</div>
       <div class="erp-value gold">₹${fmt(total)}</div>
-      <div class="erp-sub">${sorted.length} transactions</div>
+      <div class="erp-sub">${sorted.length} transactions · UPI ₹${fmt(paymentSplit.UPI)} · Cash ₹${fmt(paymentSplit.Cash)} · Card ₹${fmt(paymentSplit.Card)}</div>
     </div>
     <div class="export-row">
       <button class="btn btn-primary" onclick='exportSalesAs("${ym}","pdf")'>📄 PDF</button>
@@ -3220,7 +3247,7 @@ function shapeSalesRows(rows) {
     'Disc Label':String(r.discountLabel || ''),
     GST:         parseFloat(r.gst) || 0,
     Total:       parseFloat(r.total) || 0,
-    Payment:     r.paymentMethod || '',
+    Payment:     normalizePaymentMethod(r.paymentMethod),
     Staff:       r.staffName || '',
     'Comm %':    parseFloat(r.commissionPct) || 0,
     'Comm ₹':    parseFloat(r.commissionAmount) || 0,
@@ -3235,11 +3262,19 @@ function exportSalesAs(ym, fmt) {
   const total = rows.reduce((s,r) => s + (parseFloat(r.total)||0), 0);
   const disc  = rows.reduce((s,r) => s + (parseFloat(r.discount)||0), 0);
   const comm  = rows.reduce((s,r) => s + (parseFloat(r.commissionAmount)||0), 0);
+  const paymentSplit = rows.reduce((acc, r) => {
+    const m = normalizePaymentMethod(r.paymentMethod);
+    acc[m] += parseFloat(r.total) || 0;
+    return acc;
+  }, { UPI: 0, Cash: 0, Card: 0 });
   const summary = [
     `Total Bills: ${rows.length}`,
     `Total Revenue: ₹${fmtPlain(total)}`,
     `Total Discounts: ₹${fmtPlain(disc)}`,
     `Total Commissions: ₹${fmtPlain(comm)}`,
+    `UPI Collections: ₹${fmtPlain(paymentSplit.UPI)}`,
+    `Cash Collections: ₹${fmtPlain(paymentSplit.Cash)}`,
+    `Card Collections: ₹${fmtPlain(paymentSplit.Card)}`,
     `Average Bill: ₹${fmtPlain(rows.length ? total/rows.length : 0)}`,
   ];
   const base = `ozone-sales-${ym}`;
@@ -5009,6 +5044,40 @@ if ('serviceWorker' in navigator) {
           }
         });
       });
+      // Reload once the new SW activates and takes control.
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    }).catch(() => {});
+  });
+}
+
+window.addEventListener('online',  () => showSync('ok'));
+window.addEventListener('offline', () => showSync('error'));
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
+
+window.addEventListener('offline', () => showSync('error'));
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
+
       // Reload once the new SW activates and takes control.
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
