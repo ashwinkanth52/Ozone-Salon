@@ -1467,9 +1467,20 @@ let db    = null;
 let fbAuth = null;
 let currentUser = null;   // { email, name, photo, role: 'admin'|'supervisor'|'staff'|null }
 
+// ⬇ Firebase config baked into the code — no setup wizard needed, works on every device.
+const EMBEDDED_FB_CONFIG = {
+  apiKey:            'AIzaSyDoGba-TZvz9Jz6RybCAMkHecRj4Kttpec',
+  authDomain:        'ozone-salon-erp.firebaseapp.com',
+  projectId:         'ozone-salon-erp',
+  storageBucket:     'ozone-salon-erp.firebasestorage.app',
+  messagingSenderId: '442094654518',
+  appId:             '1:442094654518:web:223e04b970d239fee3b497',
+  measurementId:     'G-Y7X8CTGTR5'
+};
+
 function fbConfig() {
-  try { return JSON.parse(localStorage.getItem(SK.FB_CONFIG) || 'null'); }
-  catch(e) { return null; }
+  // Always prefer the embedded config so a fresh device skips the wizard.
+  return EMBEDDED_FB_CONFIG;
 }
 
 function initFirebase() {
@@ -2011,16 +2022,13 @@ async function init() {
     state.footfallCount = parseInt(localStorage.getItem(SK.FOOTFALL + state.todayStr) || '0');
   } catch(e) {}
 
-  const setupDone = localStorage.getItem(SK.SETUP) === '1';
-  if (!setupDone || !fbConfig()) {
-    showScreen('setup');
-    return;
-  }
-
+  // Firebase config is baked in — mark setup complete on every device.
+  localStorage.setItem(SK.SETUP, '1');
   document.getElementById('loading-status').textContent = 'Connecting to Firebase…';
 
   if (!initFirebase()) {
-    showScreen('setup');
+    // Embedded config failed — extremely rare. Show a soft error rather than the setup wizard.
+    document.getElementById('loading-status').textContent = 'Firebase init failed. Refresh to retry.';
     return;
   }
 
