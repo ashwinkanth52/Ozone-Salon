@@ -3264,6 +3264,9 @@ function showSync(status) {
 /* ────────────────────────────────────────────────────
    SCREEN ROUTING
 ──────────────────────────────────────────────────── */
+// Hardware/browser back-button handling — push a history entry per screen so
+// Android's back gesture moves between in-app screens instead of exiting the PWA.
+let _navSuppressHistory = false;   // set true when navigating because of popstate
 function showScreen(name) {
   // Guard sensitive screens — must be signed-in & authorized
   const protectedScreens = ['landing','staff','home','cart','payment','receipt','confirm','admin'];
@@ -3286,7 +3289,60 @@ function showScreen(name) {
   if (name === 'receipt') renderReceipt();
   if (name === 'staff') renderStaffDashboard();
   if (name === 'landing') renderLanding();
+  // Push to browser history so the device back button navigates within the app.
+  // Skip when this navigation was itself triggered by a popstate event.
+  if (!_navSuppressHistory) {
+    try {
+      const cur = (history.state && history.state.screen) || null;
+      if (cur !== name) {
+        history.pushState({ screen: name }, '', '#' + name);
+      }
+    } catch(e) {}
+  }
 }
+
+/* Map of where each screen should go when the user presses back. */
+function _backTargetForScreen(name) {
+  switch (name) {
+    case 'home':     return 'staff';
+    case 'cart':     return 'home';
+    case 'payment':  return 'cart';
+    case 'confirm':  return 'payment';
+    case 'receipt':  return 'landing';
+    case 'admin':    return 'landing';
+    case 'staff':    return 'landing';
+    case 'no-access':return 'auth';
+    default:         return null; // landing / auth → no further back
+  }
+}
+
+window.addEventListener('popstate', (ev) => {
+  // Prefer the screen the browser is moving us back to; otherwise compute target.
+  let target = (ev.state && ev.state.screen) || null;
+  if (!target) target = _backTargetForScreen(state.screen);
+  // If we're already on the landing/auth screen and back is pressed, push the
+  // entry back so the next back press doesn't exit the PWA either. Show a toast
+  // the first time so the user knows they're at the root.
+  if (!target || target === state.screen) {
+    if (state.screen === 'landing' || state.screen === 'auth') {
+      try { history.pushState({ screen: state.screen }, '', '#' + state.screen); } catch(e) {}
+      // Optional UX: brief hint
+      if (typeof toast === 'function') toast('You are at the home screen');
+      return;
+    }
+    target = _backTargetForScreen(state.screen) || 'landing';
+  }
+  // If a modal is open, close it instead of navigating screens.
+  const openModalEl = document.querySelector('.modal-backdrop.active');
+  if (openModalEl) {
+    openModalEl.classList.remove('active');
+    // Re-push so the next back still works for screen nav
+    try { history.pushState({ screen: state.screen }, '', '#' + state.screen); } catch(e) {}
+    return;
+  }
+  _navSuppressHistory = true;
+  try { showScreen(target); } finally { _navSuppressHistory = false; }
+});
 
 function renderReceipt() {
   const el = document.getElementById('receipt-total');
