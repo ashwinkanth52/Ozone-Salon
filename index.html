@@ -255,10 +255,6 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 /* STAFF DASHBOARD */
 .staff-section{padding:22px 18px;}
 .section-title{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:16px;font-weight:500;letter-spacing:-.01em;}
-.footfall-card{background:linear-gradient(135deg,var(--surface) 0%,var(--surface-2) 100%);border:1px solid var(--line-soft);border-radius:var(--radius-lg);padding:24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;box-shadow:var(--shadow-card);}
-.footfall-num{font-family:var(--serif);font-size:52px;color:var(--ink);font-weight:500;letter-spacing:-.03em;line-height:1;}
-.footfall-label{font-size:10px;color:var(--muted);letter-spacing:.22em;text-transform:uppercase;margin-top:7px;font-weight:600;}
-.footfall-controls{display:flex;gap:8px;}
 .fc-btn{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:22px;display:flex;align-items:center;justify-content:center;color:var(--ink);font-weight:300;box-shadow:var(--shadow-soft);}
 .fc-btn:active{background:var(--ink);color:#FFF;border-color:var(--ink);}
 /* ATTENDANCE — refined card */
@@ -1252,7 +1248,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
       </div>
       <div class="landing-btn-text">
         <div class="landing-btn-label">Staff Counter</div>
-        <div class="landing-btn-sub">Attendance · Billing · Footfall</div>
+        <div class="landing-btn-sub">Attendance · Billing</div>
       </div>
     </button>
 
@@ -1295,18 +1291,6 @@ img, video, canvas, svg{max-width:100%;height:auto;}
   </div>
 
   <div class="staff-section">
-    <!-- Footfall counter -->
-    <div class="footfall-card">
-      <div>
-        <div class="footfall-num" id="footfall-count">0</div>
-        <div class="footfall-label">Customers Today</div>
-      </div>
-      <div class="footfall-controls">
-        <button class="fc-btn" onclick="changeFootfall(-1)">−</button>
-        <button class="fc-btn" onclick="changeFootfall(1)">+</button>
-      </div>
-    </div>
-
     <!-- New bill button -->
     <button class="new-bill-cta" onclick="showScreen('home')">
       ✦ New Customer Bill
@@ -1883,7 +1867,6 @@ const SK = {
   SETUP:     'oz_setup_done',
   FB_CONFIG: 'oz_fb_config',
   ATT:       'oz_attendance_today',
-  FOOTFALL:  'oz_footfall_today',
 };
 
 // Firestore collection names
@@ -2631,7 +2614,6 @@ let state = {
   discountType: 'flat',
   todayStr: todayISO(),
   attendanceCache: {},  // staffName → checkInTime
-  footfallCount: 0,
   paymentMethod: 'UPI',
   dashboardMonth: todayISO().slice(0, 7),
   dashboardStaff: 'all',
@@ -3052,16 +3034,6 @@ async function fbUpsertStaffAttendance(staffName, attData) {
   return false;
 }
 
-async function fbUpsertFootfall(date, count) {
-  if (!db) return false;
-  showSync('syncing');
-  try {
-    await db.collection(COL.FOOTFALL).doc(date).set({ date, count });
-    showSync('ok');
-    return true;
-  } catch(e) { showSync('error'); return false; }
-}
-
 async function fbIncrementEMIPaid(emiId) {
   if (!db) return false;
   showSync('syncing');
@@ -3313,11 +3285,10 @@ function renderAuth() {
 async function init() {
   document.getElementById('loading-status').textContent = 'Checking setup…';
 
-  // Load today's attendance + footfall from localStorage cache
+  // Load today's attendance from localStorage cache
   try {
     const attCache = JSON.parse(localStorage.getItem(SK.ATT + state.todayStr) || '{}');
     state.attendanceCache = attCache;
-    state.footfallCount = parseInt(localStorage.getItem(SK.FOOTFALL + state.todayStr) || '0');
   } catch(e) {}
 
   // Firebase config is baked in — mark setup complete on every device.
@@ -3607,9 +3578,6 @@ function enterAdmin() {
    STAFF DASHBOARD
 ──────────────────────────────────────────────────── */
 function renderStaffDashboard() {
-  // Footfall
-  document.getElementById('footfall-count').textContent = state.footfallCount;
-
   // Hero date
   const heroDate = document.getElementById('staff-hero-date');
   if (heroDate) {
@@ -4099,13 +4067,6 @@ function renderAttCard(s, att, status) {
         ${quick}${editBtn}
       </div>
     </div>`;
-}
-
-function changeFootfall(delta) {
-  state.footfallCount = Math.max(0, state.footfallCount + delta);
-  document.getElementById('footfall-count').textContent = state.footfallCount;
-  localStorage.setItem(SK.FOOTFALL + state.todayStr, state.footfallCount);
-  fbUpsertFootfall(state.todayStr, state.footfallCount);
 }
 
 /* ────────────────────────────────────────────────────
@@ -5760,15 +5721,14 @@ async function renderAdminDashboard() {
     <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching numbers…</div>
   `;
 
-  let txs, variable, fixed, salaries, emi, footfalls, advances, attendanceRows;
+  let txs, variable, fixed, salaries, emi, advances, attendanceRows;
   try {
-    [txs, variable, fixed, salaries, emi, footfalls, advances, attendanceRows] = await Promise.all([
+    [txs, variable, fixed, salaries, emi, advances, attendanceRows] = await Promise.all([
       fbQueryByMonth(COL.TRANSACTIONS, ym),
       fbQueryByMonth(COL.EXPENSES, ym),
       fbGetCollection(COL.FIXED),
       fbGetCollection(COL.SALARIES),
       fbGetCollection(COL.EMI),
-      fbGetCollection(COL.FOOTFALL),
       fbQueryByMonth(COL.ADVANCES, ym),
       fbQueryByMonth(COL.ATTENDANCE, ym),
     ]);
@@ -5831,9 +5791,6 @@ async function renderAdminDashboard() {
     const m = normalizePaymentMethod(t.paymentMethod);
     paymentMonth[m] += parseFloat(t.total) || 0;
   });
-  const footfall    = (footfalls || [])
-    .filter(r => String(r.date || '').startsWith(ym))
-    .reduce((s, r) => s + (parseInt(r.count) || 0), 0);
   const plPct = revenue > 0 ? Math.min(100, Math.round((revenue / (totalExpenses || 1)) * 100)) : 0;
   const isProfit = netPL >= 0;
 
@@ -5998,11 +5955,6 @@ async function renderAdminDashboard() {
         <div class="erp-label">Attendance Entries</div>
         <div class="erp-value">${fmt((attendanceRows || []).length)}</div>
         <div class="erp-sub">Check-ins logged</div>
-      </div>
-      <div class="erp-card">
-        <div class="erp-label">Door Footfall</div>
-        <div class="erp-value">${fmt(footfall)}</div>
-        <div class="erp-sub">Walk-ins this month</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Avg Bill Value</div>
@@ -7784,12 +7736,11 @@ async function renderAdminAnalytics() {
     <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching data…</div>
   `;
 
-  let txs = [], txsPrev = [], footfalls = [];
+  let txs = [], txsPrev = [];
   try {
-    [txs, txsPrev, footfalls] = await Promise.all([
+    [txs, txsPrev] = await Promise.all([
       fbQueryByMonth(COL.TRANSACTIONS, ym),
       fbQueryByMonth(COL.TRANSACTIONS, prevYM),
-      fbGetCollection(COL.FOOTFALL),
     ]);
   } catch(e) {
     host.innerHTML += `<div class="muted-text center">⚠️  Failed to load analytics.</div>`;
@@ -7810,15 +7761,6 @@ async function renderAdminAnalytics() {
   // Count UNIQUE customers (those who provided phone #)
   const uniqueCustomers = new Set(txs.filter(t => t.customerId).map(t => t.customerId)).size;
   const uniqueCustomersPrev = new Set(txsPrev.filter(t => t.customerId).map(t => t.customerId)).size;
-
-  // Footfall (current + prev)
-  const ff = (m) => (footfalls||[])
-    .filter(r => String(r.date||'').startsWith(m))
-    .reduce((s,r)=>s+(parseInt(r.count)||0),0);
-  const footfallTotal = ff(ym);
-  const footfallPrev  = ff(prevYM);
-  const conversion    = footfallTotal > 0 ? Math.round((txCount / footfallTotal) * 100) : 0;
-  const conversionPrev= footfallPrev > 0 ? Math.round((txCountPrev / footfallPrev) * 100) : 0;
 
   // Trend deltas
   function deltaPill(now, prev) {
@@ -7944,8 +7886,6 @@ async function renderAdminAnalytics() {
       { Metric:'Transactions',            Value:txCount,         Previous:txCountPrev },
       { Metric:'Unique Customers',        Value:uniqueCustomers, Previous:uniqueCustomersPrev },
       { Metric:'Average Bill',            Value:avgBill,         Previous:avgBillPrev },
-      { Metric:'Footfall',                Value:footfallTotal,   Previous:footfallPrev },
-      { Metric:'Bill Conversion %',       Value:conversion,      Previous:conversionPrev },
       { Metric:'Commissions',             Value:totalCommission, Previous:'' },
       { Metric:'Discounts',               Value:totalDiscount,   Previous:'' },
     ],
@@ -7976,11 +7916,6 @@ async function renderAdminAnalytics() {
         <div class="erp-label">Unique Customers</div>
         <div class="erp-value">${uniqueCustomers}</div>
         <div class="erp-sub">${deltaPill(uniqueCustomers, uniqueCustomersPrev)} (with phone)</div>
-      </div>
-      <div class="erp-card">
-        <div class="erp-label">Footfall</div>
-        <div class="erp-value">${footfallTotal}</div>
-        <div class="erp-sub">${conversion}% conv · ${deltaPill(footfallTotal, footfallPrev)}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Avg Bill</div>
@@ -9111,12 +9046,10 @@ async function resetTestData() {
     // 3) Clear local caches that mirror this data.
     try {
       localStorage.removeItem(SK.ATT);
-      localStorage.removeItem(SK.FOOTFALL);
     } catch (_) {}
 
     // 4) Reset in-memory state so UI doesn't flash stale rows.
     state.attendanceCache = {};
-    state.footfallCount = 0;
     state.cart = [];
     state.discount = null;
 
