@@ -298,6 +298,20 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .att-sheet-meta strong{color:var(--ink);font-weight:600;}
 .att-card{cursor:pointer;}
 .att-card:active{transform:scale(.997);}
+.att-card.is-done,.att-card.is-leave{cursor:default;}
+.att-card.is-done:active,.att-card.is-leave:active{transform:none;}
+
+/* HOLD-TO-CONFIRM action button */
+.att-hold{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+.att-hold::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.22);transform-origin:left center;transform:scaleX(0);transition:transform 0s linear;pointer-events:none;}
+.att-hold.holding::before{transform:scaleX(1);transition:transform .65s linear;}
+.att-hold.att-btn-success::before{background:rgba(255,255,255,.30);}
+.att-hold .att-hold-label{position:relative;z-index:1;}
+.att-hold-hint{display:block;font-size:8.5px;letter-spacing:.20em;font-weight:600;opacity:.75;margin-top:2px;text-transform:uppercase;}
+
+/* Lock badge for finalized rows */
+.att-lock{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-left:6px;}
+.att-lock-icon{font-size:10px;}
 .new-bill-cta{width:100%;padding:18px;border-radius:14px;background:linear-gradient(135deg,var(--ink) 0%,#2d2d2d 100%);color:#FFF;font-size:12.5px;font-weight:700;text-align:center;letter-spacing:.18em;text-transform:uppercase;margin-top:8px;box-shadow:0 6px 20px rgba(26,26,26,.18);}
 .new-bill-cta:active{background:#000;}
 
@@ -3372,6 +3386,7 @@ function renderStaffDashboard() {
       (cPending ? `<span class="att-chip pending"><span class="dot"></span><strong>${cPending}</strong> Pending</span>` : '');
   }
   host.innerHTML = cards.join('');
+  _attBindHold();
 
   // Staff receipt dropdown
   const sel = document.getElementById('receipt-staff');
@@ -3416,6 +3431,88 @@ async function attQuickCheckOut(staffName) {
   _attStampAudit(ctx.rec);
   await _attPersist(ctx, staffName);
   toast(staffName + ' checked out ✓');
+}
+
+/* ──────────── ACCIDENTAL-CLICK PROTECTION ────────────
+   1. Hold-to-confirm: action buttons require ~600ms press.
+   2. Tap intent delay: card tap waits 220ms before opening sheet
+      (filters scroll/swipe noise).
+   3. Idempotency: if attendance changed in the last 30s, ask before
+      another quick action.
+   4. Locked rows (Completed/On Leave) ignore card taps entirely;
+      Edit must be pressed explicitly.
+─────────────────────────────────────────────────────── */
+
+const ATT_HOLD_MS = 600;
+const ATT_RECENT_GUARD_MS = 30 * 1000;
+let _attHoldTimer = null;
+let _attHoldEl = null;
+
+function _attBindHold() {
+  if (window.__attHoldBound) return;
+  window.__attHoldBound = true;
+  const start = (ev) => {
+    const btn = ev.target.closest('.att-hold');
+    if (!btn) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    _attHoldEl = btn;
+    btn.classList.add('holding');
+    if (navigator.vibrate) { try { navigator.vibrate(8); } catch(_){} }
+    _attHoldTimer = setTimeout(() => {
+      _attHoldEl = null;
+      btn.classList.remove('holding');
+      if (navigator.vibrate) { try { navigator.vibrate([12,40,12]); } catch(_){} }
+      _attRunHoldAction(btn);
+    }, ATT_HOLD_MS);
+  };
+  const cancel = (ev) => {
+    if (!_attHoldEl) return;
+    _attHoldEl.classList.remove('holding');
+    _attHoldEl = null;
+    clearTimeout(_attHoldTimer);
+    _attHoldTimer = null;
+  };
+  document.addEventListener('pointerdown',   start,  { passive: false });
+  document.addEventListener('pointerup',     cancel);
+  document.addEventListener('pointerleave',  cancel);
+  document.addEventListener('pointercancel', cancel);
+  // Block click that would otherwise fire after hold
+  document.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('.att-hold');
+    if (btn) { ev.preventDefault(); ev.stopPropagation(); }
+  }, true);
+}
+
+async function _attRunHoldAction(btn) {
+  const action = btn.dataset.holdAction;
+  const staff  = btn.dataset.holdStaff;
+  if (!action || !staff) return;
+  if (!await _attRecentGuard(staff)) return;
+  if (action === 'checkin')  return attQuickCheckIn(staff);
+  if (action === 'checkout') return attQuickCheckOut(staff);
+}
+
+async function _attRecentGuard(staffName) {
+  const ctx = _attCtx(staffName); if (!ctx) return true;
+  const last = ctx.rec.markedAt ? new Date(ctx.rec.markedAt).getTime() : 0;
+  if (!last) return true;
+  const ageMs = Date.now() - last;
+  if (ageMs < ATT_RECENT_GUARD_MS) {
+    const secs = Math.max(1, Math.round(ageMs / 1000));
+    return confirm(`${staffName}'s attendance was just updated ${secs}s ago.\n\nApply this change anyway?`);
+  }
+  return true;
+}
+
+let _attTapTimer = null;
+function attCardTap(ev, staffName) {
+  // Ignore taps on buttons/inputs inside the card
+  if (ev.target.closest('button, input, a, .att-menu')) return;
+  // Ignore if a hold is in progress
+  if (_attHoldEl) return;
+  clearTimeout(_attTapTimer);
+  _attTapTimer = setTimeout(() => openAttSheet(staffName), 220);
 }
 
 /* ── attendance helpers ── */
@@ -3684,14 +3781,21 @@ function renderAttCard(s, att, status) {
     leave:   '<span class="att-pill leave"><span class="dot"></span>On Leave</span>',
   })[status];
 
-  // Quick action — single primary button per state for one-tap convenience.
+  // Quick action — single primary button per state. HOLD to confirm (no
+  // accidental taps). Pure tap shows a hint toast instead of firing.
   let quick = '';
   if (status === 'pending') {
-    quick = `<button class="att-btn att-btn-primary" onclick="event.stopPropagation();attQuickCheckIn('${esc(s.name)}')">Check In Now</button>`;
-  } else if (status === 'working') {
-    quick = !outT
-      ? `<button class="att-btn att-btn-success" onclick="event.stopPropagation();attQuickCheckOut('${esc(s.name)}')">Check Out Now</button>`
-      : '';
+    quick = `<button class="att-btn att-btn-primary att-hold"
+      data-hold-action="checkin" data-hold-staff="${esc(s.name)}">
+      <span class="att-hold-label">Check In</span>
+      <span class="att-hold-hint">Hold to confirm</span>
+    </button>`;
+  } else if (status === 'working' && !outT) {
+    quick = `<button class="att-btn att-btn-success att-hold"
+      data-hold-action="checkout" data-hold-staff="${esc(s.name)}">
+      <span class="att-hold-label">Check Out</span>
+      <span class="att-hold-hint">Hold to confirm</span>
+    </button>`;
   }
   const editBtn = `<button class="att-btn att-btn-ghost" onclick="event.stopPropagation();openAttSheet('${esc(s.name)}')">Edit</button>`;
 
@@ -3699,13 +3803,19 @@ function renderAttCard(s, att, status) {
   const outLabel = outT ? `<span class="label">Out</span><span class="val">${esc(outT)}</span>` : `<span class="label">Out</span><span class="val muted">—</span>`;
   const hoursTag = hours ? `<span class="att-hours">${hours}</span>` : '';
 
+  // Finalized rows (Completed / On Leave) are LOCKED — tap-to-open is disabled
+  // to prevent accidental status flips. Edit must be pressed explicitly.
+  const isLocked = (status === 'done' || status === 'leave');
+  const cardClick = isLocked ? '' : `onclick="attCardTap(event,'${esc(s.name)}')"`;
+  const lockBadge = isLocked ? `<span class="att-lock"><span class="att-lock-icon">🔒</span>Locked</span>` : '';
+
   const cls = 'att-card is-' + status;
   return `
-    <div class="${cls}" onclick="openAttSheet('${esc(s.name)}')" title="Tap to edit attendance">
+    <div class="${cls}" ${cardClick} ${isLocked ? '' : `title="Tap to edit attendance"`}>
       <div class="att-card-head">
         <div class="att-avatar">${esc(initials || '?')}</div>
         <div style="flex:1;min-width:0">
-          <div class="att-name">${esc(s.name)}</div>
+          <div class="att-name">${esc(s.name)}${lockBadge}</div>
         </div>
         ${pill}
       </div>
