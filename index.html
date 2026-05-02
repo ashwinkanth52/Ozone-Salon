@@ -543,7 +543,8 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .svc-plus:active{background:var(--champagne);transform:scale(.9);}
 .svc-minus[disabled],.svc-minus.is-disabled{opacity:.32;pointer-events:none;background:transparent;box-shadow:none;}
 .svc-qty-num{color:var(--ink);font-size:14px;font-weight:700;min-width:18px;text-align:center;font-variant-numeric:tabular-nums;}
-.cart-float{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:488px;background:var(--ink);color:#FFF;padding:14px 20px;border-radius:50px;display:none;align-items:center;justify-content:space-between;box-shadow:var(--shadow-float);z-index:20;animation:slideUp .3s ease;}
+.cart-float{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:488px;background:var(--ink);color:#FFF;padding:14px 20px;border-radius:50px;display:none;align-items:center;justify-content:space-between;box-shadow:var(--shadow-float);z-index:20;animation:slideUp .3s ease;border:none;font:inherit;text-align:left;cursor:pointer;}
+.cart-float:focus-visible{outline:2px solid var(--champagne);outline-offset:3px;}
 .cart-float.visible{display:flex;}
 @keyframes slideUp{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 .cart-count-badge{background:var(--champagne);color:#FFF;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;}
@@ -1235,13 +1236,13 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div class="tabs-chev" aria-hidden="true">›</div>
   </div>
   <div class="service-list" id="service-list"></div>
-  <div class="cart-float" id="cart-float" onclick="showScreen('cart')">
+  <button type="button" class="cart-float" id="cart-float" onclick="showScreen('cart')" aria-label="View bill">
     <div style="display:flex;align-items:center;gap:12px;">
       <div class="cart-count-badge" id="cart-count">0</div>
       <div class="cart-float-total">₹<span id="cart-float-amount">0</span></div>
     </div>
     <div style="font-size:14px;letter-spacing:.04em;">View Bill →</div>
-  </div>
+  </button>
 </section>
 
 <!-- ═══════════════════════════════════════════════════
@@ -2495,6 +2496,7 @@ let state = {
   dashboardStaff: 'all',
   txInFlight: false,    // guard against double-submit on receipt screen
   expInFlight: false,   // guard for expense save
+  _svcCollapsed: {},    // Setup tab: which service categories are collapsed
 };
 
 function loadConfig() {
@@ -2877,29 +2879,36 @@ async function fbUpsertAttendance(row) {
 }
 
 async function fbUpsertStaffAttendance(staffName, attData) {
-  // Save attendance as part of staff member's record (in STAFF collection)
+  // Save attendance as part of staff member's record (in STAFF collection).
+  // Retries transient failures with exponential backoff. Returns true on success.
   if (!db) return false;
-  try {
-    const staffDoc = await db.collection(COL.STAFF).where('name', '==', staffName).limit(1).get();
-    if (staffDoc.empty) return false;
-    const staffId = staffDoc.docs[0].id;
-    const staffData = staffDoc.docs[0].data();
-    
-    // Update staff attendance array
-    if (!staffData.attendance) staffData.attendance = [];
-    const idx = staffData.attendance.findIndex(a => a.date === attData.date);
-    if (idx >= 0) {
-      staffData.attendance[idx] = attData;
-    } else {
-      staffData.attendance.push(attData);
+  const MAX_ATTEMPTS = 3;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const staffDoc = await db.collection(COL.STAFF).where('name', '==', staffName).limit(1).get();
+      if (staffDoc.empty) return false;
+      const staffId = staffDoc.docs[0].id;
+      const staffData = staffDoc.docs[0].data();
+      if (!staffData.attendance) staffData.attendance = [];
+      const idx = staffData.attendance.findIndex(a => a.date === attData.date);
+      if (idx >= 0) staffData.attendance[idx] = attData;
+      else staffData.attendance.push(attData);
+      await db.collection(COL.STAFF).doc(staffId).update({ attendance: staffData.attendance });
+      return true;
+    } catch (e) {
+      lastErr = e;
+      const code = (e && (e.code || e.name)) || '';
+      // Don't retry on permission / not-found / invalid-argument errors.
+      if (/permission-denied|not-found|invalid-argument|unauthenticated/i.test(code)) break;
+      if (attempt < MAX_ATTEMPTS) {
+        const delay = 250 * Math.pow(2, attempt - 1); // 250ms, 500ms, 1000ms
+        await new Promise(r => setTimeout(r, delay));
+      }
     }
-    
-    await db.collection(COL.STAFF).doc(staffId).update({ attendance: staffData.attendance });
-    return true;
-  } catch(e) { 
-    console.error('fbUpsertStaffAttendance error:', e);
-    return false; 
   }
+  console.error('fbUpsertStaffAttendance failed after retries:', lastErr);
+  return false;
 }
 
 async function fbUpsertFootfall(date, count) {
@@ -3665,8 +3674,16 @@ function _attTimeToMins(s) {
   if (!m) return null;
   let h = +m[1], mm = +m[2];
   const ap = (m[3] || '').toLowerCase();
-  if (ap === 'pm' && h < 12) h += 12;
-  if (ap === 'am' && h === 12) h = 0;
+  // Validate ranges before AM/PM normalisation.
+  if (mm < 0 || mm > 59) return null;
+  if (ap) {
+    if (h < 1 || h > 12) return null;
+    if (ap === 'pm' && h < 12) h += 12;
+    if (ap === 'am' && h === 12) h = 0;
+  } else {
+    // 24-hour input.
+    if (h < 0 || h > 23) return null;
+  }
   return h * 60 + mm;
 }
 
@@ -8921,6 +8938,30 @@ function handlePinComplete() {
 ──────────────────────────────────────────────────── */
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+/* Global ESC handler — closes the top-most active modal. Skips when focus is
+   in a non-empty input so ESC doesn't fight native field clearing. */
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const ae = document.activeElement;
+  const tag = ae && ae.tagName;
+  if (tag === 'INPUT' && ae.value) return;
+  if (tag === 'TEXTAREA' && ae.value) return;
+  const open = document.querySelectorAll('.modal-backdrop.active');
+  if (!open.length) return;
+  const top = open[open.length - 1];
+  top.classList.remove('active');
+  e.preventDefault();
+});
+
+/* Click-outside-to-dismiss for modal backdrops (skipped on PIN modal because
+   accidental dismissal there is risky). */
+document.addEventListener('click', (e) => {
+  const t = e.target;
+  if (!t || !t.classList || !t.classList.contains('modal-backdrop')) return;
+  if (t.id === 'modal-pin') return;
+  t.classList.remove('active');
+});
 
 /* ────────────────────────────────────────────────────
    TOAST
