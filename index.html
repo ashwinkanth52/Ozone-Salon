@@ -556,7 +556,7 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
   padding:0;
   z-index:1;
 }
-.service-name{display:block;max-width:100%;font-size:13.5px;color:var(--ink);font-weight:800;letter-spacing:-.005em;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.service-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-width:100%;font-size:13.5px;color:var(--ink);font-weight:800;letter-spacing:-.005em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;word-break:break-word;}
 .service-desc{display:none;}
 .service-meta-row{display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;}
 .service-price{font-size:13px;color:var(--champagne-deep);font-family:var(--serif);font-weight:700;letter-spacing:.01em;}
@@ -566,6 +566,11 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
   display:flex;align-items:center;gap:4px;
   background:var(--surface-2);border-radius:999px;padding:3px;
 }
+/* Collapsed state when qty is 0 — only the + button shows, no pill background */
+.svc-ctrl.is-empty{background:transparent;padding:0;gap:0;}
+.svc-ctrl.is-empty .svc-minus,
+.svc-ctrl.is-empty .svc-qty-num{display:none;}
+.svc-ctrl.is-empty .svc-plus{width:36px;height:36px;flex:0 0 36px;}
 .svc-minus,.svc-plus{
   width:30px;height:30px;min-height:30px;border-radius:50%;
   background:#FFF;color:var(--ink);font-size:16px;line-height:1;
@@ -4431,7 +4436,7 @@ function _buildServiceItemEl(svc, cat, idx) {
           ${dur ? `<span class="service-dur">${dur}</span>` : ''}
         </div>
       </div>
-      <div class="svc-ctrl" data-cat="${escAttr(cat)}" data-idx="${idx}" onclick="event.stopPropagation()">
+      <div class="svc-ctrl ${qty>0?'':'is-empty'}" data-cat="${escAttr(cat)}" data-idx="${idx}" onclick="event.stopPropagation()">
         <button class="svc-minus" ${dis} aria-label="Remove one" onclick="event.stopPropagation();decrementService('${escAttr(cat)}',${idx})">&#x2212;</button>
         <span class="svc-qty-num">${qty}</span>
         <button class="svc-plus" aria-label="Add one" onclick="event.stopPropagation();addToCart('${escAttr(cat)}',${idx})">+</button>
@@ -4554,7 +4559,7 @@ function refreshServiceAddIndicators() {
     if (!svc) return;
     const qty = getServiceQtyInCart(svc.name);
     const dis = qty > 0 ? '' : 'disabled';
-    ctrl.className = 'svc-ctrl';
+    ctrl.className = 'svc-ctrl' + (qty > 0 ? '' : ' is-empty');
     ctrl.innerHTML = `<button class="svc-minus" ${dis} aria-label="Remove one" onclick="event.stopPropagation();decrementService('${escAttr(cat)}',${idx})">&#x2212;</button><span class="svc-qty-num">${qty}</span><button class="svc-plus" aria-label="Add one" onclick="event.stopPropagation();addToCart('${escAttr(cat)}',${idx})">+</button>`;
   });
   // Keep shortcut chip qty badges in sync
