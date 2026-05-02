@@ -363,6 +363,8 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 
 /* BILLING HERO STRIP */
 .billing-hero{position:relative;height:126px;overflow:hidden;background-color:#1a1a1a;background-image:linear-gradient(155deg,rgba(17,17,17,.55) 0%,rgba(45,32,24,.28) 100%),url('https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=1280');background-size:cover;background-position:center;background-repeat:no-repeat;}
+/* Sticky billing header: hero + tabs + search stay pinned while scrolling services */
+.billing-sticky{position:sticky;top:0;z-index:20;background:var(--bg);box-shadow:0 4px 14px -10px rgba(0,0,0,.18);}
 
 /* ADMIN HERO — image + tagline per active tab */
 .admin-hero{position:relative;height:148px;overflow:hidden;background-color:#221911;background-size:cover;background-position:center;background-repeat:no-repeat;transition:background-image .35s ease;}
@@ -1376,24 +1378,26 @@ img, video, canvas, svg{max-width:100%;height:auto;}
     </div>
     <div style="width:44px"></div>
   </div>
-  <!-- Billing hero strip -->
-  <div class="billing-hero">
-    <div class="billing-hero-overlay"></div>
-    <div class="billing-hero-content">
-      <div class="billing-hero-eyebrow">Curated Services</div>
-      <div class="billing-hero-title">Choose &amp; build the bill</div>
+  <!-- Frozen header: hero + tabs + search stay pinned while scrolling services -->
+  <div class="billing-sticky">
+    <div class="billing-hero">
+      <div class="billing-hero-overlay"></div>
+      <div class="billing-hero-content">
+        <div class="billing-hero-eyebrow">Curated Services</div>
+        <div class="billing-hero-title">Choose &amp; build the bill</div>
+      </div>
     </div>
-  </div>
-  <div class="segment-row" id="segment-row"></div>
-  <div class="tabs-wrap" id="service-tabs-wrap">
-    <div class="tabs" id="service-tabs"></div>
-    <div class="tabs-chev" aria-hidden="true">›</div>
-  </div>
-  <div class="svc-shortcuts-bar" id="svc-shortcuts-bar"></div>
-  <div class="svc-search-wrap">
-    <svg class="svc-search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="16.5" y2="16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <input id="svc-search-billing" class="svc-search-bill" type="search" inputmode="search" placeholder="Search any service…" autocomplete="off" oninput="onBillingSearchInput(this.value)">
-    <button class="svc-search-clear" id="svc-search-clear" aria-label="Clear" type="button" onclick="clearBillingSearch()">×</button>
+    <div class="segment-row" id="segment-row"></div>
+    <div class="tabs-wrap" id="service-tabs-wrap">
+      <div class="tabs" id="service-tabs"></div>
+      <div class="tabs-chev" aria-hidden="true">›</div>
+    </div>
+    <div class="svc-shortcuts-bar" id="svc-shortcuts-bar"></div>
+    <div class="svc-search-wrap">
+      <svg class="svc-search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="16.5" y2="16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="svc-search-billing" class="svc-search-bill" type="search" inputmode="search" placeholder="Search any service…" autocomplete="off" oninput="onBillingSearchInput(this.value)">
+      <button class="svc-search-clear" id="svc-search-clear" aria-label="Clear" type="button" onclick="clearBillingSearch()">×</button>
+    </div>
   </div>
   <div class="service-list" id="service-list"></div>
   <button type="button" class="cart-float" id="cart-float" onclick="showScreen('cart')" aria-label="View bill">
