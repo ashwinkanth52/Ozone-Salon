@@ -8967,6 +8967,28 @@ function renderAdminSecurity() {
       <textarea id="update-fb-config" class="setup-input" rows="6" style="margin-top:10px;font-family:monospace;font-size:12px;resize:vertical;">${esc(JSON.stringify(fbConfig() || {}, null, 2))}</textarea>
       <button class="btn btn-secondary" style="margin-top:10px;width:100%" onclick="updateFirebaseConfig()">Update Firebase Config</button>
     </div>
+
+    <div class="separator"></div>
+    <div class="setting-row" style="border:1px solid rgba(166,85,85,.35);background:rgba(166,85,85,.04);border-radius:14px;padding:16px;">
+      <label class="setting-label" style="color:var(--danger);">Danger Zone — Clear Test Data</label>
+      <div class="muted-text" style="margin-top:6px;line-height:1.55">
+        Wipes <b>all transactional records</b> created during testing so a real customer can start fresh.<br><br>
+        <b>Will be deleted (Firebase + local):</b><br>
+        • All bills / transactions<br>
+        • All expenses<br>
+        • All footfall counts<br>
+        • All staff advances<br>
+        • All customers<br>
+        • All audit logs<br>
+        • All staff attendance entries (staff list itself is kept)<br><br>
+        <b>Will be preserved:</b> Services &amp; prices, staff list, fixed expenses, EMI, salaries, shop config, PINs, Firebase config.
+      </div>
+      <div style="margin-top:14px;">
+        <label class="muted-text" style="font-size:12px">Type <b>RESET TEST DATA</b> to confirm:</label>
+        <input type="text" id="reset-confirm-phrase" class="setup-input" placeholder="RESET TEST DATA" autocomplete="off" autocapitalize="characters" spellcheck="false" style="margin-top:6px;letter-spacing:.05em;">
+      </div>
+      <button class="btn" id="reset-test-data-btn" style="margin-top:12px;width:100%;background:var(--danger);color:#FFF;" onclick="resetTestData()">Permanently Clear Test Data</button>
+    </div>
   `;
 }
 
@@ -9004,6 +9026,110 @@ function updateFirebaseConfig() {
   localStorage.setItem(SK.FB_CONFIG, JSON.stringify(cfg));
   toast('Firebase config updated. Reloading…');
   setTimeout(() => location.reload(), 800);
+}
+
+/* ────────────────────────────────────────────────────
+   DANGER ZONE — Clear all test/transactional data so a
+   real customer can start with a clean slate. Preserves
+   services, prices, staff, fixed costs, EMI, config.
+──────────────────────────────────────────────────── */
+async function _wipeCollection(coll) {
+  // Page through and batch-delete every doc in a collection.
+  if (!db) return 0;
+  let deleted = 0;
+  while (true) {
+    const snap = await db.collection(coll).limit(400).get();
+    if (snap.empty) break;
+    const batch = db.batch();
+    snap.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+    deleted += snap.size;
+    if (snap.size < 400) break;
+  }
+  return deleted;
+}
+
+async function resetTestData() {
+  // Gate 1 — admin role check.
+  if (!hasRoleAdmin || (typeof hasRoleAdmin === 'function' && !hasRoleAdmin())) {
+    toast('Admin access required'); return;
+  }
+  // Gate 2 — typed confirmation phrase.
+  const phrase = (document.getElementById('reset-confirm-phrase')?.value || '').trim().toUpperCase();
+  if (phrase !== 'RESET TEST DATA') {
+    toast('Type RESET TEST DATA to confirm'); return;
+  }
+  // Gate 3 — admin PIN re-prompt.
+  const pin = window.prompt('Re-enter Admin PIN to confirm permanent deletion:');
+  if (pin == null) return;
+  if (pin.trim() !== String(config.adminPin || '')) {
+    toast('Incorrect Admin PIN — aborted'); return;
+  }
+  // Gate 4 — final native confirm.
+  if (!window.confirm('This will permanently delete ALL bills, expenses, attendance, customers, footfall, advances and audit logs.\n\nServices, prices, staff list and shop config will be preserved.\n\nProceed?')) {
+    return;
+  }
+
+  const btn = document.getElementById('reset-test-data-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Clearing…'; }
+  showSync && showSync('syncing');
+
+  const report = {};
+  try {
+    // 1) Wipe transactional collections.
+    const wipeTargets = [
+      ['transactions', COL.TRANSACTIONS],
+      ['expenses',     COL.EXPENSES],
+      ['footfall',     COL.FOOTFALL],
+      ['advances',     COL.ADVANCES],
+      ['customers',    COL.CUSTOMERS],
+      ['audit',        COL.AUDIT],
+      ['attendance',   COL.ATTENDANCE], // legacy top-level collection (if any)
+    ];
+    for (const [label, coll] of wipeTargets) {
+      try { report[label] = await _wipeCollection(coll); }
+      catch (e) { report[label] = 'ERR: ' + (e && e.message || e); }
+    }
+
+    // 2) Strip attendance arrays embedded inside each staff doc.
+    try {
+      const staffSnap = await db.collection(COL.STAFF).get();
+      const batch = db.batch();
+      staffSnap.docs.forEach(d => batch.update(d.ref, { attendance: [] }));
+      if (!staffSnap.empty) await batch.commit();
+      report.staffAttendanceCleared = staffSnap.size;
+    } catch (e) {
+      report.staffAttendanceCleared = 'ERR: ' + (e && e.message || e);
+    }
+
+    // 3) Clear local caches that mirror this data.
+    try {
+      localStorage.removeItem(SK.ATT);
+      localStorage.removeItem(SK.FOOTFALL);
+    } catch (_) {}
+
+    // 4) Reset in-memory state so UI doesn't flash stale rows.
+    state.attendanceCache = {};
+    state.footfallCount = 0;
+    state.cart = [];
+    state.discount = null;
+
+    // 5) Final audit entry (in the now-empty audit log) so the wipe itself
+    //    is traceable for the next operator.
+    try {
+      logAudit && logAudit('danger.resetTestData', null, report);
+    } catch (_) {}
+
+    showSync && showSync('ok');
+    const summary = Object.entries(report).map(([k, v]) => `${k}: ${v}`).join('\n');
+    window.alert('Test data cleared.\n\n' + summary + '\n\nReloading the app…');
+    setTimeout(() => location.reload(), 400);
+  } catch (e) {
+    console.error('resetTestData failed:', e);
+    showSync && showSync('error');
+    toast('Reset failed — check console');
+    if (btn) { btn.disabled = false; btn.textContent = 'Permanently Clear Test Data'; }
+  }
 }
 
 /* ────────────────────────────────────────────────────
