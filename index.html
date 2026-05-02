@@ -469,26 +469,22 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .service-dur{font-size:9.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600;}
 .svc-ctrl{
   position:relative;z-index:2;
-  display:flex;align-items:center;justify-content:flex-end;
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface-2);border-radius:999px;padding:4px;
 }
-.svc-ctrl.active{
-  background:var(--surface-2);border-radius:999px;padding:3px 4px;
-  justify-content:space-between;
-}
-.svc-plus-only{
-  width:30px;height:30px;border-radius:50%;
-  background:var(--ink);color:#FFF;font-size:20px;line-height:1;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.26);font-weight:300;
-}
-.svc-plus-only:active{transform:scale(.88);background:var(--champagne);}
 .svc-minus,.svc-plus{
-  width:26px;height:26px;border-radius:50%;
-  background:#FFF;color:var(--ink);font-size:17px;
+  width:38px;height:38px;min-height:38px;border-radius:50%;
+  background:#FFF;color:var(--ink);font-size:20px;line-height:1;
   display:flex;align-items:center;justify-content:center;font-weight:400;
+  padding:0;flex:0 0 38px;
+  box-shadow:0 1px 3px rgba(0,0,0,.10);
+  transition:transform .12s,background .15s,color .15s;
 }
-.svc-minus:active,.svc-plus:active{background:var(--champagne);transform:scale(.9);}
-.svc-qty-num{color:var(--ink);font-size:13px;font-weight:700;min-width:20px;text-align:center;}
+.svc-plus{background:var(--ink);color:#FFF;box-shadow:0 2px 8px rgba(0,0,0,.22);}
+.svc-minus:active{background:var(--champagne);color:#FFF;transform:scale(.9);}
+.svc-plus:active{background:var(--champagne);transform:scale(.9);}
+.svc-minus[disabled],.svc-minus.is-disabled{opacity:.32;pointer-events:none;background:transparent;box-shadow:none;}
+.svc-qty-num{color:var(--ink);font-size:14px;font-weight:700;min-width:18px;text-align:center;font-variant-numeric:tabular-nums;}
 .cart-float{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:488px;background:var(--ink);color:#FFF;padding:14px 20px;border-radius:50px;display:none;align-items:center;justify-content:space-between;box-shadow:var(--shadow-float);z-index:20;animation:slideUp .3s ease;}
 .cart-float.visible{display:flex;}
 @keyframes slideUp{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
@@ -4008,16 +4004,14 @@ function renderHome() {
           ${dur ? `<span class="service-dur">${dur}</span>` : ''}
         </div>
       </div>
-      ${qty > 0
-        ? `<div class="svc-ctrl active" data-cat="${escAttr(state.tab)}" data-idx="${idx}">
-             <button class="svc-minus" onclick="decrementService('${escAttr(state.tab)}',${idx})">&#x2212;</button>
-             <span class="svc-qty-num">${qty}</span>
-             <button class="svc-plus" onclick="addToCart('${escAttr(state.tab)}',${idx})">+</button>
-           </div>`
-        : `<div class="svc-ctrl" data-cat="${escAttr(state.tab)}" data-idx="${idx}">
-             <button class="svc-plus-only" onclick="addToCart('${escAttr(state.tab)}',${idx})">+</button>
-           </div>`
-      }
+      ${(() => {
+        const dis = qty > 0 ? '' : 'disabled';
+        return `<div class="svc-ctrl" data-cat="${escAttr(state.tab)}" data-idx="${idx}">
+           <button class="svc-minus" ${dis} aria-label="Remove one" onclick="decrementService('${escAttr(state.tab)}',${idx})">&#x2212;</button>
+           <span class="svc-qty-num">${qty}</span>
+           <button class="svc-plus" aria-label="Add one" onclick="addToCart('${escAttr(state.tab)}',${idx})">+</button>
+         </div>`;
+      })()}
     `;
     // Stop shimmer animation once image loads
     const img = new Image();
@@ -4043,13 +4037,9 @@ function refreshServiceAddIndicators() {
     const svc = (config.services[cat] || [])[idx];
     if (!svc) return;
     const qty = getServiceQtyInCart(svc.name);
-    if (qty > 0) {
-      ctrl.className = 'svc-ctrl active';
-      ctrl.innerHTML = `<button class="svc-minus" onclick="decrementService('${escAttr(cat)}',${idx})">&#x2212;</button><span class="svc-qty-num">${qty}</span><button class="svc-plus" onclick="addToCart('${escAttr(cat)}',${idx})">+</button>`;
-    } else {
-      ctrl.className = 'svc-ctrl';
-      ctrl.innerHTML = `<button class="svc-plus-only" onclick="addToCart('${escAttr(cat)}',${idx})">+</button>`;
-    }
+    const dis = qty > 0 ? '' : 'disabled';
+    ctrl.className = 'svc-ctrl';
+    ctrl.innerHTML = `<button class="svc-minus" ${dis} aria-label="Remove one" onclick="decrementService('${escAttr(cat)}',${idx})">&#x2212;</button><span class="svc-qty-num">${qty}</span><button class="svc-plus" aria-label="Add one" onclick="addToCart('${escAttr(cat)}',${idx})">+</button>`;
   });
 }
 
