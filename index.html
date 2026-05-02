@@ -219,14 +219,56 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .footfall-controls{display:flex;gap:8px;}
 .fc-btn{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:22px;display:flex;align-items:center;justify-content:center;color:var(--ink);font-weight:300;box-shadow:var(--shadow-soft);}
 .fc-btn:active{background:var(--ink);color:#FFF;border-color:var(--ink);}
-.attendance-row{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-soft);}
-.att-name{font-weight:600;font-size:14px;color:var(--ink);}
-.att-time{font-size:11px;color:var(--sage);margin-top:3px;letter-spacing:.04em;}
-.att-btn{padding:9px 16px;border-radius:8px;font-size:11.5px;font-weight:700;letter-spacing:.08em;background:var(--ink);color:#FFF;text-transform:uppercase;}
-.att-btn:active{background:#000;}
-.att-btn.checked{background:transparent;color:var(--sage);border:1px solid var(--sage);pointer-events:none;font-weight:600;letter-spacing:.06em;}
-.att-btn.half-day-active{background:var(--sage);color:#FFF;}
-.att-btn.half-day-active:active{background:var(--sage-dark);}
+/* ATTENDANCE — refined card */
+.att-summary{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.att-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line-soft);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.04em;}
+.att-chip strong{color:var(--ink);font-weight:700;font-size:12px;}
+.att-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);}
+.att-chip.present .dot{background:var(--green,#3a8a4e);}
+.att-chip.half .dot{background:var(--sage);}
+.att-chip.leave .dot{background:var(--red,#b14a3e);}
+.att-chip.pending .dot{background:#c9b896;}
+
+.att-card{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px 14px 12px;margin-bottom:9px;box-shadow:var(--shadow-soft);transition:border-color .15s,box-shadow .15s;}
+.att-card.is-done{background:linear-gradient(180deg,var(--surface) 0%,rgba(107,142,107,.04) 100%);}
+.att-card.is-leave{opacity:.78;}
+.att-card-head{display:flex;align-items:center;gap:11px;}
+.att-avatar{width:38px;height:38px;border-radius:50%;background:var(--surface-2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:15px;font-weight:600;flex-shrink:0;border:1px solid var(--line);}
+.att-card.is-done .att-avatar{background:rgba(107,142,107,.14);color:var(--sage-dark,#4d6a4d);border-color:rgba(107,142,107,.32);}
+.att-card.is-working .att-avatar{background:rgba(184,149,106,.12);color:var(--champagne-deep);border-color:rgba(184,149,106,.32);}
+.att-card.is-leave .att-avatar{background:rgba(177,74,62,.08);color:var(--red,#b14a3e);border-color:rgba(177,74,62,.22);}
+.att-name{font-weight:600;font-size:14.5px;color:var(--ink);line-height:1.2;}
+.att-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;background:var(--surface-2);color:var(--muted);border:1px solid var(--line-soft);}
+.att-pill .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.att-pill.working{background:rgba(184,149,106,.10);color:var(--champagne-deep);border-color:rgba(184,149,106,.30);}
+.att-pill.done{background:rgba(107,142,107,.10);color:#4d6a4d;border-color:rgba(107,142,107,.30);}
+.att-pill.half{background:rgba(91,125,184,.10);color:var(--azure,#5b7db8);border-color:rgba(91,125,184,.30);}
+.att-pill.leave{background:rgba(177,74,62,.08);color:var(--red,#b14a3e);border-color:rgba(177,74,62,.24);}
+.att-meta{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;font-size:12px;color:var(--muted);margin-top:8px;padding-left:49px;letter-spacing:.02em;}
+.att-meta .label{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#a89e92;margin-right:5px;font-weight:600;}
+.att-meta .val{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+.att-meta .val.muted{color:#bdb3a4;font-weight:500;}
+.att-hours{margin-left:auto;font-size:11px;font-weight:700;color:var(--sage,#6b8e6b);font-variant-numeric:tabular-nums;letter-spacing:.04em;}
+.att-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;padding-left:49px;}
+.att-btn{padding:9px 14px;border-radius:9px;font-size:11.5px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;line-height:1;}
+.att-btn-primary{background:var(--ink);color:#FFF;}
+.att-btn-primary:active{background:#000;}
+.att-btn-success{background:#3a8a4e;color:#FFF;}
+.att-btn-success:active{background:#2f6f40;}
+.att-btn-warn{background:rgba(91,125,184,.10);color:var(--azure,#5b7db8);border-color:rgba(91,125,184,.32);}
+.att-btn-warn:active{background:rgba(91,125,184,.18);}
+.att-btn-leave{background:transparent;color:var(--muted);border-color:var(--line);}
+.att-btn-leave:active{background:var(--surface-2);}
+.att-btn-ghost{background:transparent;color:var(--muted);border-color:var(--line);font-weight:600;letter-spacing:.06em;}
+.att-btn-ghost:active{background:var(--surface-2);}
+.att-btn-icon{padding:9px 11px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:9px;font-size:15px;line-height:1;}
+.att-btn-icon:active{background:var(--surface-2);}
+.att-menu{position:relative;display:inline-block;}
+.att-menu-list{position:absolute;right:0;top:calc(100% + 4px);min-width:170px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.14);padding:6px;z-index:20;display:none;}
+.att-menu.open .att-menu-list{display:block;animation:fadeIn .15s;}
+.att-menu-item{display:block;width:100%;text-align:left;padding:10px 12px;font-size:13px;color:var(--ink);border-radius:8px;background:transparent;letter-spacing:.01em;font-weight:500;}
+.att-menu-item:hover,.att-menu-item:active{background:var(--surface-2);}
+.att-menu-item.danger{color:var(--red,#b14a3e);}
 .new-bill-cta{width:100%;padding:18px;border-radius:14px;background:linear-gradient(135deg,var(--ink) 0%,#2d2d2d 100%);color:#FFF;font-size:12.5px;font-weight:700;text-align:center;letter-spacing:.18em;text-transform:uppercase;margin-top:8px;box-shadow:0 6px 20px rgba(26,26,26,.18);}
 .new-bill-cta:active{background:#000;}
 
@@ -1022,6 +1064,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
 
   <div class="staff-section">
     <div class="section-title">Today's Attendance</div>
+    <div id="att-summary-strip" class="att-summary"></div>
     <div id="attendance-list">
       <div class="muted-text center" style="padding:20px">No staff configured yet. Ask admin to add staff in Setup.</div>
     </div>
@@ -1289,6 +1332,33 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="closeModal('modal-add-advance')">Cancel</button>
       <button class="btn btn-primary" onclick="saveAdvance()">Save Advance</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: EDIT ATTENDANCE TIMES
+     ═══════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-edit-att">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="edit-att-title">Edit Attendance</div>
+    <div class="muted-text" style="font-size:12px;margin-bottom:14px;line-height:1.5;" id="edit-att-sub"></div>
+    <div class="modal-field">
+      <label class="modal-label">Check In Time</label>
+      <input type="time" class="modal-input" id="edit-att-in">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Check Out Time</label>
+      <input type="time" class="modal-input" id="edit-att-out">
+    </div>
+    <div class="modal-field" style="display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:10px;padding:12px 14px;">
+      <input type="checkbox" id="edit-att-half" style="width:18px;height:18px;accent-color:var(--champagne);">
+      <label for="edit-att-half" style="flex:1;font-size:13.5px;color:var(--ink);font-weight:500;cursor:pointer;">Mark as half-day</label>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('modal-edit-att')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditAttendance()">Save</button>
     </div>
   </div>
 </div>
@@ -3208,37 +3278,31 @@ function renderStaffDashboard() {
 
   // Attendance list
   const host = document.getElementById('attendance-list');
+  const summaryHost = document.getElementById('att-summary-strip');
   if (!config.staff || !config.staff.length) {
     host.innerHTML = '<div class="muted-text center" style="padding:20px">No staff configured. Ask admin to add staff in Setup.</div>';
+    if (summaryHost) summaryHost.innerHTML = '';
     return;
   }
-  host.innerHTML = '';
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  config.staff.forEach(s => {
+  let cPresent = 0, cHalf = 0, cLeave = 0, cPending = 0;
+  const cards = config.staff.map(s => {
     const att = (s.attendance || []).find(a => a.date === today) || {};
-    const hasCheckedIn = !!att.checkInTime;
-    const hasCheckedOut = !!att.checkOutTime;
-    const isHalfDay = !!att.isHalfDay;
-    
-    const div = document.createElement('div');
-    div.className = 'attendance-row';
-    div.innerHTML = `
-      <div style="flex:1">
-        <div class="att-name">${esc(s.name)}</div>
-        <div class="att-time">
-          ${hasCheckedIn ? `✓ In: ${att.checkInTime}` : 'Not checked in'}
-          ${hasCheckedOut ? ` · Out: ${att.checkOutTime}` : ''}
-          ${isHalfDay ? ' · Half Day' : ''}
-        </div>
-      </div>
-      <div style="display:flex;gap:8px">
-        ${!hasCheckedIn ? `<button class="att-btn" onclick="staffCheckIn('${esc(s.name)}')">Check In</button>` : ''}
-        ${hasCheckedIn && !hasCheckedOut ? `<button class="att-btn" onclick="staffCheckOut('${esc(s.name)}')">Check Out</button>` : ''}
-        <button class="att-btn ${isHalfDay ? 'half-day-active' : ''}" onclick="toggleHalfDay('${esc(s.name)}')" title="Mark as half-day">⏰</button>
-      </div>
-    `;
-    host.appendChild(div);
+    const status = attStatus(att); // 'pending' | 'working' | 'done' | 'half' | 'leave'
+    if (status === 'leave') cLeave++;
+    else if (status === 'half') cHalf++;
+    else if (status === 'working' || status === 'done') cPresent++;
+    else cPending++;
+    return renderAttCard(s, att, status);
   });
+  if (summaryHost) {
+    summaryHost.innerHTML =
+      `<span class="att-chip present"><span class="dot"></span><strong>${cPresent}</strong> Present</span>` +
+      (cHalf    ? `<span class="att-chip half"><span class="dot"></span><strong>${cHalf}</strong> Half-day</span>` : '') +
+      (cLeave   ? `<span class="att-chip leave"><span class="dot"></span><strong>${cLeave}</strong> On leave</span>` : '') +
+      (cPending ? `<span class="att-chip pending"><span class="dot"></span><strong>${cPending}</strong> Pending</span>` : '');
+  }
+  host.innerHTML = cards.join('');
 
   // Staff receipt dropdown
   const sel = document.getElementById('receipt-staff');
@@ -3251,71 +3315,264 @@ function renderStaffDashboard() {
 }
 
 async function staffCheckIn(staffName) {
-  if (!config.staff) return;
-  const staffIdx = config.staff.findIndex(s => s.name === staffName);
-  if (staffIdx === -1) return;
-  
-  const today = new Date().toISOString().split('T')[0];
-  const now = new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
-  
-  if (!config.staff[staffIdx].attendance) config.staff[staffIdx].attendance = [];
-  let todayAtt = config.staff[staffIdx].attendance.find(a => a.date === today);
-  if (!todayAtt) {
-    todayAtt = { date: today, checkInTime: now, checkOutTime: null, isHalfDay: false };
-    config.staff[staffIdx].attendance.push(todayAtt);
-  } else {
-    todayAtt.checkInTime = now;
-  }
-  
-  saveConfig();
-  await fbUpsertStaffAttendance(staffName, { date: today, checkInTime: now, checkOutTime: todayAtt.checkOutTime || null, isHalfDay: todayAtt.isHalfDay });
-  renderStaffDashboard();
+  const ctx = _attCtx(staffName); if (!ctx) return;
+  const now = _attNowStr();
+  ctx.rec.checkInTime = now;
+  ctx.rec.status = 'present';
+  await _attPersist(ctx, staffName);
   toast(staffName + ' checked in ✓');
 }
 
 async function staffCheckOut(staffName) {
-  if (!config.staff) return;
-  const staffIdx = config.staff.findIndex(s => s.name === staffName);
-  if (staffIdx === -1) return;
-  
-  const today = new Date().toISOString().split('T')[0];
-  const now = new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
-  
-  if (!config.staff[staffIdx].attendance) config.staff[staffIdx].attendance = [];
-  let todayAtt = config.staff[staffIdx].attendance.find(a => a.date === today);
-  if (todayAtt) {
-    todayAtt.checkOutTime = now;
-  } else {
-    todayAtt = { date: today, checkInTime: null, checkOutTime: now, isHalfDay: false };
-    config.staff[staffIdx].attendance.push(todayAtt);
+  const ctx = _attCtx(staffName); if (!ctx) return;
+  // Mis-tap guard: if just checked in, confirm
+  const inMins = _attTimeToMins(ctx.rec.checkInTime);
+  const nowMins = _attTimeToMins(_attNowStr());
+  if (ctx.rec.checkInTime && (nowMins - inMins) < 2) {
+    if (!confirm(`${staffName} just checked in at ${ctx.rec.checkInTime}.\n\nCheck out now anyway?`)) return;
   }
-  
-  saveConfig();
-  await fbUpsertStaffAttendance(staffName, { date: today, checkInTime: todayAtt.checkInTime || null, checkOutTime: now, isHalfDay: todayAtt.isHalfDay });
-  renderStaffDashboard();
+  ctx.rec.checkOutTime = _attNowStr();
+  await _attPersist(ctx, staffName);
   toast(staffName + ' checked out ✓');
 }
 
 async function toggleHalfDay(staffName) {
-  if (!config.staff) return;
-  const staffIdx = config.staff.findIndex(s => s.name === staffName);
-  if (staffIdx === -1) return;
-  
-  const today = new Date().toISOString().split('T')[0];
-  if (!config.staff[staffIdx].attendance) config.staff[staffIdx].attendance = [];
-  
-  let todayAtt = config.staff[staffIdx].attendance.find(a => a.date === today);
-  if (!todayAtt) {
-    todayAtt = { date: today, checkInTime: null, checkOutTime: null, isHalfDay: true };
-    config.staff[staffIdx].attendance.push(todayAtt);
-  } else {
-    todayAtt.isHalfDay = !todayAtt.isHalfDay;
-  }
-  
+  const ctx = _attCtx(staffName); if (!ctx) return;
+  ctx.rec.isHalfDay = !ctx.rec.isHalfDay;
+  if (ctx.rec.isHalfDay) ctx.rec.status = 'present';
+  await _attPersist(ctx, staffName);
+  toast(staffName + (ctx.rec.isHalfDay ? ' marked as half-day' : ' set to full day'));
+}
+
+async function staffMarkLeave(staffName) {
+  const ctx = _attCtx(staffName); if (!ctx) return;
+  if ((ctx.rec.checkInTime || ctx.rec.checkOutTime) &&
+      !confirm(`${staffName} has check-in/out times today. Mark as On Leave and clear them?`)) return;
+  ctx.rec.checkInTime = null;
+  ctx.rec.checkOutTime = null;
+  ctx.rec.isHalfDay = false;
+  ctx.rec.status = 'leave';
+  await _attPersist(ctx, staffName);
+  toast(staffName + ' marked on leave');
+}
+
+async function staffResetAttendance(staffName) {
+  const ctx = _attCtx(staffName); if (!ctx) return;
+  if (!confirm(`Reset today's attendance for ${staffName}?`)) return;
+  // Remove the row entirely
+  const idx = ctx.staff.attendance.findIndex(a => a.date === ctx.today);
+  if (idx > -1) ctx.staff.attendance.splice(idx, 1);
   saveConfig();
-  await fbUpsertStaffAttendance(staffName, { date: today, checkInTime: todayAtt.checkInTime || null, checkOutTime: todayAtt.checkOutTime || null, isHalfDay: todayAtt.isHalfDay });
+  await fbUpsertStaffAttendance(staffName, { date: ctx.today, checkInTime: null, checkOutTime: null, isHalfDay: false, status: null });
   renderStaffDashboard();
-  toast(staffName + (todayAtt.isHalfDay ? ' marked as half-day' : ' full day'));
+  toast(staffName + ' reset');
+}
+
+/* ── attendance helpers ── */
+function attStatus(att) {
+  if (!att || (!att.checkInTime && !att.checkOutTime && !att.isHalfDay && att.status !== 'leave')) return 'pending';
+  if (att.status === 'leave') return 'leave';
+  if (att.isHalfDay) return 'half';
+  if (att.checkInTime && att.checkOutTime) return 'done';
+  if (att.checkInTime || att.checkOutTime) return 'working';
+  return 'pending';
+}
+
+function _attCtx(staffName) {
+  if (!config.staff) return null;
+  const idx = config.staff.findIndex(s => s.name === staffName);
+  if (idx === -1) return null;
+  const staff = config.staff[idx];
+  if (!staff.attendance) staff.attendance = [];
+  const today = new Date().toISOString().split('T')[0];
+  let rec = staff.attendance.find(a => a.date === today);
+  if (!rec) {
+    rec = { date: today, checkInTime: null, checkOutTime: null, isHalfDay: false };
+    staff.attendance.push(rec);
+  }
+  return { staff, rec, today };
+}
+
+function _attNowStr() {
+  return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+
+function _attTimeToMins(s) {
+  if (!s) return null;
+  // accepts "9:30 AM" / "09:30 am" / "21:30"
+  const m = String(s).trim().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/i);
+  if (!m) return null;
+  let h = +m[1], mm = +m[2];
+  const ap = (m[3] || '').toLowerCase();
+  if (ap === 'pm' && h < 12) h += 12;
+  if (ap === 'am' && h === 12) h = 0;
+  return h * 60 + mm;
+}
+
+function _attDuration(inT, outT) {
+  const a = _attTimeToMins(inT), b = _attTimeToMins(outT);
+  if (a == null || b == null) return '';
+  let diff = b - a;
+  if (diff < 0) diff += 24 * 60; // overnight
+  if (diff <= 0) return '';
+  const h = Math.floor(diff / 60), m = diff % 60;
+  return (h ? h + 'h ' : '') + (m ? m + 'm' : (h ? '' : '0m'));
+}
+
+function _attHHMM(s) {
+  // Convert "9:30 am" -> "09:30" for <input type="time">
+  const mins = _attTimeToMins(s);
+  if (mins == null) return '';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+
+function _attHHMMtoDisplay(hhmm) {
+  // "13:45" -> "1:45 pm"
+  if (!hhmm) return null;
+  const m = hhmm.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  let h = +m[1]; const mm = +m[2];
+  const ap = h >= 12 ? 'pm' : 'am';
+  h = h % 12; if (h === 0) h = 12;
+  return h + ':' + String(mm).padStart(2, '0') + ' ' + ap;
+}
+
+async function _attPersist(ctx, staffName) {
+  saveConfig();
+  await fbUpsertStaffAttendance(staffName, {
+    date: ctx.today,
+    checkInTime: ctx.rec.checkInTime || null,
+    checkOutTime: ctx.rec.checkOutTime || null,
+    isHalfDay: !!ctx.rec.isHalfDay,
+    status: ctx.rec.status || null,
+  });
+  renderStaffDashboard();
+}
+
+function renderAttCard(s, att, status) {
+  const initials = (s.name || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  const inT  = att.checkInTime  || null;
+  const outT = att.checkOutTime || null;
+  const hours = (inT && outT) ? _attDuration(inT, outT) : '';
+
+  const pill = ({
+    pending: '<span class="att-pill"><span class="dot"></span>Pending</span>',
+    working: '<span class="att-pill working"><span class="dot"></span>Working</span>',
+    done:    '<span class="att-pill done"><span class="dot"></span>Completed</span>',
+    half:    '<span class="att-pill half"><span class="dot"></span>Half-day</span>',
+    leave:   '<span class="att-pill leave"><span class="dot"></span>On Leave</span>',
+  })[status];
+
+  let actions = '';
+  if (status === 'pending') {
+    actions =
+      `<button class="att-btn att-btn-primary" onclick="staffCheckIn('${esc(s.name)}')">Check In</button>` +
+      `<button class="att-btn att-btn-warn" onclick="toggleHalfDay('${esc(s.name)}')">Half-day</button>` +
+      `<button class="att-btn att-btn-leave" onclick="staffMarkLeave('${esc(s.name)}')">On Leave</button>`;
+  } else if (status === 'leave') {
+    actions =
+      `<button class="att-btn att-btn-ghost" onclick="staffResetAttendance('${esc(s.name)}')">Undo leave</button>`;
+  } else if (status === 'done') {
+    actions =
+      `<button class="att-btn att-btn-ghost" onclick="openEditAttendance('${esc(s.name)}')">Edit times</button>` +
+      _attMenu(s.name, status);
+  } else { // working OR half (with possibly partial times)
+    if (!outT) {
+      actions = `<button class="att-btn att-btn-success" onclick="staffCheckOut('${esc(s.name)}')">Check Out</button>`;
+    }
+    actions +=
+      `<button class="att-btn att-btn-ghost" onclick="openEditAttendance('${esc(s.name)}')">Edit</button>` +
+      _attMenu(s.name, status);
+  }
+
+  const inLabel  = inT  ? `<span class="label">In</span><span class="val">${esc(inT)}</span>`   : `<span class="label">In</span><span class="val muted">—</span>`;
+  const outLabel = outT ? `<span class="label">Out</span><span class="val">${esc(outT)}</span>` : `<span class="label">Out</span><span class="val muted">—</span>`;
+  const hoursTag = hours ? `<span class="att-hours">${hours}</span>` : '';
+
+  const cls = 'att-card is-' + status;
+  return `
+    <div class="${cls}">
+      <div class="att-card-head">
+        <div class="att-avatar">${esc(initials || '?')}</div>
+        <div style="flex:1;min-width:0">
+          <div class="att-name">${esc(s.name)}</div>
+        </div>
+        ${pill}
+      </div>
+      ${status === 'leave' ? '' : `
+      <div class="att-meta">
+        ${inLabel}
+        ${outLabel}
+        ${hoursTag}
+      </div>`}
+      <div class="att-actions">
+        ${actions}
+      </div>
+    </div>`;
+}
+
+function _attMenu(name, status) {
+  const id = 'attmenu-' + name.replace(/[^a-z0-9]/gi, '_');
+  const halfLabel = status === 'half' ? 'Unmark half-day' : 'Mark half-day';
+  return `
+    <div class="att-menu" id="${id}">
+      <button class="att-btn att-btn-icon" onclick="attMenuToggle(event,'${id}')" aria-label="More">⋯</button>
+      <div class="att-menu-list" onclick="event.stopPropagation()">
+        <button class="att-menu-item" onclick="attMenuClose('${id}');toggleHalfDay('${esc(name)}')">${halfLabel}</button>
+        <button class="att-menu-item" onclick="attMenuClose('${id}');staffMarkLeave('${esc(name)}')">Mark on leave</button>
+        <button class="att-menu-item danger" onclick="attMenuClose('${id}');staffResetAttendance('${esc(name)}')">Reset day</button>
+      </div>
+    </div>`;
+}
+
+function attMenuToggle(ev, id) {
+  ev.stopPropagation();
+  document.querySelectorAll('.att-menu.open').forEach(el => { if (el.id !== id) el.classList.remove('open'); });
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+  if (!window.__attMenuClick) {
+    window.__attMenuClick = true;
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.att-menu.open').forEach(el => el.classList.remove('open'));
+    });
+  }
+}
+function attMenuClose(id) { const el = document.getElementById(id); if (el) el.classList.remove('open'); }
+
+let _editAttStaff = null;
+function openEditAttendance(staffName) {
+  const ctx = _attCtx(staffName); if (!ctx) return;
+  _editAttStaff = staffName;
+  document.getElementById('edit-att-title').textContent = 'Edit Attendance · ' + staffName;
+  document.getElementById('edit-att-sub').textContent  = 'Adjust check-in/out times. Leave a field blank to clear it.';
+  document.getElementById('edit-att-in').value  = _attHHMM(ctx.rec.checkInTime);
+  document.getElementById('edit-att-out').value = _attHHMM(ctx.rec.checkOutTime);
+  document.getElementById('edit-att-half').checked = !!ctx.rec.isHalfDay;
+  openModal('modal-edit-att');
+}
+
+async function saveEditAttendance() {
+  if (!_editAttStaff) return;
+  const ctx = _attCtx(_editAttStaff); if (!ctx) return;
+  const inV  = document.getElementById('edit-att-in').value;
+  const outV = document.getElementById('edit-att-out').value;
+  const half = document.getElementById('edit-att-half').checked;
+  if (inV && outV) {
+    const a = _attTimeToMins(_attHHMMtoDisplay(inV));
+    const b = _attTimeToMins(_attHHMMtoDisplay(outV));
+    if (a != null && b != null && b < a) {
+      if (!confirm('Check-out is earlier than check-in. Save anyway (overnight shift)?')) return;
+    }
+  }
+  ctx.rec.checkInTime  = inV  ? _attHHMMtoDisplay(inV)  : null;
+  ctx.rec.checkOutTime = outV ? _attHHMMtoDisplay(outV) : null;
+  ctx.rec.isHalfDay = half;
+  if (ctx.rec.status === 'leave' && (ctx.rec.checkInTime || ctx.rec.checkOutTime || half)) ctx.rec.status = 'present';
+  closeModal('modal-edit-att');
+  await _attPersist(ctx, _editAttStaff);
+  toast('Attendance updated ✓');
+  _editAttStaff = null;
 }
 
 function changeFootfall(delta) {
@@ -4051,56 +4308,61 @@ async function refreshAttendanceReport() {
   try {
     const allStaff = config.staff || [];
     const rows = [];
-    let checkInCount = 0, checkOutCount = 0, halfDayCount = 0;
-    
+    let cPresent = 0, cHalf = 0, cLeave = 0, cPending = 0, totalMins = 0;
+
     allStaff.forEach(s => {
       const att = (s.attendance || []).find(a => a.date === dateStr) || {};
-      const checkInTime = att.checkInTime || '—';
+      const status = attStatus(att);
+      const checkInTime  = att.checkInTime  || '—';
       const checkOutTime = att.checkOutTime || '—';
-      const isHalfDay = !!att.isHalfDay;
-      
-      if (att.checkInTime) checkInCount++;
-      if (att.checkOutTime) checkOutCount++;
-      if (isHalfDay) halfDayCount++;
-      
-      rows.push({
-        name: s.name,
-        checkInTime,
-        checkOutTime,
-        isHalfDay,
-        status: !att.checkInTime ? 'Absent' : (isHalfDay ? 'Half Day' : 'Full Day')
-      });
+      const hours = (att.checkInTime && att.checkOutTime) ? _attDuration(att.checkInTime, att.checkOutTime) : '';
+      if (hours) {
+        const m = hours.match(/(?:(\d+)h)?\s*(?:(\d+)m)?/);
+        if (m) totalMins += (+(m[1] || 0)) * 60 + (+(m[2] || 0));
+      }
+      if (status === 'leave') cLeave++;
+      else if (status === 'half') cHalf++;
+      else if (status === 'working' || status === 'done') cPresent++;
+      else cPending++;
+
+      const statusLabel = ({pending:'Pending',working:'Working',done:'Full Day',half:'Half Day',leave:'On Leave'})[status];
+      rows.push({ name: s.name, checkInTime, checkOutTime, hours: hours || '—', status: statusLabel, statusKey: status });
     });
-    
-    host.innerHTML = 
-      '<strong style="color:var(--ink);font-size:14px">' + checkInCount + '</strong> checked in · ' +
-      '<strong style="color:var(--ink);font-size:14px">' + checkOutCount + '</strong> checked out · ' +
-      '<strong style="color:var(--ink);font-size:14px">' + halfDayCount + '</strong> half days';
-    
+
+    const totalH = Math.floor(totalMins / 60), totalM = totalMins % 60;
+    host.innerHTML =
+      '<strong style="color:var(--ink);font-size:14px">' + cPresent + '</strong> present · ' +
+      '<strong style="color:var(--ink);font-size:14px">' + cHalf + '</strong> half · ' +
+      '<strong style="color:var(--ink);font-size:14px">' + cLeave + '</strong> leave · ' +
+      '<strong style="color:var(--ink);font-size:14px">' + cPending + '</strong> pending · ' +
+      '<strong style="color:var(--ink);font-size:14px">' + (totalMins ? totalH + 'h ' + totalM + 'm' : '0m') + '</strong> total hours';
+
     const tableHost = document.getElementById('att-table');
     if (!rows.length) {
       tableHost.innerHTML = '<div class="muted-text center" style="padding:24px">No staff configured.</div>';
       return;
     }
-    
+
     let html = '<table class="att-table" style="width:100%;border-collapse:collapse;font-size:13px">' +
       '<thead><tr style="border-bottom:2px solid var(--line)">' +
         '<th style="text-align:left;padding:8px;font-weight:600;color:var(--ink)">Staff Name</th>' +
         '<th style="text-align:center;padding:8px;font-weight:600;color:var(--ink)">Check In</th>' +
         '<th style="text-align:center;padding:8px;font-weight:600;color:var(--ink)">Check Out</th>' +
+        '<th style="text-align:center;padding:8px;font-weight:600;color:var(--ink)">Hours</th>' +
         '<th style="text-align:center;padding:8px;font-weight:600;color:var(--ink)">Status</th>' +
       '</tr></thead><tbody>';
-    
+
     rows.forEach(r => {
-      const statusColor = r.status === 'Absent' ? 'var(--red)' : (r.status === 'Half Day' ? 'var(--sage)' : 'var(--green)');
+      const statusColor = ({pending:'var(--muted)',working:'var(--champagne-deep)',done:'var(--green,#3a8a4e)',half:'var(--azure,#5b7db8)',leave:'var(--red,#b14a3e)'})[r.statusKey];
       html += '<tr style="border-bottom:1px solid var(--line-soft)">' +
         '<td style="padding:10px 8px;color:var(--ink)">' + esc(r.name) + '</td>' +
-        '<td style="padding:10px 8px;text-align:center;color:var(--muted)">' + r.checkInTime + '</td>' +
-        '<td style="padding:10px 8px;text-align:center;color:var(--muted)">' + r.checkOutTime + '</td>' +
+        '<td style="padding:10px 8px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums">' + r.checkInTime + '</td>' +
+        '<td style="padding:10px 8px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums">' + r.checkOutTime + '</td>' +
+        '<td style="padding:10px 8px;text-align:center;color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums">' + r.hours + '</td>' +
         '<td style="padding:10px 8px;text-align:center"><span style="color:' + statusColor + ';font-weight:600">' + r.status + '</span></td>' +
       '</tr>';
     });
-    
+
     html += '</tbody></table>';
     tableHost.innerHTML = html;
   } catch (e) {
@@ -4118,15 +4380,17 @@ function attDownloadCSV() {
   const rows = [];
   rows.push(['Date', dateStr]);
   rows.push(['']);
-  rows.push(['Staff Name', 'Check In', 'Check Out', 'Status']);
+  rows.push(['Staff Name', 'Check In', 'Check Out', 'Hours', 'Status']);
   
   const allStaff = config.staff || [];
   allStaff.forEach(s => {
     const att = (s.attendance || []).find(a => a.date === dateStr) || {};
+    const status = attStatus(att);
     const checkInTime = att.checkInTime || '—';
     const checkOutTime = att.checkOutTime || '—';
-    const status = !att.checkInTime ? 'Absent' : (att.isHalfDay ? 'Half Day' : 'Full Day');
-    rows.push([s.name, checkInTime, checkOutTime, status]);
+    const hours = (att.checkInTime && att.checkOutTime) ? _attDuration(att.checkInTime, att.checkOutTime) : '—';
+    const statusLabel = ({pending:'Absent',working:'Working',done:'Full Day',half:'Half Day',leave:'On Leave'})[status];
+    rows.push([s.name, checkInTime, checkOutTime, hours, statusLabel]);
   });
   
   const csv = rows.map(r => r.map(c => '"' + (c || '') + '"').join(',')).join('\n');
