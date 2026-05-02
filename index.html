@@ -3995,23 +3995,27 @@ function renderHome() {
     const qty  = state.cart.reduce((s, i) => s + (i.name === svc.name ? i.qty : 0), 0);
     const div  = document.createElement('div');
     div.className = 'service-item';
+    div.dataset.cat = state.tab;
+    div.dataset.idx = idx;
+    const dis = qty > 0 ? '' : 'disabled';
     div.innerHTML = `
-      <div class="service-thumb" id="sthumb-${idx}" style="background-image:url('${meta.img}')"></div>
-      <div class="service-info">
-        <div class="service-name">${esc(svc.name)}</div>
-        <div class="service-meta-row">
-          <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
-          ${dur ? `<span class="service-dur">${dur}</span>` : ''}
+      <div class="service-row" onclick="toggleServiceDetail(this)">
+        <div class="service-thumb" id="sthumb-${idx}" style="background-image:url('${meta.img}')"></div>
+        <div class="service-info">
+          <div class="service-name">${esc(svc.name)}</div>
+          <div class="service-meta-row">
+            <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
+            ${dur ? `<span class="service-dur">${dur}</span>` : ''}
+          </div>
         </div>
+        <div class="svc-ctrl" data-cat="${escAttr(state.tab)}" data-idx="${idx}" onclick="event.stopPropagation()">
+          <button class="svc-minus" ${dis} aria-label="Remove one" onclick="event.stopPropagation();decrementService('${escAttr(state.tab)}',${idx})">&#x2212;</button>
+          <span class="svc-qty-num">${qty}</span>
+          <button class="svc-plus" aria-label="Add one" onclick="event.stopPropagation();addToCart('${escAttr(state.tab)}',${idx})">+</button>
+        </div>
+        <div class="service-chev" aria-hidden="true">▾</div>
       </div>
-      ${(() => {
-        const dis = qty > 0 ? '' : 'disabled';
-        return `<div class="svc-ctrl" data-cat="${escAttr(state.tab)}" data-idx="${idx}">
-           <button class="svc-minus" ${dis} aria-label="Remove one" onclick="decrementService('${escAttr(state.tab)}',${idx})">&#x2212;</button>
-           <span class="svc-qty-num">${qty}</span>
-           <button class="svc-plus" aria-label="Add one" onclick="addToCart('${escAttr(state.tab)}',${idx})">+</button>
-         </div>`;
-      })()}
+      <div class="svc-detail"></div>
     `;
     // Stop shimmer animation once image loads
     const img = new Image();
@@ -4039,8 +4043,668 @@ function refreshServiceAddIndicators() {
     const qty = getServiceQtyInCart(svc.name);
     const dis = qty > 0 ? '' : 'disabled';
     ctrl.className = 'svc-ctrl';
-    ctrl.innerHTML = `<button class="svc-minus" ${dis} aria-label="Remove one" onclick="decrementService('${escAttr(cat)}',${idx})">&#x2212;</button><span class="svc-qty-num">${qty}</span><button class="svc-plus" aria-label="Add one" onclick="addToCart('${escAttr(cat)}',${idx})">+</button>`;
+    ctrl.innerHTML = `<button class="svc-minus" ${dis} aria-label="Remove one" onclick="event.stopPropagation();decrementService('${escAttr(cat)}',${idx})">&#x2212;</button><span class="svc-qty-num">${qty}</span><button class="svc-plus" aria-label="Add one" onclick="event.stopPropagation();addToCart('${escAttr(cat)}',${idx})">+</button>`;
   });
+}
+
+/* ────────────────────────────────────────────────────
+   SERVICE DETAIL — expandable in-row professional descriptions
+──────────────────────────────────────────────────── */
+function toggleServiceDetail(rowEl) {
+  const item = rowEl.closest('.service-item');
+  if (!item) return;
+  const cat = item.dataset.cat;
+  const idx = parseInt(item.dataset.idx, 10);
+  const svc = (config.services[cat] || [])[idx];
+  if (!svc) return;
+  const panel = item.querySelector('.svc-detail');
+  const willOpen = !item.classList.contains('expanded');
+  document.querySelectorAll('#service-list .service-item.expanded').forEach(el => {
+    if (el !== item) el.classList.remove('expanded');
+  });
+  if (willOpen) {
+    if (!panel.dataset.built) {
+      const detail = getServiceDetail(svc.name, cat);
+      panel.innerHTML = buildSvcDetailHTML(svc, detail);
+      panel.dataset.built = '1';
+    }
+    item.classList.add('expanded');
+    setTimeout(() => {
+      const r = item.getBoundingClientRect();
+      if (r.bottom > window.innerHeight - 80) {
+        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 60);
+  } else {
+    item.classList.remove('expanded');
+  }
+}
+
+function buildSvcDetailHTML(svc, d) {
+  const dur = fmtDur(d.mins);
+  const stepsHtml = (d.steps || []).map(s => `<li>${esc(s)}</li>`).join('');
+  const chips = [];
+  if (dur) chips.push(`<span class="svc-detail-chip"><b>${esc(dur)}</b> approx.</span>`);
+  chips.push(`<span class="svc-detail-chip">₹<b>${(svc.price||0).toLocaleString('en-IN')}</b></span>`);
+  if (d.suitable) chips.push(`<span class="svc-detail-chip">For: ${esc(d.suitable)}</span>`);
+  return `
+    <div class="svc-detail-tag">${esc(d.tagline)}</div>
+    <div class="svc-detail-meta">${chips.join('')}</div>
+    ${stepsHtml ? `
+      <div class="svc-detail-section">
+        <div class="svc-detail-h">How it's done</div>
+        <ol class="svc-detail-steps">${stepsHtml}</ol>
+      </div>` : ''}
+    ${d.aftercare ? `<div class="svc-detail-after"><b>Aftercare:</b> ${esc(d.aftercare)}</div>` : ''}
+  `;
+}
+
+/* Rich, professional service descriptions — international-salon style. */
+function getServiceDetail(name, category) {
+  const meta = getServiceMeta(name, category);
+  const n = String(name || '').toLowerCase();
+  const D = (tagline, steps, aftercare, suitable) => ({
+    tagline, steps, aftercare, suitable, mins: meta.mins || 0
+  });
+
+  if (n.includes('wash') && (n.includes('keratin') || n.includes('deep'))) {
+    return D(
+      'Salon-grade keratin smoothing wash that locks in shine and tames frizz.',
+      [
+        'Detailed scalp & hair check to choose the right keratin formulation.',
+        'Pre-rinse with lukewarm water to open the cuticle.',
+        'Keratin shampoo lathered with a gentle scalp massage (3–4 min).',
+        'Deep-conditioning keratin mask applied mid-length to ends; 5-minute dwell.',
+        'Cool-water rinse to seal the cuticle and lock the protein in.',
+        'Towel dry, leave-in serum, round-brush blow dry to a glossy finish.',
+      ],
+      'Avoid tight ties for 24h. Use sulphate-free shampoo at home for longer-lasting smoothness.',
+      'Frizzy, dry, chemically-treated or coloured hair.'
+    );
+  }
+  if (n.includes('hair wash') || (n.includes('wash') && !n.includes('feet') && !n.includes('face'))) {
+    return D(
+      'Refreshing salon shampoo & conditioner with a soothing scalp massage.',
+      [
+        'Quick scalp consult to pick the right shampoo (oily / dry / dandruff).',
+        'Warm-water pre-rinse.',
+        'Two-stage shampoo with circular fingertip massage (no nails).',
+        'Conditioner applied mid-length to tips; 2-minute dwell.',
+        'Cool-water rinse, towel-blot, light blow-dry to comfort.',
+      ],
+      'Air-dry when possible; avoid heat styling daily.',
+      'Anyone — perfect add-on before any cut, colour or styling.'
+    );
+  }
+  if (n.includes('blow dry')) {
+    return D(
+      'Salon blow dry with heat-protect — smooth, voluminous, photo-ready hair.',
+      [
+        'Heat-protect spray applied root to tip.',
+        'Hair sectioned cleanly; rough-dry to 80%.',
+        'Round-brush blow-out section by section for volume at the root.',
+        'Cool-shot finish to lock the shape; light shine spray.',
+      ],
+      'Avoid touching hair too often; carry a small comb for touch-ups.',
+      'Special outings, photoshoots, events.'
+    );
+  }
+  if (n.includes('iron') || n.includes('tongs') || n.includes('crimp')) {
+    return D(
+      'Hot-tool styling — sleek straightening, soft curls or textured crimps.',
+      [
+        'Hair washed (or refreshed) and fully dried.',
+        'Heat-protect serum applied evenly.',
+        'Sectioned and styled with the chosen tool at safe heat for your hair type.',
+        'Cool-down, finishing spray, soft brush-out.',
+      ],
+      'Avoid water and steam for the rest of the day to keep the style.',
+      'Events, parties, special looks.'
+    );
+  }
+  if (n.includes('haircut') || (n.includes('cut') && (n.includes('blunt') || n.includes('step') || n.includes('layer') || n.includes('u cut') || n.includes('boy') || n.includes('butterfly') || n.includes('laser') || n.includes('blend') || n.includes('front')))) {
+    return D(
+      'Personalised haircut with face-shape consultation and a polished finish.',
+      [
+        'Face-shape & lifestyle consultation — we recommend, you decide.',
+        'Salon shampoo so cutting is precise on clean hair.',
+        'Sectioning and scissor cut tailored to the chosen style.',
+        'Neckline, sideburns and fringe cleaned up with trimmer.',
+        'Light blow dry & styling to preview the finished look.',
+      ],
+      'Trim every 6–8 weeks to maintain shape; use a wide-tooth comb on wet hair.',
+      'Anyone wanting a fresh look or routine maintenance.'
+    );
+  }
+  if (n.includes('kid') || n.includes('baby cut')) {
+    return D(
+      'Gentle, calm haircut for little ones — patient stylist, fun chair.',
+      [
+        'Friendly chat to make the child comfortable.',
+        'Booster seat / lap-cut option for very young kids.',
+        'Quick scissor cut with rounded blunt tips.',
+        'Gentle trimmer touch-ups only if the child is comfortable.',
+        'Soft brush-out and a small reward at the end.',
+      ],
+      'Reward good behaviour — many kids love the salon after a few visits!',
+      'Kids under 12.'
+    );
+  }
+  if (n.includes('beard')) {
+    return D(
+      'Sharp beard sculpt with hot-towel finish and beard oil treatment.',
+      [
+        'Beard combed and length checked against your face shape.',
+        'Trimmer line-up — neckline, cheek line and moustache balance.',
+        'Scissor-over-comb refinement for a natural taper.',
+        'Hot towel wrap to soften skin (2 min).',
+        'Beard oil massaged in; soft brush finish.',
+      ],
+      'Wash beard 2–3 times a week with a mild cleanser; oil daily for softness.',
+      'Anyone growing or grooming a beard.'
+    );
+  }
+  if (n.includes('shav')) {
+    return D(
+      'Classic clean shave — hot towel, pre-shave oil, single-blade smooth finish.',
+      [
+        'Hot-towel wrap to soften facial hair (2 min).',
+        'Pre-shave oil + warm cream lathered with a brush.',
+        'Single-blade shave with the grain, then across, never against unless requested.',
+        'Cool-towel rinse to close pores.',
+        'After-shave balm to calm the skin.',
+      ],
+      'Avoid harsh face washes for 12h. Apply moisturiser at night.',
+      'Smooth, irritation-free clean shave.'
+    );
+  }
+  if (n.includes('mustache') || n.includes('moustache')) {
+    return D(
+      'Quick moustache shape-up to balance the face and tidy stray hairs.',
+      [
+        'Comb out and assess current shape.',
+        'Trimmer + scissor refinement to your preferred style.',
+        'Wax / balm if needed for a finished look.',
+      ],
+      'A weekly trim keeps the shape sharp.',
+      'Daily grooming top-up.'
+    );
+  }
+  if (n.includes('root touchup') || n.includes('root touch')) {
+    return D(
+      'Seamless root colour match to refresh your existing shade in under an hour.',
+      [
+        'Shade matched to your existing colour under salon light.',
+        'Cape-up and section the new growth only.',
+        'Colour cream applied root-to-2cm with a fine brush.',
+        'Processed under a heat lamp (20–30 min).',
+        'Wash, conditioner, blow dry to seal.',
+      ],
+      'Avoid shampoo for 24h. Use colour-safe shampoo for longer-lasting result.',
+      'Touch-up every 4–6 weeks.'
+    );
+  }
+  if (n.includes('global') && n.includes('colour')) {
+    return D(
+      'Full-head global colour with premium ammonia-friendly formula and gloss finish.',
+      [
+        'Patch test (24h before, if first time) and detailed colour consult.',
+        'Section the head into four quadrants for even application.',
+        'Mid-lengths and ends coloured first, then root in the last 15 min.',
+        'Process 35–40 min depending on grey coverage.',
+        'Acid-balanced wash, deep conditioner, blow dry styling.',
+      ],
+      'Wait 48h before next wash. Use a sulphate-free shampoo and weekly colour mask.',
+      'Total transformation or full grey coverage.'
+    );
+  }
+  if (n.includes('highlights') || n.includes('streak')) {
+    return D(
+      'Hand-painted or foil highlights for dimension, brightness and movement.',
+      [
+        'Mood-board chat to lock the vibe (subtle / bold / face-framing).',
+        'Foil sectioning along the chosen pattern (balayage / babylights / classic).',
+        'Lightener applied with watch-glass precision; covered in foil.',
+        'Process under heat or air; lift checked every 5 min.',
+        'Toner for the right cool/warm finish; mask, wash, blow dry.',
+      ],
+      'Use a purple shampoo weekly to preserve tone. Heat-protect always.',
+      'Adding dimension to existing colour or natural hair.'
+    );
+  }
+  if (n.includes('keratin') && !n.includes('wash')) {
+    return D(
+      'Pro-grade keratin smoothing therapy that reduces frizz for up to 3 months.',
+      [
+        'Clarifying wash with chelating shampoo to remove all build-up.',
+        'Towel-dry to 80%, then keratin formula brushed through section by section.',
+        'Process for 30–40 min while the keratin penetrates the cuticle.',
+        'Blow dry on warm, then flat-iron seal at controlled temperature (multiple passes).',
+        'Hair is smooth, glossy and instantly manageable.',
+      ],
+      'No wash, ties or clips for 72 hours. Use sulphate-free shampoo for longevity.',
+      'Frizzy, unmanageable, humid-climate hair.'
+    );
+  }
+  if ((n.includes('straighten') && n.includes('perm')) || n.includes('rebonding')) {
+    return D(
+      'Permanent straightening — pin-straight, salon-finished hair lasting 6–8 months.',
+      [
+        'Detailed strand test and consultation; this is a long-term commitment.',
+        'Cysteine / thio cream applied; processed in foils with controlled time.',
+        'Rinse out, blow dry, then flat-iron passes to set the new structure.',
+        'Neutraliser applied to lock the bonds; second rinse.',
+        'Final wash, mask, blow dry — straight, glossy result.',
+      ],
+      '72h no wash, ties, clips or tucking behind the ear. Sulphate-free shampoo only.',
+      'Wavy / curly / frizzy hair seeking long-term smoothness.'
+    );
+  }
+  if (n.includes('hair spa')) {
+    return D(
+      'Deep-conditioning ritual that revives dry, dull, stressed hair.',
+      [
+        'Scalp analysis to choose the right spa cream.',
+        'Pre-wash oil massage with relaxing pressure points (5 min).',
+        'Salon shampoo, then spa cream applied root-to-tip.',
+        'Steam for 10 min to drive nutrients deep into the cortex.',
+        'Cool rinse, leave-in serum, blow dry — soft, shiny, manageable hair.',
+      ],
+      'Repeat once a month for visible long-term improvement.',
+      'Dry, frizzy, chemically-treated or pollution-stressed hair.'
+    );
+  }
+  if (n.includes('head massage') || n.includes('champi')) {
+    return D(
+      'Warm-oil champi head massage — releases tension, improves scalp circulation.',
+      [
+        'Warm coconut / almond / olive oil chosen for your scalp type.',
+        'Oil drizzled and worked into the scalp with the famed "champi" technique.',
+        'Acupressure points along the temples, crown and nape (10 min).',
+        'Soothing shoulder and neck release.',
+        'Hot-towel wrap; quick rinse if you prefer to leave the salon clean.',
+      ],
+      'Leave the oil on overnight if you can — wash with a mild shampoo next morning.',
+      'Stress, headaches, hair fall, dry scalp.'
+    );
+  }
+  if (n.includes('henna')) {
+    return D(
+      'Pure henna conditioning treatment — natural shine and gentle tone.',
+      [
+        'Henna paste mixed fresh with our house blend (no PPD, no chemicals).',
+        'Hair sectioned and the paste applied root-to-tip with a brush.',
+        'Wrapped and left to develop (45–60 min).',
+        'Rinse with water only; mild conditioner; blow dry.',
+      ],
+      'Avoid shampoo for 24h to let the colour set. Conditioning oil mid-week.',
+      'Greys, scalp health, natural reddish tone.'
+    );
+  }
+  if (n.includes('o3')) {
+    return D(
+      'O3+ professional oxygenating facial — instant glow, deep hydration, no downtime.',
+      [
+        'Skin diagnosis under salon light to confirm O3+ is right for you today.',
+        'Double cleanse — milk + foam — to remove makeup, sunscreen and pollution.',
+        'Gentle enzyme exfoliation; warm towel compress.',
+        'Steam (5–7 min) and safe extractions of blackheads / whiteheads.',
+        'O3+ vitamin-C serum massaged in with upward face-lifting strokes (15 min).',
+        'Cooling oxygen mask + gentle face & shoulder massage (10 min).',
+        'Toner, day moisturiser and SPF — you are ready to step out.',
+      ],
+      '24h: no harsh actives (retinol, AHA), no waxing on the face, SPF in the morning.',
+      'All skin types, especially dull, tired or pre-event skin.'
+    );
+  }
+  if (n.includes('shahnaz')) {
+    return D(
+      'Shahnaz Hussain herbal premium facial — Ayurvedic ingredients, multi-step ritual.',
+      [
+        'Skin consult and full double cleanse with Shahnaz milk.',
+        'Herbal scrub with sandalwood / saffron / turmeric base.',
+        'Steam + safe extractions.',
+        'Signature ayurvedic massage with herbal cream (15 min).',
+        'Custom herbal pack (gold / pearl / saffron) chilled application.',
+        'Toner, moisturiser and herbal SPF finish.',
+      ],
+      'Stay hydrated; avoid sun for the rest of the day.',
+      'Sensitive skin, those preferring herbal / Ayurvedic care, brides on prep.'
+    );
+  }
+  if (n.includes('korean')) {
+    return D(
+      '10-step Korean glass-skin ritual — for that lit-from-within glow.',
+      [
+        'Oil cleanse to break down sunscreen and makeup.',
+        'Foam cleanse for a fresh second wash.',
+        'Gentle exfoliating toner pads.',
+        'Hydrating essence patted in (3 layers — Korean technique).',
+        'Targeted ampoule for your skin concern (brightening / hydration / firming).',
+        'Sheet mask soaked in serum (15 min).',
+        'Eye cream tapped in with the ring finger.',
+        'Lightweight moisturiser layered.',
+        'Sleeping mask sealing the routine.',
+        'SPF for daytime finish.',
+      ],
+      'Drink 2L water daily; sleep on clean cotton pillowcase to maintain glow.',
+      'All skin types — especially dull, dehydrated or sensitised skin.'
+    );
+  }
+  if (n.includes('vitamin c')) {
+    return D(
+      'Vitamin-C brightening facial — fades dullness and evens skin tone.',
+      [
+        'Double cleanse and gentle scrub.',
+        'Steam + extractions where needed.',
+        'High-potency Vit-C serum massaged in with brightening strokes.',
+        'Cooling brightening pack with upward application.',
+        'Toner, moisturiser, SPF.',
+      ],
+      'Daily SPF is essential to lock in brightening results.',
+      'Dull, tanned, uneven skin tone.'
+    );
+  }
+  if (n.includes('gold')) {
+    return D(
+      '24K gold radiance facial — luxury treatment for a luminous glow.',
+      [
+        'Cleanse + exfoliate.',
+        'Steam, light extractions.',
+        'Gold leaf serum and gold massage cream worked in (15 min).',
+        'Gold peel-off pack for instant lifted glow.',
+        'Toner + moisturiser + SPF.',
+      ],
+      'Avoid harsh actives for 24h to preserve the radiance.',
+      'Pre-event glow, mature skin, brides on trial day.'
+    );
+  }
+  if (n.includes('pearl')) {
+    return D(
+      'Pearl whitening facial — luminous, even-toned skin with a soft pearl finish.',
+      [
+        'Cleanse, scrub, steam, extractions.',
+        'Pearl serum & cream massage (15 min).',
+        'Brightening pearl pack chilled application.',
+        'Toner, moisturiser, SPF.',
+      ],
+      'Wear SPF daily for a brighter, more even tone over time.',
+      'Dull, pigmented, tanned skin.'
+    );
+  }
+  if (n.includes('fruit')) {
+    return D(
+      'Fresh fruit facial — refreshing natural-ingredient ritual.',
+      [
+        'Milk cleanse and gentle scrub.',
+        'Steam + light extractions.',
+        'Fresh-fruit massage cream worked in with relaxing strokes.',
+        'Cooling fruit pulp pack.',
+        'Toner + moisturiser.',
+      ],
+      'Stay hydrated; SPF outdoors.',
+      'Sensitive skin, first-time facial guests, kids/teens.'
+    );
+  }
+  if (n.includes('bridal') && (n.includes('facial') || (!n.includes('package') && !n.includes('combo')))) {
+    return D(
+      'Bridal-grade premium facial — extended, deeply nourishing, picture-perfect.',
+      [
+        'Detailed bridal skin consult — concerns, makeup plan, photography style.',
+        'Triple cleanse to a perfectly clean canvas.',
+        'Gentle exfoliation and steam.',
+        'Targeted serum cocktail (brightening + firming + hydration) — 20 min massage.',
+        'Layered masking — clay first, then a hydrating sheet/peel-off.',
+        'Eye treatment for brightness; lip scrub & balm.',
+        'Toner + moisturiser + bridal-prep SPF.',
+      ],
+      'Plan this 5–7 days before the wedding, never the night before.',
+      'Brides, grooms, special occasion glow.'
+    );
+  }
+  if (n.includes('facial')) {
+    return D(
+      'Multi-step professional facial — cleanse, scrub, steam, extract, mask, moisturise.',
+      [
+        'Skin diagnosis and double cleanse.',
+        'Gentle exfoliation suited to your skin type.',
+        'Warm steam + safe blackhead / whitehead extraction.',
+        'Targeted serum + 15-min relaxing facial massage.',
+        'Custom face pack for your concern.',
+        'Toner, moisturiser and SPF.',
+      ],
+      'Avoid waxing the face for 24h; SPF every morning.',
+      'Anyone wanting visibly clear, refreshed skin.'
+    );
+  }
+  if (n.includes('cleanup') || n.includes('clean up')) {
+    return D(
+      'Express deep-cleanse for clear, fresh skin between facials.',
+      [
+        'Double cleanse to remove pollution and oil.',
+        'Gentle scrub for dead-cell removal.',
+        'Steam + safe blackhead / whitehead extraction.',
+        'Light face pack for soothing finish.',
+        'Toner + moisturiser + SPF.',
+      ],
+      'Repeat every 2–3 weeks for best skin clarity.',
+      'Oily / combination / blackhead-prone skin.'
+    );
+  }
+  if (n.includes('oxylife') && n.includes('tan')) {
+    return D(
+      'Oxylife premium de-tan — bubble massage + cooling pack for instant brightening.',
+      [
+        'Skin patch test for sensitivity.',
+        'Cleanse and oxylife scrub for surface tan removal.',
+        'Bubble massage cream — fizzy oxygen action lifts pigmentation.',
+        'Cooling de-tan pack on tanned area (15 min).',
+        'Toner + moisturiser + SPF.',
+      ],
+      'SPF 50 every 2 hours outdoors; reapply after swimming.',
+      'Sun-tanned face, neck, arms, feet.'
+    );
+  }
+  if (n.includes('d-tan') || n.includes('detan') || n.includes('de tan')) {
+    return D(
+      'De-tan brightening treatment — removes surface tan and revives glow.',
+      [
+        'Cleanse to a fresh canvas.',
+        'De-tan scrub for gentle exfoliation.',
+        'Brightening de-tan pack massaged in upward strokes.',
+        'Cool-water rinse; soothing toner.',
+        'Moisturiser + SPF.',
+      ],
+      'SPF daily — without it, the tan returns quickly.',
+      'Tanned face, neck, hands or feet.'
+    );
+  }
+  if (n.includes('bleach')) {
+    return D(
+      'Salon cream bleach — softens facial hair and brightens the skin tone.',
+      [
+        'Patch test (5 min) to confirm no sensitivity.',
+        'Skin cleansed and prepped.',
+        'Bleach cream + activator mixed fresh and applied evenly.',
+        'Processed for 8–12 min and watched closely.',
+        'Wiped off, washed; calming pack to soothe.',
+        'Moisturiser + SPF.',
+      ],
+      'Avoid sun, hot water and active skincare for 12h.',
+      'Visible facial / body hair, dull skin tone.'
+    );
+  }
+  if (n.includes('threading')) {
+    return D(
+      'Precision thread shaping for clean lines and fast results.',
+      [
+        'Brow shape mapped to your face (golden ratio).',
+        'Skin powder dusted for grip and minimal redness.',
+        'Cotton thread used to lift hair from the root cleanly.',
+        'Soothing gel applied immediately after.',
+      ],
+      'Avoid touching, sun and makeup on the area for 2–3 hours.',
+      'Eyebrows, upper lip, chin, full face.'
+    );
+  }
+  if (n.includes('wax')) {
+    return D(
+      'Salon waxing — clean, smooth skin with the right wax for the area.',
+      [
+        'Skin cleansed and powdered.',
+        'Right wax selected (warm / cold / Rica / honey) for the body part.',
+        'Wax applied with the hair growth and pulled against — quick technique.',
+        'Tweezer touch-ups for stray hairs.',
+        'Cooling lotion / aloe gel to calm the skin.',
+      ],
+      'No sun, no swim, no heavy creams for 12h. Exfoliate gently from day 3 to prevent ingrown hairs.',
+      'Smooth skin lasting 3–4 weeks.'
+    );
+  }
+  if (n.includes('full body massage') || (n.includes('massage') && n.includes('aroma'))) {
+    return D(
+      'Full body relaxation massage with warm aroma oils in our private spa room.',
+      [
+        'Welcome ritual — warm towel, foot soak, herbal tea.',
+        'Choose your aroma blend (lavender / lemongrass / sandalwood).',
+        'Full body massage with long Swedish strokes and pressure-point release.',
+        'Special focus on shoulders, lower back and feet.',
+        'Hot-towel wipe; rest with warm tea before stepping out.',
+      ],
+      'Drink water, avoid heavy meals for 2h; perfect time to nap.',
+      'Stress, fatigue, full-body relaxation.'
+    );
+  }
+  if (n.includes('back') && n.includes('neck')) {
+    return D(
+      'Targeted back, shoulder and neck relief — releases knots in 30 minutes.',
+      [
+        'Warm-oil application on the back, shoulders and neck.',
+        'Trigger-point release on common knots.',
+        'Long deep strokes along the spine (no pressure on bones).',
+        'Neck mobilisation and shoulder rolls.',
+      ],
+      'Stretch gently for the next 24h; warm shower helps.',
+      'Desk workers, stiff necks, headache-prone guests.'
+    );
+  }
+  if (n.includes('foot massage')) {
+    return D(
+      'Reflexology foot massage with warm oil — pressure-point relief for the whole body.',
+      [
+        'Warm foot soak with salts.',
+        'Towel dry and warm-oil application.',
+        'Reflex points worked from heel to toe.',
+        'Calf massage to improve circulation.',
+        'Cooling balm finish.',
+      ],
+      'Wear loose footwear for the rest of the day.',
+      'Aching feet, long-day shoppers, fatigue.'
+    );
+  }
+  if (n.includes('head & shoulder') || n.includes('head and shoulder')) {
+    return D(
+      'Quick head and shoulder release — relieves desk-day tension.',
+      [
+        'Light oil applied to scalp and shoulders.',
+        'Pressure-point work on the temples and base of the skull.',
+        'Long strokes across the shoulders to release tightness.',
+      ],
+      'Roll your shoulders and stretch the neck side-to-side later.',
+      'Stress, headaches, screen fatigue.'
+    );
+  }
+  if (n.includes('manicure')) {
+    const isSpa = n.includes('spa') || n.includes('crystal') || n.includes('ice');
+    return D(
+      isSpa
+        ? 'Spa manicure — luxe extended ritual with mask and hand massage.'
+        : 'Classic manicure — beautifully shaped nails, soft cuticles, smooth hands.',
+      [
+        'Old polish removed; hand inspected.',
+        'Warm aroma soak (5–10 min).',
+        'Nail shape, file and gentle buff.',
+        'Cuticle softener and careful clean-up.',
+        'Hand scrub for soft, smooth skin.',
+        ...(isSpa ? ['Hand mask wrapped in warm towels (10 min).'] : []),
+        'Relaxing hand & forearm massage.',
+        'Top-coat polish or nourishing oil — your choice.',
+      ],
+      'Apply hand cream daily; wear gloves while washing dishes for longer-lasting results.',
+      'Anyone — looks great with or without polish.'
+    );
+  }
+  if (n.includes('pedicure')) {
+    const isSpa = n.includes('spa') || n.includes('crystal') || n.includes('ice') || n.includes('paraffin');
+    return D(
+      isSpa
+        ? 'Premium spa pedicure — extended foot ritual that leaves you walking on clouds.'
+        : 'Classic pedicure — clean, smooth, well-cared-for feet.',
+      [
+        'Old polish removed; feet inspected for cracks or rough patches.',
+        'Warm aroma + salt soak (10 min).',
+        'Nail trim, shape and gentle buff.',
+        'Cuticle care and careful clean-up.',
+        'Heel and sole exfoliation with foot file (no callus blade).',
+        'Foot scrub for smooth skin.',
+        ...(isSpa ? ['Foot mask wrapped in warm towels (10 min).'] : []),
+        'Relaxing foot, ankle and calf massage.',
+        'Polish or nourishing oil to finish.',
+      ],
+      'Moisturise feet daily; wear closed footwear for 2h after polish.',
+      'Anyone — especially welcome after long days on your feet.'
+    );
+  }
+  if (/^m\d/i.test(name) || /^w\d/i.test(name) || /^c\d/i.test(name) || n.includes('combo') || n.includes('package')) {
+    return D(
+      'Curated package combining several signature services at a special price.',
+      [
+        'Welcome and consultation to plan the order of services.',
+        'Each included service performed by a specialist (cut, facial, mani-pedi etc.).',
+        'Refreshments served between treatments.',
+        'Final styling and review with the team.',
+      ],
+      'Plan 2–4 hours depending on the package; eat a light meal before arriving.',
+      'Pre-event prep, monthly self-care, gift-worthy experience.'
+    );
+  }
+  if (n.includes('underarm') || n.includes('hair removal')) {
+    return D(
+      'Targeted hair removal for a clean, smooth finish.',
+      [
+        'Skin cleansed and powdered.',
+        'Right method chosen (wax / cream) for sensitivity.',
+        'Removal performed with quick, professional technique.',
+        'Soothing gel applied to calm the skin.',
+      ],
+      'Avoid deodorant, sun and tight clothing on the area for 12h.',
+      'Smooth, comfortable underarms / target area.'
+    );
+  }
+  if (n.includes('scrub')) {
+    return D(
+      'Exfoliating body scrub for visibly smoother, brighter skin.',
+      [
+        'Warm shower / cleanse.',
+        'Aromatic body scrub massaged in circular motions.',
+        'Steam-towel removal.',
+        'Hydrating body lotion to seal moisture.',
+      ],
+      'Drink water; SPF if heading outdoors.',
+      'Dull, dry, pre-event body care.'
+    );
+  }
+  return D(
+    meta.desc || 'Professional salon service performed by trained staff.',
+    [
+      'Welcome and short consultation about your preferences.',
+      'Service prepared with salon-grade products and tools.',
+      'Performed with the full attention of your specialist.',
+      'Aftercare advice shared at the end so results last longer.',
+    ],
+    'Ask your stylist for personalised home-care tips.',
+    ''
+  );
 }
 
 function decrementService(cat, idx) {
