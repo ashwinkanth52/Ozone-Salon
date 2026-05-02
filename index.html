@@ -104,9 +104,11 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 
 /* LOADING */
 .loading-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;padding:40px;background:linear-gradient(160deg,var(--bg) 0%,#F2EBE0 100%);}
-.logo-circle{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#2a2a2a 0%,#0e0e0e 100%);color:#FFF;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 10px 36px rgba(26,26,26,.22), inset 0 0 0 1px rgba(184,149,106,.18);}
+.logo-circle{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#2a2a2a 0%,#0e0e0e 100%);color:#FFF;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 10px 36px rgba(26,26,26,.22), inset 0 0 0 1px rgba(184,149,106,.18);font-family:var(--serif);font-weight:500;letter-spacing:-.07em;font-size:34px;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.35);font-feature-settings:"kern" 1,"liga" 1;}
 .logo-circle::before{content:'';position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(184,149,106,.42);}
 .logo-circle::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1.5px solid var(--champagne);opacity:.55;animation:logoRing 2.4s ease-in-out infinite;}
+.logo-circle .oz-mono{position:relative;z-index:2;display:inline-flex;align-items:baseline;font:inherit;letter-spacing:inherit;}
+.logo-circle .oz-mono .oz-z{display:inline-block;transform:translateY(-2%);margin-left:-.02em;}
 .logo-circle .oz-letter{font-family:var(--serif);font-size:42px;font-weight:500;letter-spacing:-.02em;line-height:1;position:relative;z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.35);}
 .logo-circle .oz-dot{position:absolute;top:14px;right:14px;width:6px;height:6px;border-radius:50%;background:var(--champagne);box-shadow:0 0 8px rgba(184,149,106,.7);z-index:3;}
 
@@ -167,8 +169,10 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 #screen-auth .landing-wrap{background:linear-gradient(155deg,rgba(14,11,9,.92) 0%,rgba(20,15,10,.86) 50%,rgba(80,55,30,.25) 100%),url('https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop') center/cover no-repeat;position:relative;padding:60px 24px 50px;}
 #screen-auth .landing-wrap::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(14,11,9,.70) 100%);pointer-events:none;}
 #screen-auth .landing-wrap>*{position:relative;z-index:2;}
-.landing-logo{width:64px;height:64px;border-radius:50%;background:var(--ink);color:#FFF;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:29px;font-weight:500;margin-bottom:20px;position:relative;letter-spacing:-.02em;box-shadow:0 10px 36px rgba(0,0,0,.32);}
+.landing-logo{width:64px;height:64px;border-radius:50%;background:var(--ink);color:#FFF;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:25px;font-weight:500;margin-bottom:20px;position:relative;letter-spacing:-.07em;line-height:1;box-shadow:0 10px 36px rgba(0,0,0,.32);font-feature-settings:"kern" 1,"liga" 1;}
 .landing-logo::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1.5px solid var(--champagne);opacity:.65;}
+.landing-logo .oz-mono{display:inline-flex;align-items:baseline;font:inherit;letter-spacing:inherit;}
+.landing-logo .oz-mono .oz-z{display:inline-block;transform:translateY(-2%);margin-left:-.02em;}
 #screen-auth .landing-title{font-family:var(--serif);font-size:40px;text-align:center;margin-bottom:10px;font-weight:500;letter-spacing:-.01em;line-height:1.05;color:#FFF;text-shadow:0 4px 16px rgba(0,0,0,.5);}
 #screen-auth .landing-loc{color:var(--champagne-soft);font-size:11px;text-align:center;letter-spacing:.24em;text-transform:uppercase;margin-bottom:48px;font-weight:700;}
 .landing-title{font-family:var(--serif);font-size:32px;text-align:center;margin-bottom:6px;font-weight:500;letter-spacing:-.01em;line-height:1.1;}
@@ -207,8 +211,10 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .brand-strip-home{display:flex;align-items:center;gap:11px;flex:1;min-width:0;padding:4px 10px 4px 4px;border-radius:30px;background:transparent;border:1px solid transparent;transition:background .18s,border-color .18s,transform .12s;cursor:pointer;text-align:left;}
 .brand-strip-home:hover{background:rgba(184,149,106,.06);border-color:rgba(184,149,106,.18);}
 .brand-strip-home:active{transform:scale(.985);background:rgba(184,149,106,.10);}
-.brand-strip-logo{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#2a2a2a 0%,#0e0e0e 100%);color:#FFF;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:19px;font-weight:500;flex-shrink:0;letter-spacing:-.02em;box-shadow:0 3px 12px rgba(26,26,26,.20),inset 0 0 0 1px rgba(184,149,106,.30);position:relative;}
+.brand-strip-logo{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#2a2a2a 0%,#0e0e0e 100%);color:#FFF;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;font-weight:500;flex-shrink:0;letter-spacing:-.07em;line-height:1;box-shadow:0 3px 12px rgba(26,26,26,.20),inset 0 0 0 1px rgba(184,149,106,.30);position:relative;font-feature-settings:"kern" 1,"liga" 1;}
 .brand-strip-logo::after{content:'';position:absolute;top:5px;right:5px;width:5px;height:5px;border-radius:50%;background:var(--champagne);box-shadow:0 0 6px rgba(184,149,106,.65);}
+.brand-strip-logo .oz-mono{display:inline-flex;align-items:baseline;font:inherit;letter-spacing:inherit;}
+.brand-strip-logo .oz-mono .oz-z{display:inline-block;transform:translateY(-2%);margin-left:-.02em;}
 .brand-strip-name{font-family:var(--serif);font-size:16.5px;color:var(--ink);letter-spacing:-.005em;line-height:1.1;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .brand-strip-tag{font-size:9px;color:var(--champagne);letter-spacing:.26em;text-transform:uppercase;margin-top:3px;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .brand-strip-meta{flex:1;min-width:0;display:flex;flex-direction:column;}
@@ -873,7 +879,7 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
 @media (max-width:420px){
   .brand-strip{padding:9px 14px 8px;gap:10px;}
   .brand-strip-home{gap:9px;padding:3px 8px 3px 3px;}
-  .brand-strip-logo{width:34px;height:34px;font-size:17px;}
+  .brand-strip-logo{width:34px;height:34px;font-size:14px;}
   .brand-strip-logo::after{top:4px;right:4px;width:4px;height:4px;}
   .brand-strip-name{font-size:15px;}
   .brand-strip-tag{font-size:8.5px;}
@@ -1052,7 +1058,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
      ═══════════════════════════════════════════════════ -->
 <div class="brand-strip" id="brand-strip">
   <button class="brand-strip-home" onclick="brandGoHome()" aria-label="Go to Home" title="Go to Home">
-    <span class="brand-strip-logo">O</span>
+    <span class="brand-strip-logo" aria-label="Ozone"><span class="oz-mono"><span class="oz-o">O</span><span class="oz-z">Z</span></span></span>
     <span class="brand-strip-meta">
       <span class="brand-strip-name" id="brand-strip-name">Ozone Salon &amp; Spa</span>
       <span class="brand-strip-tag" id="brand-strip-tag">Salon ERP · Live</span>
@@ -1073,7 +1079,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
      ═══════════════════════════════════════════════════ -->
 <section class="screen active" id="screen-loading">
   <div class="loading-center">
-    <div class="logo-circle">O</div>
+    <div class="logo-circle" aria-label="Ozone"><span class="oz-mono"><span class="oz-o">O</span><span class="oz-z">Z</span></span></div>
     <h1 class="loading-title">Ozone Salon &amp; Spa</h1>
     <p class="loading-sub" id="loading-status">Starting up…</p>
     <div class="spinner"></div>
@@ -1086,7 +1092,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
 <section class="screen" id="screen-setup">
   <div class="setup-wrap">
     <div class="setup-logo">
-      <div class="logo-circle" style="margin:0 auto 16px;">O</div>
+      <div class="logo-circle" style="margin:0 auto 16px;" aria-label="Ozone"><span class="oz-mono"><span class="oz-o">O</span><span class="oz-z">Z</span></span></div>
       <div style="font-family:var(--serif);font-size:22px;color:var(--charcoal)">Ozone Salon &amp; Spa</div>
       <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin-top:4px;text-transform:uppercase">ERP Setup</div>
     </div>
@@ -1170,7 +1176,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
      ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-auth">
   <div class="landing-wrap">
-    <div class="landing-logo">O</div>
+    <div class="landing-logo" aria-label="Ozone"><span class="oz-mono"><span class="oz-o">O</span><span class="oz-z">Z</span></span></div>
     <h1 class="landing-title" id="auth-shop-name">Ozone Salon &amp; Spa</h1>
     <div class="landing-loc" id="auth-shop-loc">Premium Beauty &amp; Wellness</div>
 
@@ -1224,7 +1230,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
      ═══════════════════════════════════════════════════ -->
 <section class="screen" id="screen-landing">
   <div class="landing-wrap">
-    <div class="landing-logo">O</div>
+    <div class="landing-logo" aria-label="Ozone"><span class="oz-mono"><span class="oz-o">O</span><span class="oz-z">Z</span></span></div>
     <h1 class="landing-title" id="landing-shop-name">Ozone Salon &amp; Spa</h1>
     <div class="landing-loc" id="landing-location">Ozone Heights Clubhouse</div>
 
