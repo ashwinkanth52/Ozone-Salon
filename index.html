@@ -446,16 +446,40 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
   width:44px;height:44px;
   border-radius:8px;
   animation:shimmerBg 1.8s ease infinite;
+  overflow:hidden;
 }
 .service-thumb.loaded{animation:none;}
 @keyframes shimmerBg{
   0%,100%{background-color:var(--surface-2)}
   50%{background-color:#EDE8E0}
 }
+.service-thumb.no-image{
+  background-image:none !important;
+  background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 50%,#1a1a1a 100%);
+  animation:none;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 0 1px rgba(184,149,106,.35);
+}
+.service-thumb.no-image::before{
+  content:attr(data-letter);
+  font-family:var(--serif);font-size:18px;color:var(--champagne);
+  font-weight:500;letter-spacing:-.02em;line-height:1;
+  text-shadow:0 1px 2px rgba(0,0,0,.4);
+  z-index:2;
+}
 .service-thumb::after{
   content:'';position:absolute;inset:0;
   background:linear-gradient(to bottom,rgba(255,255,255,.03),rgba(0,0,0,.10));
   border-radius:8px;
+  pointer-events:none;
+}
+.service-thumb.no-image::after{
+  /* repurpose ::after as the champagne accent dot when there's no image */
+  content:'';position:absolute;inset:auto;
+  top:5px;right:5px;left:auto;bottom:auto;
+  width:4px;height:4px;border-radius:50%;
+  background:var(--champagne);
+  box-shadow:0 0 5px rgba(184,149,106,.7);
 }
 .service-info{
   position:relative;
@@ -4000,7 +4024,7 @@ function renderHome() {
     const dis = qty > 0 ? '' : 'disabled';
     div.innerHTML = `
       <div class="service-row" onclick="toggleServiceDetail(this)">
-        <div class="service-thumb" id="sthumb-${idx}" style="background-image:url('${meta.img}')"></div>
+        <div class="service-thumb" id="sthumb-${idx}" data-letter="${esc((svc.name||'?').trim().charAt(0).toUpperCase())}" style="background-image:url('${meta.img}')"></div>
         <div class="service-info">
           <div class="service-name">${esc(svc.name)}</div>
           <div class="service-meta-row">
@@ -4017,9 +4041,17 @@ function renderHome() {
       </div>
       <div class="svc-detail"></div>
     `;
-    // Stop shimmer animation once image loads
+    // Image load + error handling
     const img = new Image();
-    img.onload = () => { const t = div.querySelector('.service-thumb'); if(t) t.classList.add('loaded'); };
+    const thumbEl = div.querySelector('.service-thumb');
+    img.onload  = () => { if (thumbEl) thumbEl.classList.add('loaded'); };
+    img.onerror = () => {
+      if (thumbEl) {
+        thumbEl.classList.add('loaded');
+        thumbEl.classList.add('no-image');
+        thumbEl.style.backgroundImage = 'none';
+      }
+    };
     img.src = meta.img;
     listEl.appendChild(div);
   });
