@@ -269,6 +269,35 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .att-menu-item{display:block;width:100%;text-align:left;padding:10px 12px;font-size:13px;color:var(--ink);border-radius:8px;background:transparent;letter-spacing:.01em;font-weight:500;}
 .att-menu-item:hover,.att-menu-item:active{background:var(--surface-2);}
 .att-menu-item.danger{color:var(--red,#b14a3e);}
+
+/* ATTENDANCE SHEET (modal) */
+.att-sheet-head{display:flex;align-items:center;gap:13px;margin:-6px 0 18px;padding-bottom:16px;border-bottom:1px solid var(--line-soft);}
+.att-sheet-avatar{width:46px;height:46px;border-radius:50%;background:var(--surface-2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:18px;font-weight:600;border:1px solid var(--line);flex-shrink:0;}
+.att-sheet-name{font-family:var(--serif);font-size:21px;color:var(--ink);font-weight:500;letter-spacing:-.005em;line-height:1.15;}
+.att-sheet-sub{font-size:11.5px;color:var(--muted);margin-top:3px;letter-spacing:.04em;}
+.att-sheet-section{margin-bottom:18px;}
+.att-sheet-label{display:block;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.att-seg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.att-seg-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line);font-size:13px;font-weight:600;color:var(--muted);transition:all .15s;letter-spacing:.01em;}
+.att-seg-btn:active{transform:scale(.98);}
+.att-seg-btn.active[data-status="present"]{background:rgba(58,138,78,.10);border-color:#3a8a4e;color:#2f6f40;}
+.att-seg-btn.active[data-status="half"]{background:rgba(91,125,184,.10);border-color:var(--azure,#5b7db8);color:var(--azure,#5b7db8);}
+.att-seg-btn.active[data-status="leave"]{background:rgba(177,74,62,.08);border-color:var(--red,#b14a3e);color:var(--red,#b14a3e);}
+.att-seg-btn.active[data-status="absent"]{background:var(--surface-2);border-color:var(--ink);color:var(--ink);}
+.att-seg-icon{font-size:15px;font-weight:700;line-height:1;}
+.att-time-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.att-time-cap{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:600;}
+.att-time-grp{display:flex;gap:6px;align-items:stretch;}
+.att-time-input{flex:1;padding:11px 10px;font-variant-numeric:tabular-nums;}
+.att-now-btn{padding:0 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.10em;text-transform:uppercase;line-height:1;}
+.att-now-btn:active{background:var(--ink);color:#FFF;border-color:var(--ink);}
+.att-hours-preview{margin-top:10px;font-size:12.5px;color:var(--sage,#6b8e6b);font-weight:600;text-align:center;letter-spacing:.04em;font-variant-numeric:tabular-nums;background:rgba(107,142,107,.06);padding:8px;border-radius:8px;}
+.att-hours-preview.empty{color:var(--muted);background:var(--surface-2);}
+.att-hours-preview.warn{color:var(--red,#b14a3e);background:rgba(177,74,62,.06);}
+.att-sheet-meta{padding:10px 12px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:10px;font-size:11.5px;color:var(--muted);line-height:1.5;letter-spacing:.02em;margin-bottom:14px;}
+.att-sheet-meta strong{color:var(--ink);font-weight:600;}
+.att-card{cursor:pointer;}
+.att-card:active{transform:scale(.997);}
 .new-bill-cta{width:100%;padding:18px;border-radius:14px;background:linear-gradient(135deg,var(--ink) 0%,#2d2d2d 100%);color:#FFF;font-size:12.5px;font-weight:700;text-align:center;letter-spacing:.18em;text-transform:uppercase;margin-top:8px;box-shadow:0 6px 20px rgba(26,26,26,.18);}
 .new-bill-cta:active{background:#000;}
 
@@ -1337,28 +1366,68 @@ button,.btn,.add-btn,.qty-btn,.fc-btn,.pin-key,.icon-btn,.del-btn{min-height:44p
 </div>
 
 <!-- ═══════════════════════════════════════════════════
-     MODAL: EDIT ATTENDANCE TIMES
+     MODAL: ATTENDANCE SHEET (enterprise console)
      ═══════════════════════════════════════════════════ -->
-<div class="modal-backdrop" id="modal-edit-att">
+<div class="modal-backdrop" id="modal-att-sheet">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="edit-att-title">Edit Attendance</div>
-    <div class="muted-text" style="font-size:12px;margin-bottom:14px;line-height:1.5;" id="edit-att-sub"></div>
-    <div class="modal-field">
-      <label class="modal-label">Check In Time</label>
-      <input type="time" class="modal-input" id="edit-att-in">
+    <div class="att-sheet-head">
+      <div class="att-sheet-avatar" id="att-sheet-avatar">?</div>
+      <div style="flex:1;min-width:0">
+        <div class="att-sheet-name" id="att-sheet-name">—</div>
+        <div class="att-sheet-sub" id="att-sheet-sub">—</div>
+      </div>
     </div>
-    <div class="modal-field">
-      <label class="modal-label">Check Out Time</label>
-      <input type="time" class="modal-input" id="edit-att-out">
+
+    <div class="att-sheet-section">
+      <div class="att-sheet-label">Status</div>
+      <div class="att-seg" id="att-seg" role="tablist">
+        <button class="att-seg-btn" data-status="present" onclick="attSheetSetStatus('present')">
+          <span class="att-seg-icon">✓</span><span>Full Day</span>
+        </button>
+        <button class="att-seg-btn" data-status="half" onclick="attSheetSetStatus('half')">
+          <span class="att-seg-icon">◐</span><span>Half Day</span>
+        </button>
+        <button class="att-seg-btn" data-status="leave" onclick="attSheetSetStatus('leave')">
+          <span class="att-seg-icon">↗</span><span>On Leave</span>
+        </button>
+        <button class="att-seg-btn" data-status="absent" onclick="attSheetSetStatus('absent')">
+          <span class="att-seg-icon">—</span><span>Absent</span>
+        </button>
+      </div>
     </div>
-    <div class="modal-field" style="display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:10px;padding:12px 14px;">
-      <input type="checkbox" id="edit-att-half" style="width:18px;height:18px;accent-color:var(--champagne);">
-      <label for="edit-att-half" style="flex:1;font-size:13.5px;color:var(--ink);font-weight:500;cursor:pointer;">Mark as half-day</label>
+
+    <div class="att-sheet-section" id="att-sheet-times">
+      <div class="att-sheet-label">Shift Times</div>
+      <div class="att-time-row">
+        <div class="att-time-cell">
+          <div class="att-time-cap">Check In</div>
+          <div class="att-time-grp">
+            <input type="time" class="modal-input att-time-input" id="att-sheet-in">
+            <button type="button" class="att-now-btn" onclick="attSheetSetNow('in')">Now</button>
+          </div>
+        </div>
+        <div class="att-time-cell">
+          <div class="att-time-cap">Check Out</div>
+          <div class="att-time-grp">
+            <input type="time" class="modal-input att-time-input" id="att-sheet-out">
+            <button type="button" class="att-now-btn" onclick="attSheetSetNow('out')">Now</button>
+          </div>
+        </div>
+      </div>
+      <div class="att-hours-preview" id="att-sheet-hours">Worked: —</div>
     </div>
+
+    <div class="att-sheet-section" id="att-sheet-note-wrap">
+      <div class="att-sheet-label" id="att-sheet-note-label">Note (optional)</div>
+      <input type="text" class="modal-input" id="att-sheet-note" placeholder="e.g. medical leave, late arrival">
+    </div>
+
+    <div class="att-sheet-meta" id="att-sheet-meta" style="display:none"></div>
+
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="closeModal('modal-edit-att')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveEditAttendance()">Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('modal-att-sheet')">Cancel</button>
+      <button class="btn btn-primary" onclick="attSheetSave()">Save Attendance</button>
     </div>
   </div>
 </div>
@@ -3314,67 +3383,50 @@ function renderStaffDashboard() {
   });
 }
 
-async function staffCheckIn(staffName) {
+/* ==========================================================
+   ATTENDANCE — enterprise console
+   Single source of truth = openAttSheet(). Quick handlers
+   exist only for one-tap convenience and route through the
+   same persistence/audit pipeline.
+   ========================================================== */
+
+async function staffCheckIn(staffName)  { return attQuickCheckIn(staffName); }   // legacy aliases
+async function staffCheckOut(staffName) { return attQuickCheckOut(staffName); }
+
+async function attQuickCheckIn(staffName) {
   const ctx = _attCtx(staffName); if (!ctx) return;
-  const now = _attNowStr();
-  ctx.rec.checkInTime = now;
-  ctx.rec.status = 'present';
+  ctx.rec.checkInTime = _attNowStr();
+  ctx.rec.status = ctx.rec.isHalfDay ? 'present' : 'present';
+  ctx.rec.isHalfDay = false;
+  _attStampAudit(ctx.rec);
   await _attPersist(ctx, staffName);
   toast(staffName + ' checked in ✓');
 }
 
-async function staffCheckOut(staffName) {
+async function attQuickCheckOut(staffName) {
   const ctx = _attCtx(staffName); if (!ctx) return;
-  // Mis-tap guard: if just checked in, confirm
   const inMins = _attTimeToMins(ctx.rec.checkInTime);
-  const nowMins = _attTimeToMins(_attNowStr());
-  if (ctx.rec.checkInTime && (nowMins - inMins) < 2) {
+  const nowStr = _attNowStr();
+  const nowMins = _attTimeToMins(nowStr);
+  if (ctx.rec.checkInTime && inMins != null && nowMins != null && (nowMins - inMins) < 2) {
     if (!confirm(`${staffName} just checked in at ${ctx.rec.checkInTime}.\n\nCheck out now anyway?`)) return;
   }
-  ctx.rec.checkOutTime = _attNowStr();
+  ctx.rec.checkOutTime = nowStr;
+  if (!ctx.rec.status || ctx.rec.status === 'leave' || ctx.rec.status === 'absent') ctx.rec.status = 'present';
+  _attStampAudit(ctx.rec);
   await _attPersist(ctx, staffName);
   toast(staffName + ' checked out ✓');
 }
 
-async function toggleHalfDay(staffName) {
-  const ctx = _attCtx(staffName); if (!ctx) return;
-  ctx.rec.isHalfDay = !ctx.rec.isHalfDay;
-  if (ctx.rec.isHalfDay) ctx.rec.status = 'present';
-  await _attPersist(ctx, staffName);
-  toast(staffName + (ctx.rec.isHalfDay ? ' marked as half-day' : ' set to full day'));
-}
-
-async function staffMarkLeave(staffName) {
-  const ctx = _attCtx(staffName); if (!ctx) return;
-  if ((ctx.rec.checkInTime || ctx.rec.checkOutTime) &&
-      !confirm(`${staffName} has check-in/out times today. Mark as On Leave and clear them?`)) return;
-  ctx.rec.checkInTime = null;
-  ctx.rec.checkOutTime = null;
-  ctx.rec.isHalfDay = false;
-  ctx.rec.status = 'leave';
-  await _attPersist(ctx, staffName);
-  toast(staffName + ' marked on leave');
-}
-
-async function staffResetAttendance(staffName) {
-  const ctx = _attCtx(staffName); if (!ctx) return;
-  if (!confirm(`Reset today's attendance for ${staffName}?`)) return;
-  // Remove the row entirely
-  const idx = ctx.staff.attendance.findIndex(a => a.date === ctx.today);
-  if (idx > -1) ctx.staff.attendance.splice(idx, 1);
-  saveConfig();
-  await fbUpsertStaffAttendance(staffName, { date: ctx.today, checkInTime: null, checkOutTime: null, isHalfDay: false, status: null });
-  renderStaffDashboard();
-  toast(staffName + ' reset');
-}
-
 /* ── attendance helpers ── */
 function attStatus(att) {
-  if (!att || (!att.checkInTime && !att.checkOutTime && !att.isHalfDay && att.status !== 'leave')) return 'pending';
-  if (att.status === 'leave') return 'leave';
-  if (att.isHalfDay) return 'half';
+  if (!att) return 'pending';
+  if (att.status === 'leave')  return 'leave';
+  if (att.status === 'absent') return 'pending';
+  if (att.isHalfDay)           return 'half';
   if (att.checkInTime && att.checkOutTime) return 'done';
   if (att.checkInTime || att.checkOutTime) return 'working';
+  if (att.status === 'present') return 'pending'; // marked but no times
   return 'pending';
 }
 
@@ -3393,13 +3445,18 @@ function _attCtx(staffName) {
   return { staff, rec, today };
 }
 
+function _attStampAudit(rec) {
+  const who = (currentUser && (currentUser.name || currentUser.email)) || null;
+  rec.markedBy = who;
+  rec.markedAt = new Date().toISOString();
+}
+
 function _attNowStr() {
   return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 }
 
 function _attTimeToMins(s) {
   if (!s) return null;
-  // accepts "9:30 AM" / "09:30 am" / "21:30"
   const m = String(s).trim().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/i);
   if (!m) return null;
   let h = +m[1], mm = +m[2];
@@ -3413,14 +3470,13 @@ function _attDuration(inT, outT) {
   const a = _attTimeToMins(inT), b = _attTimeToMins(outT);
   if (a == null || b == null) return '';
   let diff = b - a;
-  if (diff < 0) diff += 24 * 60; // overnight
+  if (diff < 0) diff += 24 * 60;
   if (diff <= 0) return '';
   const h = Math.floor(diff / 60), m = diff % 60;
   return (h ? h + 'h ' : '') + (m ? m + 'm' : (h ? '' : '0m'));
 }
 
 function _attHHMM(s) {
-  // Convert "9:30 am" -> "09:30" for <input type="time">
   const mins = _attTimeToMins(s);
   if (mins == null) return '';
   const h = Math.floor(mins / 60), m = mins % 60;
@@ -3428,7 +3484,6 @@ function _attHHMM(s) {
 }
 
 function _attHHMMtoDisplay(hhmm) {
-  // "13:45" -> "1:45 pm"
   if (!hhmm) return null;
   const m = hhmm.match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return null;
@@ -3436,6 +3491,11 @@ function _attHHMMtoDisplay(hhmm) {
   const ap = h >= 12 ? 'pm' : 'am';
   h = h % 12; if (h === 0) h = 12;
   return h + ':' + String(mm).padStart(2, '0') + ' ' + ap;
+}
+
+function _attNowHHMM() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 
 async function _attPersist(ctx, staffName) {
@@ -3446,8 +3506,168 @@ async function _attPersist(ctx, staffName) {
     checkOutTime: ctx.rec.checkOutTime || null,
     isHalfDay: !!ctx.rec.isHalfDay,
     status: ctx.rec.status || null,
+    note: ctx.rec.note || null,
+    markedBy: ctx.rec.markedBy || null,
+    markedAt: ctx.rec.markedAt || null,
   });
   renderStaffDashboard();
+}
+
+/* ──────────── Attendance Sheet (modal) ──────────── */
+
+let _attSheetStaff  = null;
+let _attSheetStatus = 'present';
+
+function openAttSheet(staffName) {
+  const ctx = _attCtx(staffName); if (!ctx) return;
+  _attSheetStaff = staffName;
+
+  // Avatar + heading
+  const initials = (staffName || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  document.getElementById('att-sheet-avatar').textContent = initials || '?';
+  document.getElementById('att-sheet-name').textContent   = staffName;
+  document.getElementById('att-sheet-sub').textContent    =
+    new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Determine current status; 'pending' rows default to "Full Day" so admin
+  // can click Save with system-now times in two taps.
+  let st = attStatus(ctx.rec);
+  if (st === 'pending') st = 'present';
+  if (st === 'working' || st === 'done') st = ctx.rec.isHalfDay ? 'half' : 'present';
+  _attSheetStatus = st;
+
+  // Times — default to system "now" if blank and status is present/half
+  const inHHMM  = _attHHMM(ctx.rec.checkInTime)  || (st === 'present' || st === 'half' ? _attNowHHMM() : '');
+  const outHHMM = _attHHMM(ctx.rec.checkOutTime) || '';
+  document.getElementById('att-sheet-in').value  = inHHMM;
+  document.getElementById('att-sheet-out').value = outHHMM;
+  document.getElementById('att-sheet-note').value = ctx.rec.note || '';
+
+  // Audit footer
+  const meta = document.getElementById('att-sheet-meta');
+  if (ctx.rec.markedBy || ctx.rec.markedAt) {
+    let when = '';
+    if (ctx.rec.markedAt) {
+      const d = new Date(ctx.rec.markedAt);
+      if (!isNaN(d)) when = d.toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    }
+    meta.style.display = '';
+    meta.innerHTML = 'Last updated by <strong>' + esc(ctx.rec.markedBy || 'system') + '</strong>' + (when ? ' at <strong>' + esc(when) + '</strong>' : '');
+  } else {
+    meta.style.display = 'none';
+  }
+
+  attSheetSetStatus(_attSheetStatus, /*skipDefaults*/true);
+  attSheetUpdateHours();
+  document.getElementById('att-sheet-in').oninput  = attSheetUpdateHours;
+  document.getElementById('att-sheet-out').oninput = attSheetUpdateHours;
+
+  openModal('modal-att-sheet');
+}
+
+function attSheetSetStatus(status, skipDefaults) {
+  _attSheetStatus = status;
+  document.querySelectorAll('#att-seg .att-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.status === status);
+  });
+  const showTimes = (status === 'present' || status === 'half');
+  document.getElementById('att-sheet-times').style.display = showTimes ? '' : 'none';
+  const noteLabel = document.getElementById('att-sheet-note-label');
+  const noteInput = document.getElementById('att-sheet-note');
+  if (status === 'leave') {
+    noteLabel.textContent = 'Leave reason (optional)';
+    noteInput.placeholder = 'e.g. medical, personal, paid leave';
+  } else if (status === 'absent') {
+    noteLabel.textContent = 'Note (optional)';
+    noteInput.placeholder = 'e.g. did not show up';
+  } else {
+    noteLabel.textContent = 'Note (optional)';
+    noteInput.placeholder = 'e.g. late arrival, early leave';
+  }
+  // Auto-fill check-in to system time if user picks Present/Half on a blank row
+  if (!skipDefaults && showTimes) {
+    const inEl = document.getElementById('att-sheet-in');
+    if (!inEl.value) inEl.value = _attNowHHMM();
+  }
+  attSheetUpdateHours();
+}
+
+function attSheetSetNow(which) {
+  const id = which === 'in' ? 'att-sheet-in' : 'att-sheet-out';
+  document.getElementById(id).value = _attNowHHMM();
+  attSheetUpdateHours();
+}
+
+function attSheetUpdateHours() {
+  const el = document.getElementById('att-sheet-hours');
+  if (!el) return;
+  if (_attSheetStatus !== 'present' && _attSheetStatus !== 'half') {
+    el.className = 'att-hours-preview empty';
+    el.textContent = 'Worked: —';
+    return;
+  }
+  const inV  = document.getElementById('att-sheet-in').value;
+  const outV = document.getElementById('att-sheet-out').value;
+  if (!inV || !outV) {
+    el.className = 'att-hours-preview empty';
+    el.textContent = inV ? 'Check-out not set' : 'Check-in not set';
+    return;
+  }
+  const a = _attTimeToMins(_attHHMMtoDisplay(inV));
+  const b = _attTimeToMins(_attHHMMtoDisplay(outV));
+  if (a == null || b == null) { el.className = 'att-hours-preview empty'; el.textContent = '—'; return; }
+  let diff = b - a; let overnight = false;
+  if (diff < 0) { diff += 24 * 60; overnight = true; }
+  const h = Math.floor(diff / 60), m = diff % 60;
+  const txt = (h ? h + 'h ' : '') + (m + 'm');
+  el.className = 'att-hours-preview' + (overnight ? ' warn' : '');
+  el.textContent = 'Worked: ' + txt + (overnight ? '  (overnight shift)' : '');
+}
+
+async function attSheetSave() {
+  if (!_attSheetStaff) return;
+  const ctx = _attCtx(_attSheetStaff); if (!ctx) return;
+  const inV  = document.getElementById('att-sheet-in').value;
+  const outV = document.getElementById('att-sheet-out').value;
+  const note = document.getElementById('att-sheet-note').value.trim();
+
+  if ((_attSheetStatus === 'present' || _attSheetStatus === 'half') && inV && outV) {
+    const a = _attTimeToMins(_attHHMMtoDisplay(inV));
+    const b = _attTimeToMins(_attHHMMtoDisplay(outV));
+    if (a != null && b != null && b < a) {
+      if (!confirm('Check-out is earlier than check-in. Save as overnight shift?')) return;
+    }
+  }
+
+  if (_attSheetStatus === 'present') {
+    ctx.rec.status = 'present';
+    ctx.rec.isHalfDay = false;
+    ctx.rec.checkInTime  = inV  ? _attHHMMtoDisplay(inV)  : null;
+    ctx.rec.checkOutTime = outV ? _attHHMMtoDisplay(outV) : null;
+  } else if (_attSheetStatus === 'half') {
+    ctx.rec.status = 'present';
+    ctx.rec.isHalfDay = true;
+    ctx.rec.checkInTime  = inV  ? _attHHMMtoDisplay(inV)  : null;
+    ctx.rec.checkOutTime = outV ? _attHHMMtoDisplay(outV) : null;
+  } else if (_attSheetStatus === 'leave') {
+    ctx.rec.status = 'leave';
+    ctx.rec.isHalfDay = false;
+    ctx.rec.checkInTime = null;
+    ctx.rec.checkOutTime = null;
+  } else { // absent — clear day entirely
+    ctx.rec.status = 'absent';
+    ctx.rec.isHalfDay = false;
+    ctx.rec.checkInTime = null;
+    ctx.rec.checkOutTime = null;
+  }
+  ctx.rec.note = note || null;
+  _attStampAudit(ctx.rec);
+
+  closeModal('modal-att-sheet');
+  await _attPersist(ctx, _attSheetStaff);
+  const labelMap = { present:'Full day', half:'Half day', leave:'On leave', absent:'Absent' };
+  toast(_attSheetStaff + ' · ' + labelMap[_attSheetStatus] + ' ✓');
+  _attSheetStaff = null;
 }
 
 function renderAttCard(s, att, status) {
@@ -3464,27 +3684,16 @@ function renderAttCard(s, att, status) {
     leave:   '<span class="att-pill leave"><span class="dot"></span>On Leave</span>',
   })[status];
 
-  let actions = '';
+  // Quick action — single primary button per state for one-tap convenience.
+  let quick = '';
   if (status === 'pending') {
-    actions =
-      `<button class="att-btn att-btn-primary" onclick="staffCheckIn('${esc(s.name)}')">Check In</button>` +
-      `<button class="att-btn att-btn-warn" onclick="toggleHalfDay('${esc(s.name)}')">Half-day</button>` +
-      `<button class="att-btn att-btn-leave" onclick="staffMarkLeave('${esc(s.name)}')">On Leave</button>`;
-  } else if (status === 'leave') {
-    actions =
-      `<button class="att-btn att-btn-ghost" onclick="staffResetAttendance('${esc(s.name)}')">Undo leave</button>`;
-  } else if (status === 'done') {
-    actions =
-      `<button class="att-btn att-btn-ghost" onclick="openEditAttendance('${esc(s.name)}')">Edit times</button>` +
-      _attMenu(s.name, status);
-  } else { // working OR half (with possibly partial times)
-    if (!outT) {
-      actions = `<button class="att-btn att-btn-success" onclick="staffCheckOut('${esc(s.name)}')">Check Out</button>`;
-    }
-    actions +=
-      `<button class="att-btn att-btn-ghost" onclick="openEditAttendance('${esc(s.name)}')">Edit</button>` +
-      _attMenu(s.name, status);
+    quick = `<button class="att-btn att-btn-primary" onclick="event.stopPropagation();attQuickCheckIn('${esc(s.name)}')">Check In Now</button>`;
+  } else if (status === 'working') {
+    quick = !outT
+      ? `<button class="att-btn att-btn-success" onclick="event.stopPropagation();attQuickCheckOut('${esc(s.name)}')">Check Out Now</button>`
+      : '';
   }
+  const editBtn = `<button class="att-btn att-btn-ghost" onclick="event.stopPropagation();openAttSheet('${esc(s.name)}')">Edit</button>`;
 
   const inLabel  = inT  ? `<span class="label">In</span><span class="val">${esc(inT)}</span>`   : `<span class="label">In</span><span class="val muted">—</span>`;
   const outLabel = outT ? `<span class="label">Out</span><span class="val">${esc(outT)}</span>` : `<span class="label">Out</span><span class="val muted">—</span>`;
@@ -3492,7 +3701,7 @@ function renderAttCard(s, att, status) {
 
   const cls = 'att-card is-' + status;
   return `
-    <div class="${cls}">
+    <div class="${cls}" onclick="openAttSheet('${esc(s.name)}')" title="Tap to edit attendance">
       <div class="att-card-head">
         <div class="att-avatar">${esc(initials || '?')}</div>
         <div style="flex:1;min-width:0">
@@ -3507,72 +3716,9 @@ function renderAttCard(s, att, status) {
         ${hoursTag}
       </div>`}
       <div class="att-actions">
-        ${actions}
+        ${quick}${editBtn}
       </div>
     </div>`;
-}
-
-function _attMenu(name, status) {
-  const id = 'attmenu-' + name.replace(/[^a-z0-9]/gi, '_');
-  const halfLabel = status === 'half' ? 'Unmark half-day' : 'Mark half-day';
-  return `
-    <div class="att-menu" id="${id}">
-      <button class="att-btn att-btn-icon" onclick="attMenuToggle(event,'${id}')" aria-label="More">⋯</button>
-      <div class="att-menu-list" onclick="event.stopPropagation()">
-        <button class="att-menu-item" onclick="attMenuClose('${id}');toggleHalfDay('${esc(name)}')">${halfLabel}</button>
-        <button class="att-menu-item" onclick="attMenuClose('${id}');staffMarkLeave('${esc(name)}')">Mark on leave</button>
-        <button class="att-menu-item danger" onclick="attMenuClose('${id}');staffResetAttendance('${esc(name)}')">Reset day</button>
-      </div>
-    </div>`;
-}
-
-function attMenuToggle(ev, id) {
-  ev.stopPropagation();
-  document.querySelectorAll('.att-menu.open').forEach(el => { if (el.id !== id) el.classList.remove('open'); });
-  const el = document.getElementById(id);
-  if (el) el.classList.toggle('open');
-  if (!window.__attMenuClick) {
-    window.__attMenuClick = true;
-    document.addEventListener('click', () => {
-      document.querySelectorAll('.att-menu.open').forEach(el => el.classList.remove('open'));
-    });
-  }
-}
-function attMenuClose(id) { const el = document.getElementById(id); if (el) el.classList.remove('open'); }
-
-let _editAttStaff = null;
-function openEditAttendance(staffName) {
-  const ctx = _attCtx(staffName); if (!ctx) return;
-  _editAttStaff = staffName;
-  document.getElementById('edit-att-title').textContent = 'Edit Attendance · ' + staffName;
-  document.getElementById('edit-att-sub').textContent  = 'Adjust check-in/out times. Leave a field blank to clear it.';
-  document.getElementById('edit-att-in').value  = _attHHMM(ctx.rec.checkInTime);
-  document.getElementById('edit-att-out').value = _attHHMM(ctx.rec.checkOutTime);
-  document.getElementById('edit-att-half').checked = !!ctx.rec.isHalfDay;
-  openModal('modal-edit-att');
-}
-
-async function saveEditAttendance() {
-  if (!_editAttStaff) return;
-  const ctx = _attCtx(_editAttStaff); if (!ctx) return;
-  const inV  = document.getElementById('edit-att-in').value;
-  const outV = document.getElementById('edit-att-out').value;
-  const half = document.getElementById('edit-att-half').checked;
-  if (inV && outV) {
-    const a = _attTimeToMins(_attHHMMtoDisplay(inV));
-    const b = _attTimeToMins(_attHHMMtoDisplay(outV));
-    if (a != null && b != null && b < a) {
-      if (!confirm('Check-out is earlier than check-in. Save anyway (overnight shift)?')) return;
-    }
-  }
-  ctx.rec.checkInTime  = inV  ? _attHHMMtoDisplay(inV)  : null;
-  ctx.rec.checkOutTime = outV ? _attHHMMtoDisplay(outV) : null;
-  ctx.rec.isHalfDay = half;
-  if (ctx.rec.status === 'leave' && (ctx.rec.checkInTime || ctx.rec.checkOutTime || half)) ctx.rec.status = 'present';
-  closeModal('modal-edit-att');
-  await _attPersist(ctx, _editAttStaff);
-  toast('Attendance updated ✓');
-  _editAttStaff = null;
 }
 
 function changeFootfall(delta) {
