@@ -1055,6 +1055,21 @@ img, video, canvas, svg{max-width:100%;height:auto;}
   .loading-center{padding:20px;gap:10px;}
   .landing-wrap{padding:20px 24px;}
   .screen{padding-bottom:90px;}
+  /* Hero strips shrink so list content stays visible */
+  .billing-hero, .landing-hero{min-height:auto;padding:14px 18px;}
+  .billing-hero-title, .landing-hero-title{font-size:18px;}
+  .billing-hero-eyebrow, .landing-hero-eyebrow{font-size:9px;letter-spacing:.22em;}
+  .top-bar{padding-top:max(6px, env(safe-area-inset-top));padding-bottom:6px;}
+  .brand-name{font-size:14px;}
+  .brand-tag{font-size:10px;}
+  /* Cart float docks to bottom-right so it doesn't cover content */
+  .cart-float{left:auto;right:14px;bottom:14px;transform:none;width:auto;min-width:200px;padding:10px 16px;}
+}
+
+/* Wider landscape (tablets + foldables open) — use 2-column service grid */
+@media (min-width:720px) and (orientation:landscape){
+  .service-list{grid-template-columns:1fr 1fr;gap:10px;}
+  .modal{max-width:480px;margin-left:auto;margin-right:auto;}
 }
 
 /* Tablets / large phones in landscape — add a centered “phone-on-desk” frame. */

@@ -4,7 +4,7 @@
   "description": "Billing, attendance, expenses and P&L for Ozone Salon & Spa",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#FAF6F0",
   "theme_color": "#D4A5A5",
   "icons": [
