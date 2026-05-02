@@ -494,48 +494,54 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .svc-detail-chip b{color:var(--champagne-deep);font-weight:800;}
 .svc-detail-after{font-size:11.5px;line-height:1.55;color:var(--muted);background:rgba(184,149,106,.06);border-radius:8px;padding:9px 11px;margin-top:10px;}
 .svc-detail-after b{color:var(--ink);}
-/* shimmer skeleton while image loads */
+/* Iconographic monogram tile (luxury style — no photos) */
 .service-thumb{
-  position:relative;inset:auto;background-size:cover;background-position:center;background-repeat:no-repeat;
-  background-color:var(--surface-2);
-  width:44px;height:44px;
-  border-radius:8px;
-  animation:shimmerBg 1.8s ease infinite;
-  overflow:hidden;
-}
-.service-thumb.loaded{animation:none;}
-@keyframes shimmerBg{
-  0%,100%{background-color:var(--surface-2)}
-  50%{background-color:#EDE8E0}
-}
-.service-thumb.no-image{
-  background-image:none !important;
-  background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 50%,#1a1a1a 100%);
-  animation:none;
+  position:relative;
+  width:48px;height:48px;flex-shrink:0;
+  border-radius:10px;
+  background:linear-gradient(135deg, var(--mono-a, #1a1a1a) 0%, var(--mono-b, #2c2418) 100%);
+  box-shadow:inset 0 0 0 1px rgba(184,149,106,.32), 0 1px 3px rgba(0,0,0,.10);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:inset 0 0 0 1px rgba(184,149,106,.35);
+  overflow:hidden;
+  font-family:var(--serif);
+  color:var(--mono-fg, var(--champagne));
 }
-.service-thumb.no-image::before{
-  content:attr(data-letter);
-  font-family:var(--serif);font-size:18px;color:var(--champagne);
-  font-weight:500;letter-spacing:-.02em;line-height:1;
-  text-shadow:0 1px 2px rgba(0,0,0,.4);
+.service-thumb::before{
+  content:attr(data-mono);
+  font-size:17px;font-weight:500;letter-spacing:-.04em;line-height:1;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
   z-index:2;
+  font-feature-settings:"kern" 1,"liga" 1;
 }
 .service-thumb::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(to bottom,rgba(255,255,255,.03),rgba(0,0,0,.10));
-  border-radius:8px;
-  pointer-events:none;
-}
-.service-thumb.no-image::after{
-  /* repurpose ::after as the champagne accent dot when there's no image */
-  content:'';position:absolute;inset:auto;
-  top:5px;right:5px;left:auto;bottom:auto;
+  content:'';position:absolute;
+  top:5px;right:5px;
   width:4px;height:4px;border-radius:50%;
-  background:var(--champagne);
-  box-shadow:0 0 5px rgba(184,149,106,.7);
+  background:var(--mono-dot, var(--champagne));
+  box-shadow:0 0 4px rgba(184,149,106,.55);
+  z-index:3;
 }
+/* subtle inner radial light for depth */
+.service-thumb > .mono-glow{
+  position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 20%, rgba(255,255,255,.10), transparent 55%);
+  pointer-events:none;
+  z-index:1;
+}
+/* Category palettes — set via data-pal on the thumb */
+.service-thumb[data-pal="hair"]   {--mono-a:#1a1a1a;--mono-b:#3a2e1d;--mono-fg:#D4B17C;--mono-dot:#E6C896;}
+.service-thumb[data-pal="skin"]   {--mono-a:#2a2018;--mono-b:#4a3526;--mono-fg:#F2D4B3;--mono-dot:#F5DCC0;}
+.service-thumb[data-pal="nail"]   {--mono-a:#3d1f2e;--mono-b:#5a2a3f;--mono-fg:#F0BFD0;--mono-dot:#F4CDD9;}
+.service-thumb[data-pal="spa"]    {--mono-a:#1a2826;--mono-b:#2c4540;--mono-fg:#A8D4C8;--mono-dot:#BFE0D5;}
+.service-thumb[data-pal="foot"]   {--mono-a:#1f2530;--mono-b:#33405a;--mono-fg:#B6C8E5;--mono-dot:#C8D6EC;}
+.service-thumb[data-pal="hand"]   {--mono-a:#2e1f3d;--mono-b:#48315c;--mono-fg:#D4BFEA;--mono-dot:#DECDF0;}
+.service-thumb[data-pal="face"]   {--mono-a:#3d2a1a;--mono-b:#5a3f2c;--mono-fg:#E8C49A;--mono-dot:#F0D2AC;}
+.service-thumb[data-pal="wax"]    {--mono-a:#2d1f1a;--mono-b:#4a322a;--mono-fg:#E0B89A;--mono-dot:#EBC8AC;}
+.service-thumb[data-pal="massage"]{--mono-a:#1a2a2a;--mono-b:#2c4a4a;--mono-fg:#B8DAD0;--mono-dot:#CDE5DD;}
+.service-thumb[data-pal="bridal"] {--mono-a:#3a1a1f;--mono-b:#5c2a32;--mono-fg:#F0BFC8;--mono-dot:#F5CDD4;}
+.service-thumb[data-pal="kids"]   {--mono-a:#1f2a3d;--mono-b:#33425c;--mono-fg:#BCD0EA;--mono-dot:#CFDDF0;}
+.service-thumb[data-pal="combo"]  {--mono-a:#1a1a1a;--mono-b:#48315c;--mono-fg:#E0C896;--mono-dot:#EBD5A8;}
+.service-thumb[data-pal="default"]{--mono-a:#1a1a1a;--mono-b:#2c2418;--mono-fg:#D4B17C;--mono-dot:#E6C896;}
 .service-info{
   position:relative;
   padding:0;
@@ -4363,6 +4369,8 @@ function _buildServiceItemEl(svc, cat, idx) {
   const meta = getServiceMeta(svc.name, cat);
   const dur  = fmtDur(meta.mins);
   const qty  = state.cart.reduce((s, i) => s + (i.name === svc.name ? i.qty : 0), 0);
+  const mono = serviceMonogram(svc.name);
+  const pal  = servicePalette(svc.name, cat);
   const div  = document.createElement('div');
   div.className = 'service-item';
   div.dataset.cat = cat;
@@ -4370,7 +4378,7 @@ function _buildServiceItemEl(svc, cat, idx) {
   const dis = qty > 0 ? '' : 'disabled';
   div.innerHTML = `
     <div class="service-row" onclick="toggleServiceDetail(this)">
-      <div class="service-thumb" data-letter="${esc((svc.name||'?').trim().charAt(0).toUpperCase())}" style="background-image:url('${meta.img}')"></div>
+      <div class="service-thumb" data-mono="${escAttr(mono)}" data-pal="${escAttr(pal)}" aria-hidden="true"><span class="mono-glow"></span></div>
       <div class="service-info">
         <div class="service-name">${esc(svc.name)}</div>
         <div class="service-meta-row">
@@ -4387,19 +4395,44 @@ function _buildServiceItemEl(svc, cat, idx) {
     </div>
     <div class="svc-detail"></div>
   `;
-  const img = new Image();
-  const thumbEl = div.querySelector('.service-thumb');
-  img.onload  = () => { if (thumbEl) thumbEl.classList.add('loaded'); };
-  img.onerror = () => {
-    if (thumbEl) {
-      thumbEl.classList.add('loaded');
-      thumbEl.classList.add('no-image');
-      thumbEl.style.backgroundImage = 'none';
-    }
-  };
-  img.src = meta.img;
   return div;
 }
+
+/* Build a 2-letter monogram from a service name (skips bracketed/parens text & common stopwords). */
+function serviceMonogram(name) {
+  if (!name) return '··';
+  // Strip parenthesised qualifiers like "(Premium)", "(Adult)"
+  const clean = String(name).replace(/[\(\[][^)\]]*[\)\]]/g, ' ').replace(/[—\-·]/g, ' ');
+  const stop = new Set(['the','and','for','with','of','a','an','to','in','on','&','+']);
+  const words = clean.split(/\s+/).map(w => w.trim()).filter(w => w && !stop.has(w.toLowerCase()));
+  if (!words.length) return String(name).trim().slice(0, 2).toUpperCase() || '··';
+  if (words.length === 1) {
+    const w = words[0];
+    return (w.length >= 2 ? (w[0] + w[1]) : w[0]).toUpperCase();
+  }
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+/* Pick a palette key based on service name + category keywords. */
+function servicePalette(name, category) {
+  const s = ((name || '') + ' ' + (category || '')).toLowerCase();
+  // Order matters — most specific keywords first
+  if (/\b(bridal|wedding|engagement)\b/.test(s)) return 'bridal';
+  if (/\b(kid|child|junior|baby)\b/.test(s))     return 'kids';
+  if (/\b(combo|package|deluxe combo)\b/.test(s))return 'combo';
+  if (/\b(massage|relax|stress|de-?stress|head\s*massage|body\s*massage)\b/.test(s)) return 'massage';
+  if (/\b(spa)\b/.test(s))                       return 'spa';
+  if (/\b(pedicure|foot|feet)\b/.test(s))        return 'foot';
+  if (/\b(manicure|hand)\b/.test(s))             return 'hand';
+  if (/\b(nail|polish|gel|extension|art)\b/.test(s)) return 'nail';
+  if (/\b(wax|waxing|threading|d-?tan|de-?tan|bleach|tan)\b/.test(s)) return 'wax';
+  if (/\b(facial|face|clean ?up|cleanup|glow)\b/.test(s)) return 'face';
+  if (/\b(skin|peel|brighten|whiten)\b/.test(s)) return 'skin';
+  if (/\b(hair|cut|shave|beard|colour|color|highlight|keratin|smooth|botox|wash|trim|style|blow)\b/.test(s)) return 'hair';
+  return 'default';
+}
+
+/* Render quick-shortcut chips above the list. */
 
 /* Render quick-shortcut chips above the list. */
 function renderServiceShortcuts() {
