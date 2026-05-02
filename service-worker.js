@@ -1,6 +1,6 @@
 // Ozone Salon & Spa — ERP Service Worker (Firebase edition)
 // Bump the cache version on every release so installed PWAs auto-update.
-const CACHE = 'ozone-erp-v31-attendance-hold-confirm';
+const CACHE = 'ozone-erp-v32-brand-home';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
