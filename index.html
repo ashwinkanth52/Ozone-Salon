@@ -440,10 +440,10 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .svc-shortcut-chip .sc-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .svc-shortcut-chip .sc-qty{margin-left:4px;background:rgba(184,149,106,.25);color:#FFF;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;font-variant-numeric:tabular-nums;}
 .svc-search-wrap{position:relative;padding:8px 14px 4px;}
-.svc-search-input{width:100%;padding:11px 36px 11px 38px;border:1px solid var(--line-soft);border-radius:10px;background:#FFF;font-size:max(16px,1em);font-family:inherit;color:var(--ink);outline:none;-webkit-appearance:none;}
-.svc-search-input:focus{border-color:var(--champagne);box-shadow:0 0 0 3px rgba(184,149,106,.12);}
-.svc-search-ico{position:absolute;left:24px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none;}
-.svc-search-clear{position:absolute;right:22px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:none;background:var(--surface-2);color:var(--ink);font-size:16px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
+.svc-search-bill{width:100%;padding:11px 36px 11px 38px;border:1px solid var(--line-soft);border-radius:10px;background:#FFF;font-size:max(16px,1em);font-family:inherit;color:var(--ink);outline:none;-webkit-appearance:none;box-sizing:border-box;}
+.svc-search-bill:focus{border-color:var(--champagne);box-shadow:0 0 0 3px rgba(184,149,106,.12);}
+.svc-search-ico{position:absolute;left:24px;top:calc(50% + 2px);transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none;}
+.svc-search-clear{position:absolute;right:22px;top:calc(50% + 2px);transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:none;background:var(--surface-2);color:var(--ink);font-size:16px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
 .svc-search-wrap.has-text .svc-search-clear{display:inline-flex;}
 .svc-search-cathint{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--champagne-deep);font-weight:700;padding:10px 4px 2px;border-top:1px dashed var(--line-soft);margin-top:6px;}
 .svc-search-cathint:first-child{border-top:none;margin-top:0;padding-top:2px;}
@@ -1371,7 +1371,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
   <div class="svc-shortcuts-bar" id="svc-shortcuts-bar"></div>
   <div class="svc-search-wrap">
     <svg class="svc-search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="16.5" y2="16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <input id="svc-search-billing" class="svc-search-input" type="search" inputmode="search" placeholder="Search any service…" autocomplete="off" oninput="onBillingSearchInput(this.value)">
+    <input id="svc-search-billing" class="svc-search-bill" type="search" inputmode="search" placeholder="Search any service…" autocomplete="off" oninput="onBillingSearchInput(this.value)">
     <button class="svc-search-clear" id="svc-search-clear" aria-label="Clear" type="button" onclick="clearBillingSearch()">×</button>
   </div>
   <div class="service-list" id="service-list"></div>
