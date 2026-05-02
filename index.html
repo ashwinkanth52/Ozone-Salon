@@ -451,15 +451,18 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .svc-search-cathint:first-child{border-top:none;margin-top:0;padding-top:2px;}
 .empty-search{text-align:center;padding:30px 14px;color:var(--muted);font-size:13.5px;}
 .empty-search b{color:var(--ink);}
-.service-list{display:grid;grid-template-columns:1fr;gap:8px;padding:10px 14px 14px;}
+.service-list{display:grid;grid-template-columns:1fr;gap:8px;padding:10px 14px 14px;align-items:start;}
 .service-item{
   position:relative;border-radius:12px;overflow:hidden;
   background:var(--surface);box-shadow:0 1px 7px rgba(0,0,0,.05);
   display:flex;flex-direction:column;
   border:1px solid var(--line-soft);
   transition:box-shadow .18s,border-color .18s;
+  align-self:start;
 }
-.service-item.expanded{box-shadow:0 6px 24px rgba(26,26,26,.10);border-color:rgba(184,149,106,.35);}
+/* When a card is expanded in a multi-column grid, stretch it across so the
+   neighbour doesn't get an oversized empty row and tiles stay aligned. */
+.service-item.expanded{box-shadow:0 6px 24px rgba(26,26,26,.10);border-color:rgba(184,149,106,.35);grid-column:1 / -1;}
 .service-row{
   min-height:62px;
   display:grid;grid-template-columns:44px minmax(0,1fr) auto auto;
@@ -1420,8 +1423,13 @@ img, video, canvas, svg{max-width:100%;height:auto;}
     <div class="brand-tag">Bill Summary</div>
     <div style="width:44px"></div>
   </div>
-  <h1 class="screen-title">Review Bill</h1>
-  <div class="screen-subtitle">Confirm services before payment</div>
+  <div class="billing-hero">
+    <div class="billing-hero-overlay"></div>
+    <div class="billing-hero-content">
+      <div class="billing-hero-eyebrow">Review</div>
+      <div class="billing-hero-title">Confirm the bill</div>
+    </div>
+  </div>
   <div class="cart-time-bar" id="cart-time-bar" style="display:none"></div>
   <div class="cart-list" id="cart-list"></div>
   <div id="discount-area"></div>
@@ -1442,6 +1450,13 @@ img, video, canvas, svg{max-width:100%;height:auto;}
     </button>
     <div class="brand-tag">Payment</div>
     <div style="width:44px"></div>
+  </div>
+  <div class="billing-hero">
+    <div class="billing-hero-overlay"></div>
+    <div class="billing-hero-content">
+      <div class="billing-hero-eyebrow">Payment</div>
+      <div class="billing-hero-title">Collect &amp; confirm</div>
+    </div>
   </div>
   <div class="payment-wrap">
     <div class="payment-amount-label">Amount to Collect</div>
@@ -1475,6 +1490,13 @@ img, video, canvas, svg{max-width:100%;height:auto;}
       <div class="brand-tag">Complete Transaction</div>
     </div>
     <div style="width:44px"></div>
+  </div>
+  <div class="billing-hero">
+    <div class="billing-hero-overlay"></div>
+    <div class="billing-hero-content">
+      <div class="billing-hero-eyebrow">Receipt</div>
+      <div class="billing-hero-title">Share &amp; close out</div>
+    </div>
   </div>
   <div class="form-wrap">
     <div style="background:var(--ink);color:#FFF;border-radius:14px;padding:18px 22px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;position:relative;">
