@@ -224,11 +224,13 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .brand-strip-user-name{font-size:11.5px;color:var(--ink);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
 .brand-strip-user-role{font-size:8px;color:var(--champagne);letter-spacing:.18em;text-transform:uppercase;font-weight:600;margin-top:1px;}
 .brand-strip.visible + .screen .top-bar{top:49px;}
-/* Brand-strip (49px) + top-bar (73px) = 122px for stickies below top-bar */
-.brand-strip.visible + .screen .segment-row{top:122px;}
-/* Brand-strip + top-bar + segment-row (62px) = 184px for tabs */
-.brand-strip.visible + .screen .tabs-wrap{top:184px;}
-.brand-strip.visible + .screen .tabs-wrap.no-segment{top:122px;}
+/* With brand-strip (+49) the billing-hero also shifts down */
+.brand-strip.visible + .screen .billing-hero{top:122px;}
+/* Brand-strip + top-bar + hero = 49+73+126 = 248px for segment */
+.brand-strip.visible + .screen .segment-row{top:248px;}
+/* + segment (62px) = 310px for tabs */
+.brand-strip.visible + .screen .tabs-wrap{top:310px;}
+.brand-strip.visible + .screen .tabs-wrap.no-segment{top:248px;}
 .brand-strip.visible + .screen .admin-tabs{top:122px;}
 
 /* USER CHIP */
@@ -362,9 +364,7 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .staff-hero-sub{font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-top:10px;opacity:.88;font-weight:600;}
 
 /* BILLING HERO STRIP */
-.billing-hero{position:relative;height:126px;overflow:hidden;background-color:#1a1a1a;background-image:linear-gradient(155deg,rgba(17,17,17,.55) 0%,rgba(45,32,24,.28) 100%),url('https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=1280');background-size:cover;background-position:center;background-repeat:no-repeat;}
-/* Sticky billing header: hero + tabs + search stay pinned while scrolling services */
-.billing-sticky{position:sticky;top:0;z-index:20;background:var(--bg);box-shadow:0 4px 14px -10px rgba(0,0,0,.18);}
+.billing-hero{position:sticky;top:73px;z-index:7;height:126px;overflow:hidden;background-color:#1a1a1a;background-image:linear-gradient(155deg,rgba(17,17,17,.55) 0%,rgba(45,32,24,.28) 100%),url('https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=1280');background-size:cover;background-position:center;background-repeat:no-repeat;}
 
 /* ADMIN HERO — image + tagline per active tab */
 .admin-hero{position:relative;height:148px;overflow:hidden;background-color:#221911;background-size:cover;background-position:center;background-repeat:no-repeat;transition:background-image .35s ease;}
@@ -412,18 +412,25 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
   .staff-hero-title{font-size:21px;}
   .billing-hero{height:100px;}
   .billing-hero-title{font-size:19px;}
+  /* Adjusted sticky offsets for shorter hero (100px) */
+  .segment-row{top:173px;}
+  .tabs-wrap{top:235px;}
+  .tabs-wrap.no-segment{top:173px;}
+  .brand-strip.visible + .screen .segment-row{top:222px;}
+  .brand-strip.visible + .screen .tabs-wrap{top:284px;}
+  .brand-strip.visible + .screen .tabs-wrap.no-segment{top:222px;}
 }
 
 /* BILLING: SEGMENT (Men / Women / Combo) + TABS + SERVICES */
-/* segment-row is sticky so users always see Men/Women/Combos even when scrolled */
-.segment-row{display:flex;gap:8px;padding:14px 16px 8px;background:var(--surface);position:sticky;top:73px;z-index:8;border-bottom:1px solid var(--line-soft);}
+/* segment-row sticks below the (also sticky) billing-hero: 73 top-bar + 126 hero = 199 */
+.segment-row{display:flex;gap:8px;padding:14px 16px 8px;background:var(--surface);position:sticky;top:199px;z-index:8;border-bottom:1px solid var(--line-soft);}
 .segment-btn{flex:1;padding:11px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--muted);transition:all .18s;}
 .segment-btn:active{transform:scale(.97);}
 .segment-btn.active{background:var(--ink);border-color:var(--ink);color:#FFF;}
-/* Tabs wrapper: sticky below segment-row (73 top-bar + 62 segment = 135) */
-/* If segment row is hidden (single segment), use .no-segment class → top:73px */
-.tabs-wrap{position:sticky;top:135px;z-index:9;background:var(--surface);border-bottom:1px solid var(--line-soft);}
-.tabs-wrap.no-segment{top:73px;}
+/* Tabs wrapper: sticks below segment-row (73 top-bar + 126 hero + 62 segment = 261) */
+/* If segment row is hidden (single segment), use .no-segment class → 199px */
+.tabs-wrap{position:sticky;top:261px;z-index:9;background:var(--surface);border-bottom:1px solid var(--line-soft);}
+.tabs-wrap.no-segment{top:199px;}
 .tabs-wrap::after{content:'';position:absolute;top:0;right:0;bottom:0;width:40px;background:linear-gradient(to right, rgba(248,245,240,0), var(--surface) 75%);pointer-events:none;}
 .tabs-wrap .tabs-chev{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:300;pointer-events:none;z-index:2;opacity:.55;animation:tabsHint 1.6s ease-in-out infinite;}
 @keyframes tabsHint{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(3px)}}
@@ -451,18 +458,15 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .svc-search-cathint:first-child{border-top:none;margin-top:0;padding-top:2px;}
 .empty-search{text-align:center;padding:30px 14px;color:var(--muted);font-size:13.5px;}
 .empty-search b{color:var(--ink);}
-.service-list{display:grid;grid-template-columns:1fr;gap:8px;padding:10px 14px 14px;align-items:start;}
+.service-list{display:grid;grid-template-columns:1fr;gap:8px;padding:10px 14px 14px;}
 .service-item{
   position:relative;border-radius:12px;overflow:hidden;
   background:var(--surface);box-shadow:0 1px 7px rgba(0,0,0,.05);
   display:flex;flex-direction:column;
   border:1px solid var(--line-soft);
   transition:box-shadow .18s,border-color .18s;
-  align-self:start;
 }
-/* When a card is expanded in a multi-column grid, stretch it across so the
-   neighbour doesn't get an oversized empty row and tiles stay aligned. */
-.service-item.expanded{box-shadow:0 6px 24px rgba(26,26,26,.10);border-color:rgba(184,149,106,.35);grid-column:1 / -1;}
+.service-item.expanded{box-shadow:0 6px 24px rgba(26,26,26,.10);border-color:rgba(184,149,106,.35);}
 .service-row{
   min-height:62px;
   display:grid;grid-template-columns:44px minmax(0,1fr) auto auto;
@@ -1381,26 +1385,24 @@ img, video, canvas, svg{max-width:100%;height:auto;}
     </div>
     <div style="width:44px"></div>
   </div>
-  <!-- Frozen header: hero + tabs + search stay pinned while scrolling services -->
-  <div class="billing-sticky">
-    <div class="billing-hero">
-      <div class="billing-hero-overlay"></div>
-      <div class="billing-hero-content">
-        <div class="billing-hero-eyebrow">Curated Services</div>
-        <div class="billing-hero-title">Choose &amp; build the bill</div>
-      </div>
+  <!-- Billing hero strip -->
+  <div class="billing-hero">
+    <div class="billing-hero-overlay"></div>
+    <div class="billing-hero-content">
+      <div class="billing-hero-eyebrow">Curated Services</div>
+      <div class="billing-hero-title">Choose &amp; build the bill</div>
     </div>
-    <div class="segment-row" id="segment-row"></div>
-    <div class="tabs-wrap" id="service-tabs-wrap">
-      <div class="tabs" id="service-tabs"></div>
-      <div class="tabs-chev" aria-hidden="true">›</div>
-    </div>
-    <div class="svc-shortcuts-bar" id="svc-shortcuts-bar"></div>
-    <div class="svc-search-wrap">
-      <svg class="svc-search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="16.5" y2="16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input id="svc-search-billing" class="svc-search-bill" type="search" inputmode="search" placeholder="Search any service…" autocomplete="off" oninput="onBillingSearchInput(this.value)">
-      <button class="svc-search-clear" id="svc-search-clear" aria-label="Clear" type="button" onclick="clearBillingSearch()">×</button>
-    </div>
+  </div>
+  <div class="segment-row" id="segment-row"></div>
+  <div class="tabs-wrap" id="service-tabs-wrap">
+    <div class="tabs" id="service-tabs"></div>
+    <div class="tabs-chev" aria-hidden="true">›</div>
+  </div>
+  <div class="svc-shortcuts-bar" id="svc-shortcuts-bar"></div>
+  <div class="svc-search-wrap">
+    <svg class="svc-search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="16.5" y2="16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="svc-search-billing" class="svc-search-bill" type="search" inputmode="search" placeholder="Search any service…" autocomplete="off" oninput="onBillingSearchInput(this.value)">
+    <button class="svc-search-clear" id="svc-search-clear" aria-label="Clear" type="button" onclick="clearBillingSearch()">×</button>
   </div>
   <div class="service-list" id="service-list"></div>
   <button type="button" class="cart-float" id="cart-float" onclick="showScreen('cart')" aria-label="View bill">
@@ -1423,13 +1425,8 @@ img, video, canvas, svg{max-width:100%;height:auto;}
     <div class="brand-tag">Bill Summary</div>
     <div style="width:44px"></div>
   </div>
-  <div class="billing-hero">
-    <div class="billing-hero-overlay"></div>
-    <div class="billing-hero-content">
-      <div class="billing-hero-eyebrow">Review</div>
-      <div class="billing-hero-title">Confirm the bill</div>
-    </div>
-  </div>
+  <h1 class="screen-title">Review Bill</h1>
+  <div class="screen-subtitle">Confirm services before payment</div>
   <div class="cart-time-bar" id="cart-time-bar" style="display:none"></div>
   <div class="cart-list" id="cart-list"></div>
   <div id="discount-area"></div>
@@ -1450,13 +1447,6 @@ img, video, canvas, svg{max-width:100%;height:auto;}
     </button>
     <div class="brand-tag">Payment</div>
     <div style="width:44px"></div>
-  </div>
-  <div class="billing-hero">
-    <div class="billing-hero-overlay"></div>
-    <div class="billing-hero-content">
-      <div class="billing-hero-eyebrow">Payment</div>
-      <div class="billing-hero-title">Collect &amp; confirm</div>
-    </div>
   </div>
   <div class="payment-wrap">
     <div class="payment-amount-label">Amount to Collect</div>
@@ -1490,13 +1480,6 @@ img, video, canvas, svg{max-width:100%;height:auto;}
       <div class="brand-tag">Complete Transaction</div>
     </div>
     <div style="width:44px"></div>
-  </div>
-  <div class="billing-hero">
-    <div class="billing-hero-overlay"></div>
-    <div class="billing-hero-content">
-      <div class="billing-hero-eyebrow">Receipt</div>
-      <div class="billing-hero-title">Share &amp; close out</div>
-    </div>
   </div>
   <div class="form-wrap">
     <div style="background:var(--ink);color:#FFF;border-radius:14px;padding:18px 22px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;position:relative;">
