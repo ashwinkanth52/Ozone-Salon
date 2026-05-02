@@ -431,6 +431,24 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .tab{flex-shrink:0;padding:15px 14px;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.12em;border-bottom:1.5px solid transparent;transition:all .18s;white-space:nowrap;text-transform:uppercase;scroll-snap-align:start;}
 .tab.active{color:var(--ink);border-bottom-color:var(--champagne);font-weight:600;}
 /* SERVICE GRID */
+.svc-shortcuts-bar{display:flex;gap:6px;overflow-x:auto;padding:8px 14px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.svc-shortcuts-bar::-webkit-scrollbar{display:none;}
+.svc-shortcuts-bar:empty{display:none;}
+.svc-shortcut-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:7px 12px 7px 8px;border-radius:999px;background:linear-gradient(135deg,#1A1A1A,#2c2418);color:#FFF;border:1px solid var(--champagne);font-size:12.5px;font-weight:600;cursor:pointer;transition:transform .12s,box-shadow .12s;-webkit-tap-highlight-color:transparent;font-family:inherit;letter-spacing:.01em;max-width:75vw;}
+.svc-shortcut-chip:active{transform:scale(.96);box-shadow:0 0 0 3px rgba(184,149,106,.18);}
+.svc-shortcut-chip .sc-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--champagne);color:#1A1A1A;font-weight:800;font-size:11px;font-variant-numeric:tabular-nums;flex-shrink:0;}
+.svc-shortcut-chip .sc-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.svc-shortcut-chip .sc-qty{margin-left:4px;background:rgba(184,149,106,.25);color:#FFF;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;font-variant-numeric:tabular-nums;}
+.svc-search-wrap{position:relative;padding:8px 14px 4px;}
+.svc-search-input{width:100%;padding:11px 36px 11px 38px;border:1px solid var(--line-soft);border-radius:10px;background:#FFF;font-size:max(16px,1em);font-family:inherit;color:var(--ink);outline:none;-webkit-appearance:none;}
+.svc-search-input:focus{border-color:var(--champagne);box-shadow:0 0 0 3px rgba(184,149,106,.12);}
+.svc-search-ico{position:absolute;left:24px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none;}
+.svc-search-clear{position:absolute;right:22px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:none;background:var(--surface-2);color:var(--ink);font-size:16px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
+.svc-search-wrap.has-text .svc-search-clear{display:inline-flex;}
+.svc-search-cathint{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--champagne-deep);font-weight:700;padding:10px 4px 2px;border-top:1px dashed var(--line-soft);margin-top:6px;}
+.svc-search-cathint:first-child{border-top:none;margin-top:0;padding-top:2px;}
+.empty-search{text-align:center;padding:30px 14px;color:var(--muted);font-size:13.5px;}
+.empty-search b{color:var(--ink);}
 .service-list{display:grid;grid-template-columns:1fr;gap:8px;padding:10px 14px 14px;}
 .service-item{
   position:relative;border-radius:12px;overflow:hidden;
@@ -764,6 +782,23 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 .svc-cat-actions{display:flex;gap:8px;margin-bottom:14px;}
 .svc-mini{padding:6px 12px;border-radius:8px;background:transparent;border:1px solid var(--line);color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;}
 .svc-mini:active{background:var(--surface-2);color:var(--ink);}
+/* Quick Shortcuts panel (admin) */
+.qsc-panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;padding:12px 14px;margin-bottom:14px;}
+.qsc-panel[open]{box-shadow:0 1px 7px rgba(0,0,0,.04);}
+.qsc-summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;list-style:none;padding:4px 0;font-weight:600;color:var(--ink);}
+.qsc-summary::-webkit-details-marker{display:none;}
+.qsc-summary::after{content:'▾';color:var(--champagne-deep);transition:transform .2s;}
+.qsc-panel:not([open]) .qsc-summary::after{transform:rotate(-90deg);}
+.qsc-panel:not([open]) .qsc-summary{padding-bottom:4px;}
+.qsc-title{font-size:14px;letter-spacing:.01em;}
+.qsc-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--champagne-deep);font-weight:700;background:rgba(184,149,106,.10);padding:3px 9px;border-radius:999px;margin-right:10px;}
+.qsc-grid{display:flex;flex-direction:column;gap:8px;}
+.qsc-row{display:flex;align-items:center;gap:8px;}
+.qsc-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1A1A1A,#2c2418);color:var(--champagne);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;border:1px solid var(--champagne);}
+.qsc-select{flex:1;min-width:0;padding:9px 10px;background:#FFF;border:1px solid var(--line-soft);border-radius:8px;font-size:13.5px;color:var(--ink);outline:none;font-family:inherit;}
+.qsc-select:focus{border-color:var(--champagne);box-shadow:0 0 0 3px rgba(184,149,106,.10);}
+.qsc-clear{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line-soft);color:var(--terracotta);font-size:16px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;}
+.qsc-clear-spacer{flex-shrink:0;width:28px;height:28px;display:inline-block;}
 .svc-cat-card{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;margin-bottom:14px;overflow:hidden;}
 .svc-cat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;background:linear-gradient(to bottom, var(--surface), var(--surface));user-select:none;}
 .svc-cat-header:active{background:var(--surface-2);}
@@ -1332,6 +1367,12 @@ img, video, canvas, svg{max-width:100%;height:auto;}
   <div class="tabs-wrap" id="service-tabs-wrap">
     <div class="tabs" id="service-tabs"></div>
     <div class="tabs-chev" aria-hidden="true">›</div>
+  </div>
+  <div class="svc-shortcuts-bar" id="svc-shortcuts-bar"></div>
+  <div class="svc-search-wrap">
+    <svg class="svc-search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="16.5" y2="16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="svc-search-billing" class="svc-search-input" type="search" inputmode="search" placeholder="Search any service…" autocomplete="off" oninput="onBillingSearchInput(this.value)">
+    <button class="svc-search-clear" id="svc-search-clear" aria-label="Clear" type="button" onclick="clearBillingSearch()">×</button>
   </div>
   <div class="service-list" id="service-list"></div>
   <button type="button" class="cart-float" id="cart-float" onclick="showScreen('cart')" aria-label="View bill">
@@ -1957,6 +1998,9 @@ const DEFAULTS = {
   // Admin-editable rich service details (overrides static catalogue per service).
   // Shape: { [serviceName]: { tagline, suitable, steps:[…], aftercare } }
   serviceDetails: {},
+  // Quick-shortcut slots 1–9 → service name (admin-configurable).
+  // Shape: { '1': 'Haircut (Adult)', '2': 'Spa Pedicure (Premium)', … }
+  serviceShortcuts: {},
   // Menu version — bump this when DEFAULTS.services changes to force-refresh stale local caches.
   servicesVersion: 'v2026-04-full-menu',
   services: {
@@ -2821,6 +2865,7 @@ async function handleAuthStateChange(user) {
       if (shopCfg.adminWhatsappNumber !== undefined)    config.adminWhatsappNumber  = shopCfg.adminWhatsappNumber;
       if (Array.isArray(shopCfg.expenseCategories))     config.expenseCategories     = shopCfg.expenseCategories;
       if (shopCfg.serviceDetails && typeof shopCfg.serviceDetails === 'object') config.serviceDetails = shopCfg.serviceDetails;
+      if (shopCfg.serviceShortcuts && typeof shopCfg.serviceShortcuts === 'object') config.serviceShortcuts = shopCfg.serviceShortcuts;
       if (shopCfg.codOpeningBalances && typeof shopCfg.codOpeningBalances === 'object') config.codOpeningBalances = shopCfg.codOpeningBalances;
       if (shopCfg.dayCloseLocks && typeof shopCfg.dayCloseLocks === 'object') config.dayCloseLocks = shopCfg.dayCloseLocks;
       saveConfig();
@@ -4203,53 +4248,161 @@ function renderHome() {
     requestAnimationFrame(updateTabsChev);
   }
 
+  // ─── Quick shortcuts (admin-configurable: slot 1-9 → service name) ───
+  renderServiceShortcuts();
+
+  // ─── Search input: keep value + has-text class in sync ───
+  const searchInput = document.getElementById('svc-search-billing');
+  const searchWrap  = searchInput && searchInput.closest('.svc-search-wrap');
+  const q = String(state._svcSearchBilling || '').trim();
+  if (searchInput && document.activeElement !== searchInput) searchInput.value = state._svcSearchBilling || '';
+  if (searchWrap) searchWrap.classList.toggle('has-text', !!q);
+
+  // When searching, dim the tab row (still tappable to clear context, but search wins)
+  const tabsWrapEl = document.getElementById('service-tabs-wrap');
+  if (tabsWrapEl) tabsWrapEl.style.opacity = q ? '.45' : '';
+
   // Services
   const listEl = document.getElementById('service-list');
   listEl.innerHTML = '';
-  (config.services[state.tab] || []).forEach((svc, idx) => {
-    const meta = getServiceMeta(svc.name, state.tab);
-    const dur  = fmtDur(meta.mins);
-    const qty  = state.cart.reduce((s, i) => s + (i.name === svc.name ? i.qty : 0), 0);
-    const div  = document.createElement('div');
-    div.className = 'service-item';
-    div.dataset.cat = state.tab;
-    div.dataset.idx = idx;
-    const dis = qty > 0 ? '' : 'disabled';
-    div.innerHTML = `
-      <div class="service-row" onclick="toggleServiceDetail(this)">
-        <div class="service-thumb" id="sthumb-${idx}" data-letter="${esc((svc.name||'?').trim().charAt(0).toUpperCase())}" style="background-image:url('${meta.img}')"></div>
-        <div class="service-info">
-          <div class="service-name">${esc(svc.name)}</div>
-          <div class="service-meta-row">
-            <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
-            ${dur ? `<span class="service-dur">${dur}</span>` : ''}
-          </div>
-        </div>
-        <div class="svc-ctrl" data-cat="${escAttr(state.tab)}" data-idx="${idx}" onclick="event.stopPropagation()">
-          <button class="svc-minus" ${dis} aria-label="Remove one" onclick="event.stopPropagation();decrementService('${escAttr(state.tab)}',${idx})">&#x2212;</button>
-          <span class="svc-qty-num">${qty}</span>
-          <button class="svc-plus" aria-label="Add one" onclick="event.stopPropagation();addToCart('${escAttr(state.tab)}',${idx})">+</button>
-        </div>
-        <div class="service-chev" aria-hidden="true">▾</div>
-      </div>
-      <div class="svc-detail"></div>
-    `;
-    // Image load + error handling
-    const img = new Image();
-    const thumbEl = div.querySelector('.service-thumb');
-    img.onload  = () => { if (thumbEl) thumbEl.classList.add('loaded'); };
-    img.onerror = () => {
-      if (thumbEl) {
-        thumbEl.classList.add('loaded');
-        thumbEl.classList.add('no-image');
-        thumbEl.style.backgroundImage = 'none';
-      }
-    };
-    img.src = meta.img;
-    listEl.appendChild(div);
-  });
+
+  if (q) {
+    // Flat search across ALL services in the current segment.
+    const needle = q.toLowerCase();
+    const allCats = Object.keys(config.services || {}).filter(c => getServiceSegment(c) === state.segment);
+    const groups = [];
+    let totalHits = 0;
+    allCats.forEach(cat => {
+      const hits = (config.services[cat] || [])
+        .map((svc, idx) => ({ svc, idx }))
+        .filter(o => String(o.svc.name || '').toLowerCase().includes(needle));
+      if (hits.length) { groups.push({ cat, hits }); totalHits += hits.length; }
+    });
+    if (!totalHits) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-search';
+      empty.innerHTML = `No services match <b>"${esc(q)}"</b>.<br><span style="font-size:12px;">Try a shorter word, or clear the search.</span>`;
+      listEl.appendChild(empty);
+    } else {
+      groups.forEach(g => {
+        const hint = document.createElement('div');
+        hint.className = 'svc-search-cathint';
+        const parts = String(g.cat).split(' · ');
+        hint.textContent = parts.length > 1 ? parts.slice(1).join(' · ') : g.cat;
+        listEl.appendChild(hint);
+        g.hits.forEach(({ svc, idx }) => listEl.appendChild(_buildServiceItemEl(svc, g.cat, idx)));
+      });
+    }
+  } else {
+    (config.services[state.tab] || []).forEach((svc, idx) => {
+      listEl.appendChild(_buildServiceItemEl(svc, state.tab, idx));
+    });
+  }
 
   updateCartFloat();
+}
+
+/* Build a single service-item DOM element (used by both tab view & search results). */
+function _buildServiceItemEl(svc, cat, idx) {
+  const meta = getServiceMeta(svc.name, cat);
+  const dur  = fmtDur(meta.mins);
+  const qty  = state.cart.reduce((s, i) => s + (i.name === svc.name ? i.qty : 0), 0);
+  const div  = document.createElement('div');
+  div.className = 'service-item';
+  div.dataset.cat = cat;
+  div.dataset.idx = idx;
+  const dis = qty > 0 ? '' : 'disabled';
+  div.innerHTML = `
+    <div class="service-row" onclick="toggleServiceDetail(this)">
+      <div class="service-thumb" data-letter="${esc((svc.name||'?').trim().charAt(0).toUpperCase())}" style="background-image:url('${meta.img}')"></div>
+      <div class="service-info">
+        <div class="service-name">${esc(svc.name)}</div>
+        <div class="service-meta-row">
+          <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
+          ${dur ? `<span class="service-dur">${dur}</span>` : ''}
+        </div>
+      </div>
+      <div class="svc-ctrl" data-cat="${escAttr(cat)}" data-idx="${idx}" onclick="event.stopPropagation()">
+        <button class="svc-minus" ${dis} aria-label="Remove one" onclick="event.stopPropagation();decrementService('${escAttr(cat)}',${idx})">&#x2212;</button>
+        <span class="svc-qty-num">${qty}</span>
+        <button class="svc-plus" aria-label="Add one" onclick="event.stopPropagation();addToCart('${escAttr(cat)}',${idx})">+</button>
+      </div>
+      <div class="service-chev" aria-hidden="true">▾</div>
+    </div>
+    <div class="svc-detail"></div>
+  `;
+  const img = new Image();
+  const thumbEl = div.querySelector('.service-thumb');
+  img.onload  = () => { if (thumbEl) thumbEl.classList.add('loaded'); };
+  img.onerror = () => {
+    if (thumbEl) {
+      thumbEl.classList.add('loaded');
+      thumbEl.classList.add('no-image');
+      thumbEl.style.backgroundImage = 'none';
+    }
+  };
+  img.src = meta.img;
+  return div;
+}
+
+/* Render quick-shortcut chips above the list. */
+function renderServiceShortcuts() {
+  const bar = document.getElementById('svc-shortcuts-bar');
+  if (!bar) return;
+  bar.innerHTML = '';
+  const map = config.serviceShortcuts || {};
+  // Slots 1-9 in order
+  for (let n = 1; n <= 9; n++) {
+    const name = map[String(n)];
+    if (!name) continue;
+    const found = findServiceByName(name);
+    if (!found) continue;
+    const qty = getServiceQtyInCart(found.svc.name);
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'svc-shortcut-chip';
+    chip.title = found.svc.name + ' · ₹' + (found.svc.price || 0).toLocaleString('en-IN');
+    chip.innerHTML = `<span class="sc-num">${n}</span><span class="sc-name">${esc(found.svc.name)}</span>${qty ? `<span class="sc-qty">${qty}</span>` : ''}`;
+    chip.onclick = () => {
+      addToCart(found.cat, found.idx);
+      // Re-render shortcuts to refresh qty badge
+      renderServiceShortcuts();
+    };
+    bar.appendChild(chip);
+  }
+}
+
+/* Find a service by exact name across all categories. Returns {cat, idx, svc} or null. */
+function findServiceByName(name) {
+  if (!name || !config.services) return null;
+  for (const cat of Object.keys(config.services)) {
+    const list = config.services[cat] || [];
+    const idx = list.findIndex(s => s.name === name);
+    if (idx >= 0) return { cat, idx, svc: list[idx] };
+  }
+  return null;
+}
+
+/* Search input handlers. */
+let _billingSearchTimer = null;
+function onBillingSearchInput(v) {
+  state._svcSearchBilling = v;
+  // Debounce so typing on slow phones stays smooth
+  clearTimeout(_billingSearchTimer);
+  _billingSearchTimer = setTimeout(() => {
+    if (state.screen === 'home') renderHome();
+  }, 140);
+  // Toggle clear button immediately for snappy feel
+  const wrap = document.querySelector('.svc-search-wrap');
+  if (wrap) wrap.classList.toggle('has-text', !!String(v || '').trim());
+}
+function clearBillingSearch() {
+  state._svcSearchBilling = '';
+  const inp = document.getElementById('svc-search-billing');
+  if (inp) inp.value = '';
+  const wrap = document.querySelector('.svc-search-wrap');
+  if (wrap) wrap.classList.remove('has-text');
+  if (state.screen === 'home') renderHome();
 }
 
 /* ────────────────────────────────────────────────────
@@ -4270,6 +4423,10 @@ function refreshServiceAddIndicators() {
     ctrl.className = 'svc-ctrl';
     ctrl.innerHTML = `<button class="svc-minus" ${dis} aria-label="Remove one" onclick="event.stopPropagation();decrementService('${escAttr(cat)}',${idx})">&#x2212;</button><span class="svc-qty-num">${qty}</span><button class="svc-plus" aria-label="Add one" onclick="event.stopPropagation();addToCart('${escAttr(cat)}',${idx})">+</button>`;
   });
+  // Keep shortcut chip qty badges in sync
+  if (typeof renderServiceShortcuts === 'function' && document.getElementById('svc-shortcuts-bar')) {
+    renderServiceShortcuts();
+  }
 }
 
 /* ────────────────────────────────────────────────────
@@ -8381,6 +8538,8 @@ function renderSetupServices(host) {
       <button class="svc-mini" onclick="toggleAllSvcCategories(false)">Expand all</button>
       <button class="svc-mini" onclick="toggleAllSvcCategories(true)">Collapse all</button>
     </div>
+
+    ${renderQuickShortcutsPanelHTML()}
   `;
 
   Object.keys(config.services).forEach(cat => {
@@ -8556,6 +8715,74 @@ async function saveServicesList() {
   saveConfig();
   const ok = await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
   toast(ok ? 'Services saved ✓' : '⚠ Could not save services');
+}
+
+/* ─── Quick Shortcuts (slot 1-9 → service) admin UI ─── */
+function renderQuickShortcutsPanelHTML() {
+  if (!config.serviceShortcuts) config.serviceShortcuts = {};
+  const map = config.serviceShortcuts;
+  // Build a flat list of {cat, name, price} for dropdown rendering
+  const allOpts = [];
+  Object.keys(config.services || {}).forEach(cat => {
+    const shortCat = String(cat).split(' · ').slice(1).join(' · ') || cat;
+    const items = (config.services[cat] || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+    items.forEach(s => allOpts.push({ cat: shortCat, name: s.name, price: s.price || 0 }));
+  });
+  // Group by cat preserving order of first appearance
+  const groups = {};
+  allOpts.forEach(o => { (groups[o.cat] = groups[o.cat] || []).push(o); });
+
+  const buildOptions = (selectedName) => {
+    let html = `<option value="">— None —</option>`;
+    Object.keys(groups).forEach(cat => {
+      html += `<optgroup label="${escAttr(cat)}">`;
+      groups[cat].forEach(o => {
+        const sel = (o.name === selectedName) ? ' selected' : '';
+        html += `<option value="${escAttr(o.name)}"${sel}>${esc(o.name)} — ₹${o.price.toLocaleString('en-IN')}</option>`;
+      });
+      html += `</optgroup>`;
+    });
+    return html;
+  };
+
+  const usedCount = Object.values(map).filter(Boolean).length;
+  let rows = '';
+  for (let n = 1; n <= 9; n++) {
+    const sel = map[String(n)] || '';
+    rows += `
+      <div class="qsc-row">
+        <div class="qsc-num">${n}</div>
+        <select class="qsc-select" data-slot="${n}" onchange="onQuickShortcutChange(${n}, this.value)">
+          ${buildOptions(sel)}
+        </select>
+        ${sel ? `<button class="qsc-clear" type="button" onclick="onQuickShortcutChange(${n}, '')" title="Clear slot">×</button>` : '<span class="qsc-clear-spacer"></span>'}
+      </div>
+    `;
+  }
+  return `
+    <details class="qsc-panel" ${usedCount ? 'open' : ''}>
+      <summary class="qsc-summary">
+        <span class="qsc-title">Quick Shortcuts (1–9)</span>
+        <span class="qsc-count">${usedCount}/9 used</span>
+      </summary>
+      <div class="muted-text" style="font-size:12px;margin:0 0 10px;line-height:1.55;">
+        Pick the most-billed services so supervisors can add them in one tap from the billing screen — no scrolling required.
+      </div>
+      <div class="qsc-grid">${rows}</div>
+    </details>
+  `;
+}
+
+async function onQuickShortcutChange(slot, value) {
+  if (!config.serviceShortcuts) config.serviceShortcuts = {};
+  if (value) config.serviceShortcuts[String(slot)] = value;
+  else       delete config.serviceShortcuts[String(slot)];
+  saveConfig();
+  toast(value ? `Shortcut ${slot} → ${value} ✓` : `Shortcut ${slot} cleared ✓`);
+  try { await fbSetConfig({ serviceShortcuts: config.serviceShortcuts }); } catch(e) {}
+  // Re-render so the count + clear button update
+  const host = document.getElementById('setup-sub-content');
+  if (host) renderSetupServices(host);
 }
 
 /* ─── Edit rich service detail (tagline / steps / aftercare / suitable) ─── */
