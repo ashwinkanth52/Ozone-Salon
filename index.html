@@ -208,8 +208,8 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
 .brand-strip-home:active{transform:scale(.985);background:rgba(184,149,106,.10);}
 .brand-strip-logo{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#2a2a2a 0%,#0e0e0e 100%);color:#FFF;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:19px;font-weight:500;flex-shrink:0;letter-spacing:-.02em;box-shadow:0 3px 12px rgba(26,26,26,.20),inset 0 0 0 1px rgba(184,149,106,.30);position:relative;}
 .brand-strip-logo::after{content:'';position:absolute;top:5px;right:5px;width:5px;height:5px;border-radius:50%;background:var(--champagne);box-shadow:0 0 6px rgba(184,149,106,.65);}
-.brand-strip-name{font-family:var(--serif);font-size:16.5px;color:var(--ink);letter-spacing:-.005em;line-height:1.1;font-weight:500;display:block;}
-.brand-strip-tag{font-size:9px;color:var(--champagne);letter-spacing:.26em;text-transform:uppercase;margin-top:3px;font-weight:700;display:block;}
+.brand-strip-name{font-family:var(--serif);font-size:16.5px;color:var(--ink);letter-spacing:-.005em;line-height:1.1;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brand-strip-tag{font-size:9px;color:var(--champagne);letter-spacing:.26em;text-transform:uppercase;margin-top:3px;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .brand-strip-meta{flex:1;min-width:0;display:flex;flex-direction:column;}
 .brand-strip-user{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);padding:3px 10px 3px 3px;border-radius:30px;flex-shrink:0;box-shadow:var(--shadow-soft);}
 .brand-strip-user img{width:22px;height:22px;border-radius:50%;object-fit:cover;}
@@ -3868,9 +3868,14 @@ async function attSheetSave() {
   _attStampAudit(ctx.rec);
 
   closeModal('modal-att-sheet');
-  await _attPersist(ctx, _attSheetStaff);
-  const labelMap = { present:'Full day', half:'Half day', leave:'On leave', absent:'Absent' };
-  toast(_attSheetStaff + ' · ' + labelMap[_attSheetStatus] + ' ✓');
+  try {
+    await _attPersist(ctx, _attSheetStaff);
+    const labelMap = { present:'Full day', half:'Half day', leave:'On leave', absent:'Absent' };
+    toast(_attSheetStaff + ' · ' + labelMap[_attSheetStatus] + ' ✓');
+  } catch (e) {
+    console.error('attSheetSave: persist failed', e);
+    toast('⚠️ Saved locally — will sync when online');
+  }
   _attSheetStaff = null;
 }
 
@@ -4785,7 +4790,9 @@ function decrementService(cat, idx) {
 }
 
 function addToCart(cat, idx) {
-  const svc = config.services[cat][idx];
+  const list = config && config.services && config.services[cat];
+  const svc  = list && list[idx];
+  if (!svc) { console.warn('addToCart: missing service', cat, idx); return; }
   const existing = state.cart.find(i => i.name === svc.name);
   if (existing) existing.qty++;
   else state.cart.push({ id: uid(), name: svc.name, price: svc.price, qty: 1 });
