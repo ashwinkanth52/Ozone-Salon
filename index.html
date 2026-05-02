@@ -1819,6 +1819,37 @@ img, video, canvas, svg{max-width:100%;height:auto;}
 <div class="save-toast" id="save-toast"></div>
 <div class="sync-pill" id="sync-pill"></div>
 
+<!-- Edit Service Details (admin) -->
+<div class="modal-backdrop" id="modal-svc-detail">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="svc-detail-title">Edit Service Details</div>
+    <div class="muted-text" style="font-size:12px;margin:-8px 0 14px;">Customise what customers see when they tap a service. Leave blank to use the smart default.</div>
+    <div class="modal-field">
+      <label class="modal-label">Tagline / one-line description</label>
+      <textarea class="modal-input" id="svcd-tagline" rows="2" placeholder="e.g. Premium spa pedicure — extended foot ritual that leaves you walking on clouds."></textarea>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Suitable for / who it's for</label>
+      <input type="text" class="modal-input" id="svcd-suitable" placeholder="e.g. Anyone — especially welcome after long days on your feet.">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">How it's done — one step per line</label>
+      <textarea class="modal-input" id="svcd-steps" rows="9" placeholder="Old polish removed; feet inspected for cracks or rough patches.&#10;Warm aroma + salt soak (10 min).&#10;Nail trim, shape and gentle buff.&#10;…" style="font-family:inherit;line-height:1.55;"></textarea>
+      <div class="muted-text" style="font-size:11px;margin-top:6px;">Tip: keep each step short and action-oriented. Numbers are added automatically.</div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Aftercare advice</label>
+      <textarea class="modal-input" id="svcd-aftercare" rows="2" placeholder="e.g. Moisturise feet daily; wear closed footwear for 2h after polish."></textarea>
+    </div>
+    <div class="modal-btns" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-svc-detail')">Cancel</button>
+      <button class="btn btn-secondary" onclick="resetServiceDetail()" style="color:var(--terracotta);">Reset to Default</button>
+      <button class="btn btn-primary" onclick="saveServiceDetail()" style="flex:1;min-width:110px;">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
      ═══════════════════════════════════════════════════ -->
@@ -1923,6 +1954,9 @@ const DEFAULTS = {
   staff: [],
   fixedExpenses: [],
   emi: [],
+  // Admin-editable rich service details (overrides static catalogue per service).
+  // Shape: { [serviceName]: { tagline, suitable, steps:[…], aftercare } }
+  serviceDetails: {},
   // Menu version — bump this when DEFAULTS.services changes to force-refresh stale local caches.
   servicesVersion: 'v2026-04-full-menu',
   services: {
@@ -2786,6 +2820,7 @@ async function handleAuthStateChange(user) {
       config.supervisorPermissions = getNormalizedSupervisorPermissions(shopCfg.supervisorPermissions || config.supervisorPermissions);
       if (shopCfg.adminWhatsappNumber !== undefined)    config.adminWhatsappNumber  = shopCfg.adminWhatsappNumber;
       if (Array.isArray(shopCfg.expenseCategories))     config.expenseCategories     = shopCfg.expenseCategories;
+      if (shopCfg.serviceDetails && typeof shopCfg.serviceDetails === 'object') config.serviceDetails = shopCfg.serviceDetails;
       if (shopCfg.codOpeningBalances && typeof shopCfg.codOpeningBalances === 'object') config.codOpeningBalances = shopCfg.codOpeningBalances;
       if (shopCfg.dayCloseLocks && typeof shopCfg.dayCloseLocks === 'object') config.dayCloseLocks = shopCfg.dayCloseLocks;
       saveConfig();
@@ -4289,8 +4324,25 @@ function buildSvcDetailHTML(svc, d) {
   `;
 }
 
-/* Rich, professional service descriptions — international-salon style. */
+/* Rich, professional service descriptions — international-salon style.
+   Admin can override per-service via Setup → Services → Edit Details.
+   Override shape: { tagline, suitable, steps:[…], aftercare } */
 function getServiceDetail(name, category) {
+  const base = _defaultServiceDetail(name, category);
+  const ov = (config.serviceDetails || {})[name];
+  if (ov && typeof ov === 'object') {
+    return {
+      tagline:   (ov.tagline   != null && String(ov.tagline).trim())   ? ov.tagline   : base.tagline,
+      suitable:  (ov.suitable  != null && String(ov.suitable).trim())  ? ov.suitable  : base.suitable,
+      steps:     (Array.isArray(ov.steps) && ov.steps.length)          ? ov.steps     : base.steps,
+      aftercare: (ov.aftercare != null && String(ov.aftercare).trim()) ? ov.aftercare : base.aftercare,
+      mins:      base.mins,
+    };
+  }
+  return base;
+}
+
+function _defaultServiceDetail(name, category) {
   const meta = getServiceMeta(name, category);
   const n = String(name || '').toLowerCase();
   const D = (tagline, steps, aftercare, suitable) => ({
@@ -8408,6 +8460,7 @@ function renderSetupServices(host) {
           <button class="svc-autofill" title="Auto-fill description & duration from name">✨</button>
         </div>
         <textarea class="svc-desc" rows="2" placeholder="What's done in this service… (tap ✨ to auto-fill)">${esc(svc.desc || '')}</textarea>
+        <button class="btn btn-secondary svc-edit-detail" type="button" style="font-size:12px;padding:8px 12px;align-self:flex-start;">${(config.serviceDetails && config.serviceDetails[svc.name]) ? '✎ Edit Details (customised)' : '✎ Edit Details'}</button>
       `;
       const ni = r.querySelector('.svc-name');
       const pi = r.querySelector('.svc-price');
@@ -8438,6 +8491,8 @@ function renderSetupServices(host) {
         saveConfig();
         toast('Filled ✓');
       };
+      const ed = r.querySelector('.svc-edit-detail');
+      if (ed) ed.onclick = () => openEditServiceDetail(svc.name, cat);
       rowsHost.appendChild(r);
     });
   });
@@ -8501,6 +8556,58 @@ async function saveServicesList() {
   saveConfig();
   const ok = await fbReplaceCollection(COL.SERVICES, flattenServices(config.services));
   toast(ok ? 'Services saved ✓' : '⚠ Could not save services');
+}
+
+/* ─── Edit rich service detail (tagline / steps / aftercare / suitable) ─── */
+let _editingSvcName = null;
+let _editingSvcCat  = null;
+function openEditServiceDetail(name, cat) {
+  _editingSvcName = name;
+  _editingSvcCat  = cat;
+  const def = _defaultServiceDetail(name, cat);
+  const ov  = (config.serviceDetails || {})[name] || {};
+  document.getElementById('svc-detail-title').textContent = 'Edit · ' + name;
+  document.getElementById('svcd-tagline').value   = ov.tagline   != null ? ov.tagline   : (def.tagline   || '');
+  document.getElementById('svcd-suitable').value  = ov.suitable  != null ? ov.suitable  : (def.suitable  || '');
+  document.getElementById('svcd-steps').value     = (Array.isArray(ov.steps) && ov.steps.length ? ov.steps : (def.steps || [])).join('\n');
+  document.getElementById('svcd-aftercare').value = ov.aftercare != null ? ov.aftercare : (def.aftercare || '');
+  openModal('modal-svc-detail');
+}
+
+async function saveServiceDetail() {
+  if (!_editingSvcName) return;
+  const tagline   = document.getElementById('svcd-tagline').value.trim();
+  const suitable  = document.getElementById('svcd-suitable').value.trim();
+  const stepsRaw  = document.getElementById('svcd-steps').value;
+  const aftercare = document.getElementById('svcd-aftercare').value.trim();
+  const steps = stepsRaw.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!config.serviceDetails) config.serviceDetails = {};
+  config.serviceDetails[_editingSvcName] = { tagline, suitable, steps, aftercare };
+  saveConfig();
+  closeModal('modal-svc-detail');
+  toast('Saved ✓');
+  // Push to Firestore so every device gets the update
+  try { await fbSetConfig({ serviceDetails: config.serviceDetails }); } catch(e) {}
+  // Invalidate any already-built service detail panels so the next open shows fresh content
+  document.querySelectorAll('.svc-detail').forEach(p => { p.dataset.built = ''; p.innerHTML = ''; });
+  // Refresh list so the "(customised)" label appears
+  const host = document.getElementById('setup-sub-content');
+  if (host) renderSetupServices(host);
+  _editingSvcName = null; _editingSvcCat = null;
+}
+
+async function resetServiceDetail() {
+  if (!_editingSvcName) return;
+  if (!confirm('Reset this service back to the smart default?\n\nYour custom tagline, steps and aftercare will be removed.')) return;
+  if (config.serviceDetails) delete config.serviceDetails[_editingSvcName];
+  saveConfig();
+  closeModal('modal-svc-detail');
+  toast('Reset to default ✓');
+  try { await fbSetConfig({ serviceDetails: config.serviceDetails || {} }); } catch(e) {}
+  document.querySelectorAll('.svc-detail').forEach(p => { p.dataset.built = ''; p.innerHTML = ''; });
+  const host = document.getElementById('setup-sub-content');
+  if (host) renderSetupServices(host);
+  _editingSvcName = null; _editingSvcCat = null;
 }
 
 function renderSetupShop(host) {
