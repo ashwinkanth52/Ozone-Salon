@@ -1948,6 +1948,12 @@ img, video, canvas, svg{max-width:100%;height:auto;}
           <input type="text" class="input" id="customer-name" placeholder="e.g. Aarav Sharma" maxlength="60" oninput="onCustomerNameInput(this.value)">
         </div>
         <div class="hint">Auto-capitalised. Saved for repeat-visit greeting.</div>
+
+        <label class="form-label" style="margin-top:14px">Bill Date</label>
+        <div class="input-group">
+          <input type="date" class="input" id="transaction-date">
+        </div>
+        <div class="hint">Select today or any past date for this sale.</div>
       </div>
     </div>
 
@@ -3556,8 +3562,8 @@ function getDayCloseEntry(dateStr) {
 }
 
 function isDayCloseLocked(dateStr) {
-  const row = getDayCloseEntry(dateStr);
-  return !!(row && row.lockTimestamp && !row.unlockTimestamp);
+  // Close-of-day has been removed: never treat any day as locked.
+  return false;
 }
 
 /* ────────────────────────────────────────────────────
@@ -3570,89 +3576,12 @@ function isDayCloseLocked(dateStr) {
 ──────────────────────────────────────────────────── */
 let _autoCloseSweepRunning = false;
 async function runDayCloseAutoLockSweep() {
-  if (_autoCloseSweepRunning) return;
-  if (!db) return;
-  _autoCloseSweepRunning = true;
-  try {
-    const today = todayISO();
-    // Look back up to 14 IST days for activity that needs an auto-close.
-    const candidates = [];
-    const baseMs = istDateTimeToMs(today, '00:00 am');
-    for (let i = 1; i <= 14; i++) {
-      const d = new Date(baseMs - i * 24 * 60 * 60000 + 330 * 60000);
-      const y = d.getUTCFullYear();
-      const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-      const dd = String(d.getUTCDate()).padStart(2, '0');
-      candidates.push(`${y}-${m}-${dd}`);
-    }
-    // Group candidate dates by month to minimise queries.
-    const byMonth = {};
-    candidates.forEach(ds => {
-      const ym = ds.slice(0, 7);
-      (byMonth[ym] = byMonth[ym] || []).push(ds);
-    });
-    let anyLocked = false;
-    if (!config.dayCloseLocks) config.dayCloseLocks = {};
-    for (const ym of Object.keys(byMonth)) {
-      let txs = [], exps = [];
-      try {
-        [txs, exps] = await Promise.all([
-          fbQueryByMonth(COL.TRANSACTIONS, ym).catch(() => []),
-          fbQueryByMonth(COL.EXPENSES, ym).catch(() => []),
-        ]);
-      } catch (_) { continue; }
-      for (const ds of byMonth[ym]) {
-        if (isDayCloseLocked(ds)) continue;
-        const existing = getDayCloseEntry(ds);
-        if (existing && existing.lockTimestamp) continue; // historical lock present
-        const dayTx = (txs || []).filter(t => String(t.date) === ds);
-        const dayEx = (exps || []).filter(e => String(e.date) === ds);
-        if (!dayTx.length && !dayEx.length) continue; // no activity → skip
-        const cashSales = dayTx.reduce((s, t) => {
-          const bd = getTxPaymentBreakdown(t);
-          return s + bd.Cash;
-        }, 0);
-        const cashExp = dayEx.reduce((s, e) => {
-          return s + (String(e.paymentMode || 'Cash') === 'Cash' ? (parseFloat(e.amount) || 0) : 0);
-        }, 0);
-        const opening = parseFloat((config.codOpeningBalances || {})[ds]) || 0;
-        const expectedClosing = opening + cashSales - cashExp;
-        config.dayCloseLocks[ds] = {
-          date: ds,
-          expectedClosing,
-          countedClosing: expectedClosing, // assumed; admin to reconcile
-          variance: 0,
-          varianceReason: 'Auto-closed by system — admin to verify counted cash',
-          approver: 'system',
-          lockTimestamp: Date.now(),
-          unlockTimestamp: null,
-          unlockReason: '',
-          lockApprovalReason: 'System auto-close after IST midnight',
-          auto: true,
-          autoNeedsReview: true,
-        };
-        anyLocked = true;
-        try { logAudit('cod.dayClose.autoLock', null, { date: ds, expectedClosing, txCount: dayTx.length, expenseCount: dayEx.length }); } catch (_) {}
-      }
-    }
-    if (anyLocked) {
-      saveConfig();
-      try { await fbSetConfig({ dayCloseLocks: config.dayCloseLocks }); } catch (_) {}
-      try { toast('System auto-locked one or more past days. Review on Admin → Expenses.'); } catch (_) {}
-    }
-  } finally {
-    _autoCloseSweepRunning = false;
-  }
+  // Close-of-day feature removed: disable automatic day-close locking.
+  return;
 }
 
 function listAutoClosedPendingDays() {
-  const map = config.dayCloseLocks || {};
-  return Object.keys(map)
-    .filter(k => {
-      const r = map[k];
-      return r && r.auto && r.autoNeedsReview && r.lockTimestamp && !r.unlockTimestamp;
-    })
-    .sort();
+  return [];
 }
 
 async function acknowledgeAutoCloseDay(dateStr) {
@@ -4790,6 +4719,11 @@ function renderReceipt() {
   if (badge) {
     const m = state.paymentMethod === 'Split' ? 'Split' : normalizePaymentMethod(state.paymentMethod);
     badge.innerHTML = 'PAID<br>VIA ' + m.toUpperCase();
+  }
+  const dateEl = document.getElementById('transaction-date');
+  if (dateEl) {
+    dateEl.value = state.todayStr || todayISO();
+    dateEl.max = todayISO();
   }
   // Build / update the multi-staff split panel under the staff dropdown.
   renderReceiptStaffPanel();
@@ -7100,10 +7034,9 @@ async function finaliseTransaction(phone, options) {
   // (potentially stale) value cached at app load — otherwise bills posted
   // after IST midnight would be filed against yesterday.
   state.todayStr = todayISO();
-  if (isDayCloseLocked(state.todayStr)) {
-    toast('Day is closed and locked. Unlock to post new transactions.');
-    return;
-  }
+  const txDate = String((document.getElementById('transaction-date') || {}).value || state.todayStr || todayISO());
+  if (!txDate) { toast('Pick a bill date'); return; }
+  if (txDate > state.todayStr) { toast('Bill date cannot be in the future'); return; }
   if (!state.cart.length) { toast('Cart is empty'); return; }
 
   // Staff is mandatory per cart item and is enforced on the Review Bill
@@ -7181,7 +7114,7 @@ async function finaliseTransaction(phone, options) {
 
   // Build transaction row. NOTE: no client `id` — fbAppendDoc generates one.
   const txRow = {
-    date: state.todayStr,
+    date: txDate,
     time: timeStr,
     services: state.cart.map(i => `${i.name}${i.qty > 1 ? ' ×' + i.qty : ''}`).join(', '),
     items: state.cart.map(i => ({ name: i.name, qty: i.qty, price: i.price, staffName: i.staffName || '' })),
@@ -8100,23 +8033,6 @@ async function renderAdminDashboard() {
       </div>
     </div>
 
-    ${(() => {
-      const pending = listAutoClosedPendingDays();
-      if (!pending.length) return '';
-      const items = pending.map(d => `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px dashed rgba(180,80,80,.25);">
-          <div style="font-size:12px;color:#7a1f1f;">${d} — auto-closed by system. Verify counted cash, then acknowledge.</div>
-          <button class="btn btn-secondary" style="flex:none;padding:8px 12px;font-size:11px;" onclick="acknowledgeAutoCloseDay('${d}')">Acknowledge</button>
-        </div>
-      `).join('');
-      return `
-        <div style="background:#fff3f3;border:1px solid #e7c5c5;border-radius:12px;padding:12px 14px;margin-bottom:14px;">
-          <div style="font-weight:700;color:#7a1f1f;margin-bottom:4px;">⚠ Day(s) auto-closed by system</div>
-          <div style="font-size:12px;color:#7a1f1f;margin-bottom:6px;">Day Close was not locked manually before IST midnight. The system locked the books with expected cash. Please review and reconcile.</div>
-          ${items}
-        </div>
-      `;
-    })()}
 
     <!-- TODAY SNAPSHOT -->
     <div class="admin-section-title">Today · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',weekday:'short'})}</div>
@@ -9023,7 +8939,7 @@ async function refreshCODPanel() {
       <div class="erp-card"><div class="erp-label">Counted Closing</div><div class="erp-value">₹${fmt(countedClosing)}</div></div>
       <div class="erp-card ${variance === 0 ? '' : (variance > 0 ? 'green' : 'red')}"><div class="erp-label">Variance</div><div class="erp-value ${variance === 0 ? '' : (variance > 0 ? 'green' : 'red')}">₹${fmt(Math.abs(variance))}${variance === 0 ? '' : (variance > 0 ? ' (Excess)' : ' (Short)')}</div></div>
       <div class="erp-card full"><div class="erp-sub">Sales split: UPI ₹${fmt(salesSplit.UPI)} · Cash ₹${fmt(salesSplit.Cash)} · Card ₹${fmt(salesSplit.Card)} | Total sales: ₹${fmt(totalSales)} | Total expenses: ₹${fmt(expenseTotal)}</div></div>
-      <div class="erp-card full"><div class="erp-sub">Day Close: ${isLocked ? ('Locked at ' + new Date(lockRow.lockTimestamp || Date.now()).toLocaleString('en-IN') + (lockRow.approver ? (' · by ' + esc(lockRow.approver)) : '')) : 'Not locked'}</div></div>
+      <div class="erp-card full"><div class="erp-sub">COD summary: cash opening/closing is shown above.</div></div>
     </div>
   `;
 
@@ -9075,7 +8991,7 @@ async function sendCODReportWhatsApp() {
   if (!report) { toast('Load COD report first'); return; }
   const phone = numberRaw.length === 10 ? ('91' + numberRaw) : numberRaw;
   const lines = [
-    `*${config.shopName || 'Salon'} - COD Day Close*`,
+    `*${config.shopName || 'Salon'} - COD Cashbook*`,
     `Date: ${report.date}`,
     `Location: ${config.location || '-'}`,
     '------------------------------',
@@ -9133,10 +9049,6 @@ async function renderAdminExpenses() {
     <div class="month-picker" style="margin-bottom:10px;align-items:flex-end;">
       <input type="number" id="cod-counted-closing" class="setup-input" placeholder="Counted closing cash" style="flex:1;max-width:220px;">
       <input type="text" id="cod-variance-reason" class="setup-input" placeholder="Variance reason (required if not zero)" style="flex:1;">
-    </div>
-    <div class="export-row" style="margin-bottom:12px">
-      <button class="btn btn-primary" onclick="lockCODDayClose()">Lock Day Close</button>
-      <button class="btn btn-secondary" onclick="unlockCODDayClose()">Unlock Day</button>
     </div>
     <button class="btn btn-gold" style="width:100%;margin-bottom:12px" onclick="sendCODReportWhatsApp()">Send COD Report to Admin WhatsApp</button>
 
