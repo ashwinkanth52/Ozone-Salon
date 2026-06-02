@@ -2777,7 +2777,7 @@ const DEFAULTS = {
     roomKeywords: ['massage','spa','facial','pedicure','manicure','threading','wax','bleach','clean up','cleanup','straighten','keratin','d-tan','de-tan','detan'],
   },
   // Menu version — bump this when DEFAULTS.services changes to force-refresh stale local caches.
-  servicesVersion: 'v2026-04-full-menu',
+  servicesVersion: 'v2026-06-final-menu',
   // ── CAPEX (Capital Expenditure) ──
   // Industry-standard categories for a salon/spa. `dep` is suggested useful-life
   // in months for straight-line depreciation. `kind` separates real depreciable
@@ -2822,180 +2822,681 @@ const DEFAULTS = {
     { name:'Towel Laundry',              amount:0 },
   ],
   services: {
-    // ─── MEN'S SERVICES ───
-    "Men · Hair Essentials": [
-      {name:'Haircut (Adult)', price:200},
-      {name:'Haircut (Kids — under 12)', price:150},
-      {name:'Beard Trim / Styling', price:100},
-      {name:'Shaving (Clean)', price:100},
-      {name:'Shaving (Shape / Style)', price:150},
-      {name:'Hair Wash (Normal)', price:150},
-      {name:'Hair Wash (Keratin / Deep Conditioning)', price:350},
-      {name:'Blow Dry', price:200},
-      {name:'Underarm Hair Removal', price:50},
-    ],
-    "Men · Hair Treatments": [
-      {name:'Hair Colour — Beard / Mustache (Black)', price:250},
-      {name:'Hair Colour — Hair + Wash (Black)', price:300},
-      {name:'Hair Colour — Global (Full Head)', price:2000},
-      {name:'Highlights — Per Streak', price:200},
-      {name:'Highlights — Full Head', price:1200},
-      {name:'Hair Spa', price:1000},
-      {name:'Head Massage (Oil)', price:200},
-      {name:'Hair Protein Pack / Deep Conditioning', price:500},
-      {name:'Dandruff Treatment (Scalp)', price:500},
-      {name:'Henna', price:400},
-    ],
-    "Men · Skin & Face": [
-      {name:'Face & Neck De-Tan', price:600},
-      {name:'Clean Up (Basic)', price:400},
-      {name:'D-Tan Cleanup (Oxylife)', price:850},
-      {name:'Bleach — Face & Neck (Basic)', price:150},
-      {name:'Bleach — Face & Neck (Oxylife)', price:200},
-      {name:'Facial — Vitamin C', price:600},
-      {name:'Facial — Premium / Gold', price:1000},
-      {name:'O3 Facial', price:1500},
-      {name:'Korean Glass Facial', price:1500},
-    ],
-    "Men · Body & Spa": [
-      {name:'Head & Shoulder Massage (20 min)', price:250},
-      {name:'Back & Neck Massage (30 min)', price:400},
-      {name:'Full Body Massage (45 min)', price:700},
-      {name:'Foot Massage (20 min)', price:250},
-      {name:'Body Scrub / Full Arm Scrub', price:300},
-      {name:'Manicure (Basic)', price:300},
-      {name:'Pedicure (Basic)', price:600},
-      {name:'Spa Pedicure (Premium)', price:800},
-      {name:'Feet Bleach', price:200},
-    ],
-    // ─── WOMEN'S SERVICES ───
-    "Women · Hair Essentials & Haircuts": [
-      {name:'Haircut — Straight / Basic (Adult)', price:300},
-      {name:'Haircut — U Cut', price:350},
-      {name:'Haircut — Boy Cut / Layers', price:350},
-      {name:'Haircut — Blend Cut', price:350},
-      {name:'Haircut — Front Cut Only', price:250},
-      {name:'Haircut — Butterfly Cut', price:800},
-      {name:'Haircut — Laser Cut', price:800},
-      {name:'Haircut — Step Cut', price:800},
-      {name:'Haircut — Baby Cut (under 12)', price:200},
-      {name:'Haircut — Blunt Cut (Kids)', price:250},
-      {name:'Blow Dry (Upto Shoulder)', price:400},
-      {name:'Blow Dry (Below Shoulder)', price:600},
-      {name:'Hair Styling — Tongs / Iron', price:500},
-      {name:'Hair Crimping', price:500},
-      {name:'Hair Wash (Normal)', price:250},
-      {name:'Hair Wash (Keratin)', price:450},
-    ],
-    "Women · Hair Treatments & Colour": [
-      {name:'Hair Colour — Basic (Upto Shoulder)', price:600},
-      {name:'Hair Colour — Basic (Below Shoulder)', price:900},
-      {name:"Hair Colour — L'Oreal / Matrix (Upto Shoulder)", price:1000},
-      {name:"Hair Colour — L'Oreal / Matrix (Below Shoulder)", price:1300},
-      {name:'Hair Colour — Root Touchup', price:700},
-      {name:'Hair Colour — Global (Full Head)', price:2000},
-      {name:'Highlights — Per Streak', price:250},
-      {name:'Highlights — Full Head', price:1200},
-      {name:'Hair Spa (Upto Shoulder)', price:800},
-      {name:'Hair Spa (Below Shoulder)', price:1100},
-      {name:'Keratin Hair Mask', price:1500},
-      {name:'Hair Protein Pack', price:500},
-      {name:'Dandruff Treatment (Scalp)', price:500},
-      {name:'Permanent Hair Straightening', price:4500},
-      {name:'Temporary Hair Straightening', price:800},
-      {name:'Henna (with Wash)', price:500},
-      {name:'Head Massage (Oil)', price:400},
-    ],
-    "Women · Threading & Cleanups": [
-      {name:'Eyebrow Threading', price:50},
-      {name:'Upper Lip Threading', price:30},
-      {name:'Forehead Threading', price:30},
-      {name:'Chin Threading', price:30},
-      {name:'Full Face Threading', price:250},
-      {name:'Face & Neck De-Tan', price:500},
-      {name:'Clean Up — Basic / Premium', price:400},
-      {name:'Cleanup — D-Tan', price:450},
-      {name:'Cleanup — Oxylife D-Tan', price:600},
-      {name:'Cleanup — Gold', price:550},
-      {name:'Cleanup — Pearl', price:550},
-    ],
-    "Women · Bleach & Facials": [
-      {name:'Bleach — Basic Face', price:200},
-      {name:'Bleach — Golden Fem', price:300},
-      {name:'Bleach — Oxylife', price:350},
-      {name:'Bleach — Pimple', price:250},
-      {name:'Bleach — Underarm', price:200},
-      {name:'Bleach — Feet', price:250},
-      {name:'Bleach — Full Body', price:900},
-      {name:'Bleach — Full Body Oxylife', price:1500},
-      {name:'Facial — Premium', price:600},
-      {name:'Facial — Fruit', price:700},
-      {name:'Facial — Natural Gold', price:1000},
-      {name:'Facial — Natural Pearl', price:1100},
-      {name:'Facial — D-Tan Oxylife', price:1100},
-      {name:'Facial — O3', price:1500},
-      {name:'Facial — Shahnaz', price:2000},
-      {name:'Bridal — O3 Facial', price:2500},
-      {name:'Bridal — FIC Korean Glass Facial', price:1800},
-      {name:'Bridal — Rice Water Korean Glass Facial', price:1500},
-      {name:'Bridal — Full Package', price:4500},
-    ],
-    "Women · Waxing": [
-      {name:'Full Arms Wax — Honey', price:300},
-      {name:'Half Arms Wax — Honey', price:150},
-      {name:'Full Legs Wax — Honey', price:500},
-      {name:'Half Legs Wax — Honey', price:250},
-      {name:'Underarm Wax — Honey', price:100},
-      {name:'Full Face Wax — Honey', price:250},
-      {name:'Full Body Wax — Honey', price:1100},
-      {name:'Full Arms Wax — Rica (Premium)', price:500},
-      {name:'Full Legs Wax — Rica (Premium)', price:1000},
-      {name:'Underarm Wax — Rica (Premium)', price:250},
-      {name:'Full Face Wax — Rica (Premium)', price:400},
-      {name:'Full Body Wax — Rica (Premium)', price:1700},
-    ],
-    "Women · Body & Spa": [
-      {name:'Head & Shoulder Massage (20 min)', price:350},
-      {name:'Back & Neck Massage (30 min)', price:500},
-      {name:'Full Body Massage (45 min)', price:900},
-      {name:'Foot Massage (20 min)', price:300},
-      {name:'Body Scrub / Full Arm Scrub', price:400},
-      {name:'Manicure — Basic / Premium', price:350},
-      {name:'Manicure — Spa', price:700},
-      {name:'Manicure — D-Tan', price:900},
-      {name:'Pedicure — Basic / Premium', price:500},
-      {name:'Pedicure — Spa', price:800},
-      {name:'Pedicure — Crystal', price:1200},
-      {name:'Pedicure — Ice', price:1200},
-      {name:'Pedicure — D-Tan', price:900},
-    ],
-    // ─── COMBO PACKAGES ───
-    "Combo · Men": [
-      {name:'M1 — Quick Trim (Haircut + Beard + Wash)', price:399},
-      {name:'M2 — Clean Slate (Haircut + Beard + Wash + De-Tan)', price:899},
-      {name:'M3 — Fresh Face (+ Head Massage)', price:1099},
-      {name:'M4 — Colour Pop (Haircut + Beard + Black Colour + Wash)', price:649},
-      {name:'M5 — Glow Up (Haircut + Beard + Vitamin C Facial + De-Tan + Wash)', price:1399},
-      {name:'M6 — Style King (Haircut + Beard + Black Colour + De-Tan + Head Massage)', price:1199},
-      {name:'M7 — Spa Day (Haircut + Beard + Hair Spa + De-Tan + Facial + Foot Massage)', price:2399},
-      {name:'M8 — The Royal (Premium full package)', price:3199},
-    ],
-    "Combo · Women": [
-      {name:'W1 — Quick Touch Up (Eyebrows + Upper Lip + De-Tan)', price:499},
-      {name:'W2 — Fresh Glow (Brows + Lip + De-Tan + Wash + Massage)', price:1049},
-      {name:'W3 — Skin Treat (Brightening Facial + De-Tan + Body Scrub + Pedicure)', price:1699},
-      {name:'W4 — Hair & Glow (Haircut + Blow Dry + De-Tan + Brows + Wash)', price:1299},
-      {name:'W5 — Pamper Pack (Premium Facial + De-Tan + Arms Wax + Pedicure + Head Massage)', price:2199},
-      {name:'W6 — Wax & Glow (Arms + Legs + Underarm Wax + De-Tan + Brows + Lip)', price:1299},
-      {name:'W7 — Bridal Lite (Haircut + Blow Dry + Premium Facial + De-Tan + Pedicure + Wax + Brows + Lip)', price:2649},
-      {name:'W8 — Queen\u2019s Package (Premium full package)', price:3799},
-    ],
-    "Combo · Couple": [
-      {name:'C1 — Quick Duo (His + Hers — quick care)', price:1099},
-      {name:'C2 — Date Night (His + Hers — premium evening package)', price:2549},
-      {name:'C3 — Power Couple (His + Hers — full bridal-grade package)', price:4749},
-    ],
-  }
+    "Men · Hair Essentials":  [
+                                  {
+                                      "name":  "Haircut (Adult)",
+                                      "price":  250
+                                  },
+                                  {
+                                      "name":  "Haircut — Stylist",
+                                      "price":  500
+                                  },
+                                  {
+                                      "name":  "Haircut (Kids — under 12 yrs)",
+                                      "price":  150
+                                  },
+                                  {
+                                      "name":  "Beard Trim / Styling",
+                                      "price":  150
+                                  },
+                                  {
+                                      "name":  "Shaving Clean — Foam",
+                                      "price":  200
+                                  },
+                                  {
+                                      "name":  "Beard Trim + Shaving (Shape / Style)",
+                                      "price":  200
+                                  },
+                                  {
+                                      "name":  "Hair Wash (Normal — Shampoo only)",
+                                      "price":  150
+                                  },
+                                  {
+                                      "name":  "Hair Wash (Shampoo + Conditioner)",
+                                      "price":  250
+                                  },
+                                  {
+                                      "name":  "Hair Wash (Loreal Shampoo + Conditioner)",
+                                      "price":  500
+                                  },
+                                  {
+                                      "name":  "Hair Wash (Deep Conditioning)",
+                                      "price":  300
+                                  },
+                                  {
+                                      "name":  "Blow Dry",
+                                      "price":  200
+                                  },
+                                  {
+                                      "name":  "Underarm Hair Removal",
+                                      "price":  100
+                                  }
+                              ],
+    "Men · Hair Treatments":  [
+                                  {
+                                      "name":  "Hair Colour — (Fruit)",
+                                      "price":  350
+                                  },
+                                  {
+                                      "name":  "Hair Colour — (Fruit) + Hair Wash (Normal)",
+                                      "price":  500
+                                  },
+                                  {
+                                      "name":  "Colour — Beard / Moustache-Normal",
+                                      "price":  200
+                                  },
+                                  {
+                                      "name":  "Colour — Beard / Moustache-Branded",
+                                      "price":  400
+                                  },
+                                  {
+                                      "name":  "Hair Colour — Branded (L\u0027Oreal / Matrix)",
+                                      "price":  700
+                                  },
+                                  {
+                                      "name":  "Hair Colour — Global (Full Head)",
+                                      "price":  2000
+                                  },
+                                  {
+                                      "name":  "Highlights — Per Streak",
+                                      "price":  200
+                                  },
+                                  {
+                                      "name":  "Highlights — Full Head",
+                                      "price":  1500
+                                  },
+                                  {
+                                      "name":  "Hair Spa",
+                                      "price":  1000
+                                  },
+                                  {
+                                      "name":  "Head Massage (Oil)",
+                                      "price":  250
+                                  },
+                                  {
+                                      "name":  "Hair Protein Pack / Keratin Mask",
+                                      "price":  2000
+                                  },
+                                  {
+                                      "name":  "Dandruff Treatment (Scalp)",
+                                      "price":  500
+                                  },
+                                  {
+                                      "name":  "Henna (without Wash)",
+                                      "price":  350
+                                  }
+                              ],
+    "Men · Skin \u0026 Face":  [
+                                   {
+                                       "name":  "De-Tan (Face \u0026 Neck)",
+                                       "price":  500
+                                   },
+                                   {
+                                       "name":  "Clean Up (Basic)",
+                                       "price":  500
+                                   },
+                                   {
+                                       "name":  "D-Tan Cleanup (Oxylife)",
+                                       "price":  850
+                                   },
+                                   {
+                                       "name":  "Bleach — Face \u0026 Neck (Basic)",
+                                       "price":  200
+                                   },
+                                   {
+                                       "name":  "Bleach — Face \u0026 Neck (Oxylife)",
+                                       "price":  250
+                                   },
+                                   {
+                                       "name":  "Facial — Fruit",
+                                       "price":  600
+                                   },
+                                   {
+                                       "name":  "Facial —Gold",
+                                       "price":  1000
+                                   },
+                                   {
+                                       "name":  "O3 Facial",
+                                       "price":  2000
+                                   },
+                                   {
+                                       "name":  "Korean Glass Facial",
+                                       "price":  2000
+                                   }
+                               ],
+    "Men · Body \u0026 Spa":  [
+                                  {
+                                      "name":  "Head \u0026 Shoulder Massage",
+                                      "price":  250
+                                  },
+                                  {
+                                      "name":  "Back \u0026 Neck Massage",
+                                      "price":  400
+                                  },
+                                  {
+                                      "name":  "Full Body Massage (with Oil)",
+                                      "price":  1000
+                                  },
+                                  {
+                                      "name":  "Foot Massage",
+                                      "price":  300
+                                  },
+                                  {
+                                      "name":  "Head Massage with Steam",
+                                      "price":  400
+                                  },
+                                  {
+                                      "name":  "Body Steam (with Towel)",
+                                      "price":  200
+                                  },
+                                  {
+                                      "name":  "Body Scrub",
+                                      "price":  2000
+                                  },
+                                  {
+                                      "name":  "Manicure (Basic)",
+                                      "price":  500
+                                  },
+                                  {
+                                      "name":  "Pedicure (Basic)",
+                                      "price":  600
+                                  },
+                                  {
+                                      "name":  "Spa Pedicure",
+                                      "price":  800
+                                  },
+                                  {
+                                      "name":  "Feet Bleach",
+                                      "price":  200
+                                  },
+                                  {
+                                      "name":  "Feet Pack",
+                                      "price":  200
+                                  }
+                              ],
+    "Women · Hair Essentials \u0026 Haircuts":  [
+                                                    {
+                                                        "name":  "Haircut — Straight / Basic (Adult)",
+                                                        "price":  350
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — U Cut",
+                                                        "price":  500
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Boy Cut / Layers",
+                                                        "price":  600
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Blend Cut",
+                                                        "price":  600
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Front Cut Only",
+                                                        "price":  400
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Butterfly Cut",
+                                                        "price":  1200
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Laser Cut",
+                                                        "price":  1200
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Step Cut",
+                                                        "price":  1200
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Baby Cut (under 12 yrs)",
+                                                        "price":  300
+                                                    },
+                                                    {
+                                                        "name":  "Haircut — Blunt Cut (Kids)",
+                                                        "price":  300
+                                                    },
+                                                    {
+                                                        "name":  "Blow Dry (Upto Shoulder)",
+                                                        "price":  600
+                                                    },
+                                                    {
+                                                        "name":  "Blow Dry (Below Shoulder)",
+                                                        "price":  1000
+                                                    },
+                                                    {
+                                                        "name":  "Hair Styling — Tongs / Iron",
+                                                        "price":  1000
+                                                    },
+                                                    {
+                                                        "name":  "Hair Crimping",
+                                                        "price":  1000
+                                                    },
+                                                    {
+                                                        "name":  "Hair Wash (Normal — Shampoo)",
+                                                        "price":  200
+                                                    },
+                                                    {
+                                                        "name":  "Hair Wash (Shampoo + Conditioner)",
+                                                        "price":  350
+                                                    },
+                                                    {
+                                                        "name":  "Hair Wash (Branded Shampoo + Conditioner)",
+                                                        "price":  800
+                                                    },
+                                                    {
+                                                        "name":  "Hair Wash (Keratin)",
+                                                        "price":  2000
+                                                    }
+                                                ],
+    "Women · Hair Treatments \u0026 Colour":  [
+                                                  {
+                                                      "name":  "Hair Colour — Basic (Upto Shoulder)",
+                                                      "price":  800
+                                                  },
+                                                  {
+                                                      "name":  "Hair Colour — Basic (Below Shoulder)",
+                                                      "price":  900
+                                                  },
+                                                  {
+                                                      "name":  "Hair Colour — L\u0027Oreal / Matrix (Upto Shoulder)",
+                                                      "price":  1500
+                                                  },
+                                                  {
+                                                      "name":  "Hair Colour — L\u0027Oreal / Matrix (Below Shoulder)",
+                                                      "price":  2000
+                                                  },
+                                                  {
+                                                      "name":  "Hair Colour — Root Touchup",
+                                                      "price":  700
+                                                  },
+                                                  {
+                                                      "name":  "Hair Colour — Global (Full Head)",
+                                                      "price":  2500
+                                                  },
+                                                  {
+                                                      "name":  "Highlights — Per Streak",
+                                                      "price":  500
+                                                  },
+                                                  {
+                                                      "name":  "Highlights — Full Head",
+                                                      "price":  2000
+                                                  },
+                                                  {
+                                                      "name":  "Hair Spa (Upto Shoulder)",
+                                                      "price":  1500
+                                                  },
+                                                  {
+                                                      "name":  "Hair Spa (Below Shoulder)",
+                                                      "price":  1800
+                                                  },
+                                                  {
+                                                      "name":  "Keratin Hair Mask",
+                                                      "price":  2500
+                                                  },
+                                                  {
+                                                      "name":  "Hair Protein Pack",
+                                                      "price":  2500
+                                                  },
+                                                  {
+                                                      "name":  "Dandruff Treatment (Scalp)",
+                                                      "price":  500
+                                                  },
+                                                  {
+                                                      "name":  "Permanent Hair Straightening",
+                                                      "price":  6000
+                                                  },
+                                                  {
+                                                      "name":  "Temporary Hair Straightening",
+                                                      "price":  1000
+                                                  },
+                                                  {
+                                                      "name":  "Henna (without Wash)",
+                                                      "price":  500
+                                                  },
+                                                  {
+                                                      "name":  "Henna (with Wash)",
+                                                      "price":  700
+                                                  },
+                                                  {
+                                                      "name":  "Head Massage (Oil — without wash)",
+                                                      "price":  350
+                                                  }
+                                              ],
+    "Women · Threading \u0026 Cleanups":  [
+                                              {
+                                                  "name":  "Eyebrow Threading",
+                                                  "price":  50
+                                              },
+                                              {
+                                                  "name":  "Upper Lip Threading",
+                                                  "price":  30
+                                              },
+                                              {
+                                                  "name":  "Forehead Threading",
+                                                  "price":  30
+                                              },
+                                              {
+                                                  "name":  "Chin Threading",
+                                                  "price":  30
+                                              },
+                                              {
+                                                  "name":  "Full Face Threading",
+                                                  "price":  350
+                                              },
+                                              {
+                                                  "name":  "De-Tan",
+                                                  "price":  500
+                                              },
+                                              {
+                                                  "name":  "Clean Up",
+                                                  "price":  500
+                                              },
+                                              {
+                                                  "name":  "D-Tan Oxylife",
+                                                  "price":  700
+                                              },
+                                              {
+                                                  "name":  "Cleanup — Gold",
+                                                  "price":  700
+                                              },
+                                              {
+                                                  "name":  "Cleanup — Pearl",
+                                                  "price":  700
+                                              }
+                                          ],
+    "Women · Bleach \u0026 Facials":  [
+                                          {
+                                              "name":  "Bleach — Basic Face",
+                                              "price":  200
+                                          },
+                                          {
+                                              "name":  "Bleach — Golden Fem",
+                                              "price":  300
+                                          },
+                                          {
+                                              "name":  "Bleach — Oxylife",
+                                              "price":  400
+                                          },
+                                          {
+                                              "name":  "Bleach — Pimple",
+                                              "price":  300
+                                          },
+                                          {
+                                              "name":  "Bleach — Underarm",
+                                              "price":  200
+                                          },
+                                          {
+                                              "name":  "Bleach — Feet",
+                                              "price":  250
+                                          },
+                                          {
+                                              "name":  "Bleach — Full Body",
+                                              "price":  1200
+                                          },
+                                          {
+                                              "name":  "Bleach — Full Body Oxylife",
+                                              "price":  2000
+                                          },
+                                          {
+                                              "name":  "Facial — Fruit",
+                                              "price":  1000
+                                          },
+                                          {
+                                              "name":  "Facial — Natural Gold",
+                                              "price":  1500
+                                          },
+                                          {
+                                              "name":  "Facial — Natural Pearl",
+                                              "price":  1500
+                                          },
+                                          {
+                                              "name":  "Facial — D-Tan Oxylife",
+                                              "price":  1500
+                                          },
+                                          {
+                                              "name":  "Facial — O3 Shine \u0026 Glow",
+                                              "price":  2000
+                                          },
+                                          {
+                                              "name":  "Facial — Lotus",
+                                              "price":  2000
+                                          },
+                                          {
+                                              "name":  "Facial — Shahnaz",
+                                              "price":  2000
+                                          },
+                                          {
+                                              "name":  "Bridal — O3 Facial",
+                                              "price":  3500
+                                          },
+                                          {
+                                              "name":  "Korean Glass Facial",
+                                              "price":  2000
+                                          },
+                                          {
+                                              "name":  "Bridal — Rice Water Korean Glass Facial",
+                                              "price":  3500
+                                          },
+                                          {
+                                              "name":  "Bridal — Full Package",
+                                              "price":  8000
+                                          },
+                                          {
+                                              "name":  "Makeup",
+                                              "price":  2500
+                                          }
+                                      ],
+    "Women · Waxing":  [
+                           {
+                               "name":  "Full Arms Wax — Honey",
+                               "price":  350
+                           },
+                           {
+                               "name":  "Half Arms Wax — Honey",
+                               "price":  250
+                           },
+                           {
+                               "name":  "Full Legs Wax — Honey",
+                               "price":  800
+                           },
+                           {
+                               "name":  "Half Legs Wax — Honey",
+                               "price":  400
+                           },
+                           {
+                               "name":  "Underarm Wax — Honey",
+                               "price":  150
+                           },
+                           {
+                               "name":  "Upper Lip Wax — Honey",
+                               "price":  30
+                           },
+                           {
+                               "name":  "Chin Wax — Honey",
+                               "price":  30
+                           },
+                           {
+                               "name":  "Full Face Wax — Honey",
+                               "price":  300
+                           },
+                           {
+                               "name":  "Full Body Wax — Honey",
+                               "price":  1500
+                           },
+                           {
+                               "name":  "Full Arms Wax — Rica (Premium)",
+                               "price":  600
+                           },
+                           {
+                               "name":  "Full Legs Wax — Rica (Premium)",
+                               "price":  1200
+                           },
+                           {
+                               "name":  "Underarm Wax — Rica (Premium)",
+                               "price":  300
+                           },
+                           {
+                               "name":  "Upper Lip Wax — Rica (Premium)",
+                               "price":  50
+                           },
+                           {
+                               "name":  "Chin Wax — Rica (Premium)",
+                               "price":  50
+                           },
+                           {
+                               "name":  "Full Face Wax — Rica (Premium)",
+                               "price":  500
+                           },
+                           {
+                               "name":  "Full Body Wax — Rica (Premium)",
+                               "price":  2000
+                           }
+                       ],
+    "Women · Body \u0026 Spa":  [
+                                    {
+                                        "name":  "Head \u0026 Shoulder Massage",
+                                        "price":  350
+                                    },
+                                    {
+                                        "name":  "Back \u0026 Neck Massage",
+                                        "price":  500
+                                    },
+                                    {
+                                        "name":  "Full Body Massage-With Oil",
+                                        "price":  1000
+                                    },
+                                    {
+                                        "name":  "Foot Massage",
+                                        "price":  300
+                                    },
+                                    {
+                                        "name":  "Body Steam (with Towel)",
+                                        "price":  200
+                                    },
+                                    {
+                                        "name":  "Full Hand Scrub- Pack",
+                                        "price":  1000
+                                    },
+                                    {
+                                        "name":  "Manicure — Basic",
+                                        "price":  500
+                                    },
+                                    {
+                                        "name":  "Manicure — Spa",
+                                        "price":  1000
+                                    },
+                                    {
+                                        "name":  "Manicure — D-Tan",
+                                        "price":  1000
+                                    },
+                                    {
+                                        "name":  "Pedicure — Basic",
+                                        "price":  500
+                                    },
+                                    {
+                                        "name":  "Pedicure — Spa",
+                                        "price":  1000
+                                    },
+                                    {
+                                        "name":  "Pedicure — Crystal",
+                                        "price":  1200
+                                    },
+                                    {
+                                        "name":  "Pedicure — Ice",
+                                        "price":  1500
+                                    },
+                                    {
+                                        "name":  "Pedicure — D-Tan pack",
+                                        "price":  1000
+                                    },
+                                    {
+                                        "name":  "Nail Cutting",
+                                        "price":  100
+                                    }
+                                ],
+    "Combo · Men":  [
+                        {
+                            "name":  "M1 — Quick Trim (Haircut + Beard Trim + Hair Wash)",
+                            "price":  399
+                        },
+                        {
+                            "name":  "M2 — Clean Slate (Haircut + Beard + Hair Wash + Face De-Tan)",
+                            "price":  899
+                        },
+                        {
+                            "name":  "M3 — Fresh Face (Haircut + Beard + Wash + De-Tan + Head Massage)",
+                            "price":  1099
+                        },
+                        {
+                            "name":  "M4 — Colour Pop (Haircut + Beard + Black Hair Colour + Hair Wash)",
+                            "price":  649
+                        },
+                        {
+                            "name":  "M5 — Glow Up (Haircut + Beard + Vitamin C Facial + De-Tan + Wash)",
+                            "price":  1399
+                        },
+                        {
+                            "name":  "M6 — Style King (Haircut + Beard + Black Hair Colour + De-Tan + Head Massage)",
+                            "price":  1199
+                        },
+                        {
+                            "name":  "M7 — Spa Day (Haircut + Beard + Hair Spa + De-Tan + Facial + Foot Massage)",
+                            "price":  2399
+                        },
+                        {
+                            "name":  "M8 — The Royal (Haircut + Beard + Hair Spa + Premium Facial + De-Tan + Head Massage + Pedicure)",
+                            "price":  3199
+                        }
+                    ],
+    "Combo · Women":  [
+                          {
+                              "name":  "W1 — Quick Touch Up (Eyebrows + Upper Lip + Face De-Tan)",
+                              "price":  499
+                          },
+                          {
+                              "name":  "W2 — Fresh Glow (Eyebrows + Upper Lip + De-Tan + Hair Wash + Head Massage)",
+                              "price":  1049
+                          },
+                          {
+                              "name":  "W3 — Skin Treat (Brightening Facial + De-Tan + Body Scrub + Pedicure)",
+                              "price":  1699
+                          },
+                          {
+                              "name":  "W4 — Hair \u0026 Glow (Haircut + Blow Dry + De-Tan + Eyebrows + Hair Wash)",
+                              "price":  1299
+                          },
+                          {
+                              "name":  "W5 — Pamper Pack (Premium Facial + De-Tan + Full Arms Wax + Pedicure + Head Massage)",
+                              "price":  2199
+                          },
+                          {
+                              "name":  "W6 — Wax \u0026 Glow (Full Arms + Full Legs + Underarm Wax (Honey) + De-Tan + Eyebrows + Upper Lip)",
+                              "price":  1299
+                          },
+                          {
+                              "name":  "W7 — Bridal Lite (Haircut + Blow Dry + Premium Facial + De-Tan + Pedicure + Arms Wax + Eyebrows + Upper Lip)",
+                              "price":  2649
+                          },
+                          {
+                              "name":  "W8 — Queen\u0027s Package (Haircut + Blow Dry + Pearl Facial + De-Tan + Hair Spa + Pedicure + Arms Wax + Legs Wax + Eyebrows + Upper Lip)",
+                              "price":  3799
+                          }
+                      ],
+    "Combo · Couple":  [
+                           {
+                               "name":  "C1 — Quick Duo (His: Haircut + Beard + Wash | Hers: Eyebrows + Upper Lip + De-Tan + Wash)",
+                               "price":  1099
+                           },
+                           {
+                               "name":  "C2 — Date Night (His: Haircut + Beard + De-Tan + Head Massage | Hers: Premium Facial + De-Tan + Eyebrows + Pedicure)",
+                               "price":  2549
+                           },
+                           {
+                               "name":  "C3 — Power Couple (His: Haircut + Beard + Premium Facial + De-Tan + Hair Spa | Hers: Haircut + Blow Dry + Pearl Facial + De-Tan + Pedicure + Arms Wax + Eyebrows)",
+                               "price":  4749
+                           }
+                       ]
+}
 };
 
 /* ────────────────────────────────────────────────────
@@ -13159,4 +13660,3 @@ requestNotificationPermissionOnce();
 </script>
 </body>
 </html>
-
