@@ -918,6 +918,7 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 .admin-service-row-v2 input,.admin-service-row-v2 textarea{padding:10px 12px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:8px;font-size:13.5px;outline:none;color:var(--ink);font-family:inherit;}
 .admin-service-row-v2 input:focus,.admin-service-row-v2 textarea:focus{border-color:var(--champagne);background:#fff;}
 .admin-service-row-v2 .svc-name{flex:1;min-width:0;}
+.admin-service-row-v2 .svc-code{width:74px;text-transform:uppercase;}
 .admin-service-row-v2 .svc-price{width:80px;text-align:right;}
 .admin-service-row-v2 .svc-mins{width:66px;text-align:right;}
 .admin-service-row-v2 .svc-desc{width:100%;resize:vertical;min-height:44px;line-height:1.5;}
@@ -969,6 +970,7 @@ select.input{appearance:none;-webkit-appearance:none;background-image:url("data:
 .svc-card-row2{display:flex;gap:8px;align-items:flex-end;}
 .svc-card input,.svc-card textarea{padding:10px 12px;background:#FFF;border:1px solid var(--line-soft);border-radius:8px;font-size:14px;outline:none;color:var(--ink);font-family:inherit;}
 .svc-card input:focus,.svc-card textarea:focus{border-color:var(--champagne);box-shadow:0 0 0 3px rgba(184,149,106,.10);}
+.svc-card .svc-code{width:74px;text-transform:uppercase;}
 .svc-card .svc-name{flex:1;min-width:0;font-weight:500;}
 .svc-field{display:flex;flex-direction:column;gap:4px;flex:1;}
 .svc-field span{font-size:9.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600;padding-left:2px;}
@@ -2777,7 +2779,7 @@ const DEFAULTS = {
     roomKeywords: ['massage','spa','facial','pedicure','manicure','threading','wax','bleach','clean up','cleanup','straighten','keratin','d-tan','de-tan','detan'],
   },
   // Menu version — bump this when DEFAULTS.services changes to force-refresh stale local caches.
-  servicesVersion: 'v2026-06-final-menu',
+  servicesVersion: 'v2026-06-code-search',
   // ── CAPEX (Capital Expenditure) ──
   // Industry-standard categories for a salon/spa. `dep` is suggested useful-life
   // in months for straight-line depreciation. `kind` separates real depreciable
@@ -2824,674 +2826,836 @@ const DEFAULTS = {
   services: {
     "Men · Hair Essentials":  [
                                   {
+                                      "code":  "MH01",
                                       "name":  "Haircut (Adult)",
                                       "price":  250
                                   },
                                   {
+                                      "code":  "MH01S",
                                       "name":  "Haircut — Stylist",
                                       "price":  500
                                   },
                                   {
+                                      "code":  "MH02",
                                       "name":  "Haircut (Kids — under 12 yrs)",
                                       "price":  150
                                   },
                                   {
+                                      "code":  "MH03",
                                       "name":  "Beard Trim / Styling",
                                       "price":  150
                                   },
                                   {
+                                      "code":  "MH05",
                                       "name":  "Shaving Clean — Foam",
                                       "price":  200
                                   },
                                   {
+                                      "code":  "MH04",
                                       "name":  "Beard Trim + Shaving (Shape / Style)",
                                       "price":  200
                                   },
                                   {
+                                      "code":  "MH06",
                                       "name":  "Hair Wash (Normal — Shampoo only)",
                                       "price":  150
                                   },
                                   {
+                                      "code":  "MH07",
                                       "name":  "Hair Wash (Shampoo + Conditioner)",
                                       "price":  250
                                   },
                                   {
+                                      "code":  "MH08",
                                       "name":  "Hair Wash (Loreal Shampoo + Conditioner)",
                                       "price":  500
                                   },
                                   {
+                                      "code":  "MH09",
                                       "name":  "Hair Wash (Deep Conditioning)",
                                       "price":  300
                                   },
                                   {
+                                      "code":  "MH10",
                                       "name":  "Blow Dry",
                                       "price":  200
                                   },
                                   {
+                                      "code":  "MH11",
                                       "name":  "Underarm Hair Removal",
                                       "price":  100
                                   }
                               ],
     "Men · Hair Treatments":  [
                                   {
+                                      "code":  "MC01",
                                       "name":  "Hair Colour — (Fruit)",
                                       "price":  350
                                   },
                                   {
+                                      "code":  "MC02",
                                       "name":  "Hair Colour — (Fruit) + Hair Wash (Normal)",
                                       "price":  500
                                   },
                                   {
+                                      "code":  "MC03",
                                       "name":  "Colour — Beard / Moustache-Normal",
                                       "price":  200
                                   },
                                   {
+                                      "code":  "MC03B",
                                       "name":  "Colour — Beard / Moustache-Branded",
                                       "price":  400
                                   },
                                   {
+                                      "code":  "MC04",
                                       "name":  "Hair Colour — Branded (L\u0027Oreal / Matrix)",
                                       "price":  700
                                   },
                                   {
+                                      "code":  "MC05",
                                       "name":  "Hair Colour — Global (Full Head)",
                                       "price":  2000
                                   },
                                   {
+                                      "code":  "MC06",
                                       "name":  "Highlights — Per Streak",
                                       "price":  200
                                   },
                                   {
+                                      "code":  "MC07",
                                       "name":  "Highlights — Full Head",
                                       "price":  1500
                                   },
                                   {
+                                      "code":  "MC08",
                                       "name":  "Hair Spa",
                                       "price":  1000
                                   },
                                   {
+                                      "code":  "MC09",
                                       "name":  "Head Massage (Oil)",
                                       "price":  250
                                   },
                                   {
+                                      "code":  "MC10",
                                       "name":  "Hair Protein Pack / Keratin Mask",
                                       "price":  2000
                                   },
                                   {
+                                      "code":  "MC11",
                                       "name":  "Dandruff Treatment (Scalp)",
                                       "price":  500
                                   },
                                   {
+                                      "code":  "MC12",
                                       "name":  "Henna (without Wash)",
                                       "price":  350
                                   }
                               ],
     "Men · Skin \u0026 Face":  [
                                    {
+                                       "code":  "MS01",
                                        "name":  "De-Tan (Face \u0026 Neck)",
                                        "price":  500
                                    },
                                    {
+                                       "code":  "MS02",
                                        "name":  "Clean Up (Basic)",
                                        "price":  500
                                    },
                                    {
+                                       "code":  "MS03",
                                        "name":  "D-Tan Cleanup (Oxylife)",
                                        "price":  850
                                    },
                                    {
+                                       "code":  "MS04",
                                        "name":  "Bleach — Face \u0026 Neck (Basic)",
                                        "price":  200
                                    },
                                    {
+                                       "code":  "MS05",
                                        "name":  "Bleach — Face \u0026 Neck (Oxylife)",
                                        "price":  250
                                    },
                                    {
+                                       "code":  "MS06",
                                        "name":  "Facial — Fruit",
                                        "price":  600
                                    },
                                    {
+                                       "code":  "MS07",
                                        "name":  "Facial —Gold",
                                        "price":  1000
                                    },
                                    {
+                                       "code":  "MS08",
                                        "name":  "O3 Facial",
                                        "price":  2000
                                    },
                                    {
+                                       "code":  "WF08",
                                        "name":  "Korean Glass Facial",
                                        "price":  2000
                                    }
                                ],
     "Men · Body \u0026 Spa":  [
                                   {
+                                      "code":  "WMS01",
                                       "name":  "Head \u0026 Shoulder Massage",
                                       "price":  250
                                   },
                                   {
+                                      "code":  "WMS02",
                                       "name":  "Back \u0026 Neck Massage",
                                       "price":  400
                                   },
                                   {
+                                      "code":  "MB03",
                                       "name":  "Full Body Massage (with Oil)",
                                       "price":  1000
                                   },
                                   {
+                                      "code":  "WMS04",
                                       "name":  "Foot Massage",
                                       "price":  300
                                   },
                                   {
+                                      "code":  "MB05",
                                       "name":  "Head Massage with Steam",
                                       "price":  400
                                   },
                                   {
+                                      "code":  "WMS05",
                                       "name":  "Body Steam (with Towel)",
                                       "price":  200
                                   },
                                   {
+                                      "code":  "MB07",
                                       "name":  "Body Scrub",
                                       "price":  2000
                                   },
                                   {
+                                      "code":  "MB08",
                                       "name":  "Manicure (Basic)",
                                       "price":  500
                                   },
                                   {
+                                      "code":  "MB09",
                                       "name":  "Pedicure (Basic)",
                                       "price":  600
                                   },
                                   {
+                                      "code":  "MB10",
                                       "name":  "Spa Pedicure",
                                       "price":  800
                                   },
                                   {
+                                      "code":  "MB11",
                                       "name":  "Feet Bleach",
                                       "price":  200
                                   },
                                   {
+                                      "code":  "MB12",
                                       "name":  "Feet Pack",
                                       "price":  200
                                   }
                               ],
     "Women · Hair Essentials \u0026 Haircuts":  [
                                                     {
+                                                        "code":  "WH01",
                                                         "name":  "Haircut — Straight / Basic (Adult)",
                                                         "price":  350
                                                     },
                                                     {
+                                                        "code":  "WH02",
                                                         "name":  "Haircut — U Cut",
                                                         "price":  500
                                                     },
                                                     {
+                                                        "code":  "WH03",
                                                         "name":  "Haircut — Boy Cut / Layers",
                                                         "price":  600
                                                     },
                                                     {
+                                                        "code":  "WH04",
                                                         "name":  "Haircut — Blend Cut",
                                                         "price":  600
                                                     },
                                                     {
+                                                        "code":  "WH05",
                                                         "name":  "Haircut — Front Cut Only",
                                                         "price":  400
                                                     },
                                                     {
+                                                        "code":  "WH06",
                                                         "name":  "Haircut — Butterfly Cut",
                                                         "price":  1200
                                                     },
                                                     {
+                                                        "code":  "WH07",
                                                         "name":  "Haircut — Laser Cut",
                                                         "price":  1200
                                                     },
                                                     {
+                                                        "code":  "WH08",
                                                         "name":  "Haircut — Step Cut",
                                                         "price":  1200
                                                     },
                                                     {
+                                                        "code":  "WH09",
                                                         "name":  "Haircut — Baby Cut (under 12 yrs)",
                                                         "price":  300
                                                     },
                                                     {
+                                                        "code":  "WH10",
                                                         "name":  "Haircut — Blunt Cut (Kids)",
                                                         "price":  300
                                                     },
                                                     {
+                                                        "code":  "WH11",
                                                         "name":  "Blow Dry (Upto Shoulder)",
                                                         "price":  600
                                                     },
                                                     {
+                                                        "code":  "WH12",
                                                         "name":  "Blow Dry (Below Shoulder)",
                                                         "price":  1000
                                                     },
                                                     {
+                                                        "code":  "WH13",
                                                         "name":  "Hair Styling — Tongs / Iron",
                                                         "price":  1000
                                                     },
                                                     {
+                                                        "code":  "WH14",
                                                         "name":  "Hair Crimping",
                                                         "price":  1000
                                                     },
                                                     {
+                                                        "code":  "WH15",
                                                         "name":  "Hair Wash (Normal — Shampoo)",
                                                         "price":  200
                                                     },
                                                     {
+                                                        "code":  "WH16",
                                                         "name":  "Hair Wash (Shampoo + Conditioner)",
                                                         "price":  350
                                                     },
                                                     {
+                                                        "code":  "WH17",
                                                         "name":  "Hair Wash (Branded Shampoo + Conditioner)",
                                                         "price":  800
                                                     },
                                                     {
+                                                        "code":  "WH18",
                                                         "name":  "Hair Wash (Keratin)",
                                                         "price":  2000
                                                     }
                                                 ],
     "Women · Hair Treatments \u0026 Colour":  [
                                                   {
+                                                      "code":  "WC01",
                                                       "name":  "Hair Colour — Basic (Upto Shoulder)",
                                                       "price":  800
                                                   },
                                                   {
+                                                      "code":  "WC02",
                                                       "name":  "Hair Colour — Basic (Below Shoulder)",
                                                       "price":  900
                                                   },
                                                   {
+                                                      "code":  "WC03",
                                                       "name":  "Hair Colour — L\u0027Oreal / Matrix (Upto Shoulder)",
                                                       "price":  1500
                                                   },
                                                   {
+                                                      "code":  "WC04",
                                                       "name":  "Hair Colour — L\u0027Oreal / Matrix (Below Shoulder)",
                                                       "price":  2000
                                                   },
                                                   {
+                                                      "code":  "WC05",
                                                       "name":  "Hair Colour — Root Touchup",
                                                       "price":  700
                                                   },
                                                   {
+                                                      "code":  "WC06",
                                                       "name":  "Hair Colour — Global (Full Head)",
                                                       "price":  2500
                                                   },
                                                   {
+                                                      "code":  "WC07",
                                                       "name":  "Highlights — Per Streak",
                                                       "price":  500
                                                   },
                                                   {
+                                                      "code":  "WC08",
                                                       "name":  "Highlights — Full Head",
                                                       "price":  2000
                                                   },
                                                   {
+                                                      "code":  "WC09",
                                                       "name":  "Hair Spa (Upto Shoulder)",
                                                       "price":  1500
                                                   },
                                                   {
+                                                      "code":  "WC10",
                                                       "name":  "Hair Spa (Below Shoulder)",
                                                       "price":  1800
                                                   },
                                                   {
+                                                      "code":  "WC11",
                                                       "name":  "Keratin Hair Mask",
                                                       "price":  2500
                                                   },
                                                   {
+                                                      "code":  "WC12",
                                                       "name":  "Hair Protein Pack",
                                                       "price":  2500
                                                   },
                                                   {
+                                                      "code":  "WC13",
                                                       "name":  "Dandruff Treatment (Scalp)",
                                                       "price":  500
                                                   },
                                                   {
+                                                      "code":  "WC14",
                                                       "name":  "Permanent Hair Straightening",
                                                       "price":  6000
                                                   },
                                                   {
+                                                      "code":  "WC15",
                                                       "name":  "Temporary Hair Straightening",
                                                       "price":  1000
                                                   },
                                                   {
+                                                      "code":  "WC16",
                                                       "name":  "Henna (without Wash)",
                                                       "price":  500
                                                   },
                                                   {
+                                                      "code":  "WC17",
                                                       "name":  "Henna (with Wash)",
                                                       "price":  700
                                                   },
                                                   {
+                                                      "code":  "WC18",
                                                       "name":  "Head Massage (Oil — without wash)",
                                                       "price":  350
                                                   }
                                               ],
     "Women · Threading \u0026 Cleanups":  [
                                               {
+                                                  "code":  "WT01",
                                                   "name":  "Eyebrow Threading",
                                                   "price":  50
                                               },
                                               {
+                                                  "code":  "WT02",
                                                   "name":  "Upper Lip Threading",
                                                   "price":  30
                                               },
                                               {
+                                                  "code":  "WT03",
                                                   "name":  "Forehead Threading",
                                                   "price":  30
                                               },
                                               {
+                                                  "code":  "WT04",
                                                   "name":  "Chin Threading",
                                                   "price":  30
                                               },
                                               {
+                                                  "code":  "WT05",
                                                   "name":  "Full Face Threading",
                                                   "price":  350
                                               },
                                               {
+                                                  "code":  "WDC01",
                                                   "name":  "De-Tan",
                                                   "price":  500
                                               },
                                               {
+                                                  "code":  "WDC02",
                                                   "name":  "Clean Up",
                                                   "price":  500
                                               },
                                               {
+                                                  "code":  "WDC05",
                                                   "name":  "D-Tan Oxylife",
                                                   "price":  700
                                               },
                                               {
+                                                  "code":  "WDC03",
                                                   "name":  "Cleanup — Gold",
                                                   "price":  700
                                               },
                                               {
+                                                  "code":  "WDC04",
                                                   "name":  "Cleanup — Pearl",
                                                   "price":  700
                                               }
                                           ],
     "Women · Bleach \u0026 Facials":  [
                                           {
+                                              "code":  "WBL01",
                                               "name":  "Bleach — Basic Face",
                                               "price":  200
                                           },
                                           {
+                                              "code":  "WBL02",
                                               "name":  "Bleach — Golden Fem",
                                               "price":  300
                                           },
                                           {
+                                              "code":  "WBL03",
                                               "name":  "Bleach — Oxylife",
                                               "price":  400
                                           },
                                           {
+                                              "code":  "WBL04",
                                               "name":  "Bleach — Pimple",
                                               "price":  300
                                           },
                                           {
+                                              "code":  "WBL05",
                                               "name":  "Bleach — Underarm",
                                               "price":  200
                                           },
                                           {
+                                              "code":  "WBL06",
                                               "name":  "Bleach — Feet",
                                               "price":  250
                                           },
                                           {
+                                              "code":  "WBL07",
                                               "name":  "Bleach — Full Body",
                                               "price":  1200
                                           },
                                           {
+                                              "code":  "WBL08",
                                               "name":  "Bleach — Full Body Oxylife",
                                               "price":  2000
                                           },
                                           {
+                                              "code":  "WF01",
                                               "name":  "Facial — Fruit",
                                               "price":  1000
                                           },
                                           {
+                                              "code":  "WF02",
                                               "name":  "Facial — Natural Gold",
                                               "price":  1500
                                           },
                                           {
+                                              "code":  "WF03",
                                               "name":  "Facial — Natural Pearl",
                                               "price":  1500
                                           },
                                           {
+                                              "code":  "WF04",
                                               "name":  "Facial — D-Tan Oxylife",
                                               "price":  1500
                                           },
                                           {
+                                              "code":  "WF05",
                                               "name":  "Facial — O3 Shine \u0026 Glow",
                                               "price":  2000
                                           },
                                           {
+                                              "code":  "WF06",
                                               "name":  "Facial — Lotus",
                                               "price":  2000
                                           },
                                           {
+                                              "code":  "WF07",
                                               "name":  "Facial — Shahnaz",
                                               "price":  2000
                                           },
                                           {
+                                              "code":  "WBR01",
                                               "name":  "Bridal — O3 Facial",
                                               "price":  3500
                                           },
                                           {
+                                              "code":  "WF08",
                                               "name":  "Korean Glass Facial",
                                               "price":  2000
                                           },
                                           {
+                                              "code":  "WBR02",
                                               "name":  "Bridal — Rice Water Korean Glass Facial",
                                               "price":  3500
                                           },
                                           {
+                                              "code":  "WBR03",
                                               "name":  "Bridal — Full Package",
                                               "price":  8000
                                           },
                                           {
+                                              "code":  "WMK01",
                                               "name":  "Makeup",
                                               "price":  2500
                                           }
                                       ],
     "Women · Waxing":  [
                            {
+                               "code":  "WWX01",
                                "name":  "Full Arms Wax — Honey",
                                "price":  350
                            },
                            {
+                               "code":  "WWX02",
                                "name":  "Half Arms Wax — Honey",
                                "price":  250
                            },
                            {
+                               "code":  "WWX03",
                                "name":  "Full Legs Wax — Honey",
                                "price":  800
                            },
                            {
+                               "code":  "WWX04",
                                "name":  "Half Legs Wax — Honey",
                                "price":  400
                            },
                            {
+                               "code":  "WWX05",
                                "name":  "Underarm Wax — Honey",
                                "price":  150
                            },
                            {
+                               "code":  "WWX06",
                                "name":  "Upper Lip Wax — Honey",
                                "price":  30
                            },
                            {
+                               "code":  "WWX07",
                                "name":  "Chin Wax — Honey",
                                "price":  30
                            },
                            {
+                               "code":  "WWX08",
                                "name":  "Full Face Wax — Honey",
                                "price":  300
                            },
                            {
+                               "code":  "WWX09",
                                "name":  "Full Body Wax — Honey",
                                "price":  1500
                            },
                            {
+                               "code":  "WWX10",
                                "name":  "Full Arms Wax — Rica (Premium)",
                                "price":  600
                            },
                            {
+                               "code":  "WWX11",
                                "name":  "Full Legs Wax — Rica (Premium)",
                                "price":  1200
                            },
                            {
+                               "code":  "WWX12",
                                "name":  "Underarm Wax — Rica (Premium)",
                                "price":  300
                            },
                            {
+                               "code":  "WWX13",
                                "name":  "Upper Lip Wax — Rica (Premium)",
                                "price":  50
                            },
                            {
+                               "code":  "WWX14",
                                "name":  "Chin Wax — Rica (Premium)",
                                "price":  50
                            },
                            {
+                               "code":  "WWX15",
                                "name":  "Full Face Wax — Rica (Premium)",
                                "price":  500
                            },
                            {
+                               "code":  "WWX16",
                                "name":  "Full Body Wax — Rica (Premium)",
                                "price":  2000
                            }
                        ],
     "Women · Body \u0026 Spa":  [
                                     {
+                                        "code":  "WMS01",
                                         "name":  "Head \u0026 Shoulder Massage",
                                         "price":  350
                                     },
                                     {
+                                        "code":  "WMS02",
                                         "name":  "Back \u0026 Neck Massage",
                                         "price":  500
                                     },
                                     {
+                                        "code":  "WMS03",
                                         "name":  "Full Body Massage-With Oil",
                                         "price":  1000
                                     },
                                     {
+                                        "code":  "WMS04",
                                         "name":  "Foot Massage",
                                         "price":  300
                                     },
                                     {
+                                        "code":  "WMS05",
                                         "name":  "Body Steam (with Towel)",
                                         "price":  200
                                     },
                                     {
+                                        "code":  "WSN01",
                                         "name":  "Full Hand Scrub- Pack",
                                         "price":  1000
                                     },
                                     {
+                                        "code":  "WMN01",
                                         "name":  "Manicure — Basic",
                                         "price":  500
                                     },
                                     {
+                                        "code":  "WMN02",
                                         "name":  "Manicure — Spa",
                                         "price":  1000
                                     },
                                     {
+                                        "code":  "WMN03",
                                         "name":  "Manicure — D-Tan",
                                         "price":  1000
                                     },
                                     {
+                                        "code":  "WPD01",
                                         "name":  "Pedicure — Basic",
                                         "price":  500
                                     },
                                     {
+                                        "code":  "WPD02",
                                         "name":  "Pedicure — Spa",
                                         "price":  1000
                                     },
                                     {
+                                        "code":  "WPD03",
                                         "name":  "Pedicure — Crystal",
                                         "price":  1200
                                     },
                                     {
+                                        "code":  "WPD04",
                                         "name":  "Pedicure — Ice",
                                         "price":  1500
                                     },
                                     {
+                                        "code":  "WPD05",
                                         "name":  "Pedicure — D-Tan pack",
                                         "price":  1000
                                     },
                                     {
+                                        "code":  "WSN02",
                                         "name":  "Nail Cutting",
                                         "price":  100
                                     }
                                 ],
     "Combo · Men":  [
                         {
+                            "code":  "M1",
                             "name":  "M1 — Quick Trim (Haircut + Beard Trim + Hair Wash)",
                             "price":  399
                         },
                         {
+                            "code":  "M2",
                             "name":  "M2 — Clean Slate (Haircut + Beard + Hair Wash + Face De-Tan)",
                             "price":  899
                         },
                         {
+                            "code":  "M3",
                             "name":  "M3 — Fresh Face (Haircut + Beard + Wash + De-Tan + Head Massage)",
                             "price":  1099
                         },
                         {
+                            "code":  "M4",
                             "name":  "M4 — Colour Pop (Haircut + Beard + Black Hair Colour + Hair Wash)",
                             "price":  649
                         },
                         {
+                            "code":  "M5",
                             "name":  "M5 — Glow Up (Haircut + Beard + Vitamin C Facial + De-Tan + Wash)",
                             "price":  1399
                         },
                         {
+                            "code":  "M6",
                             "name":  "M6 — Style King (Haircut + Beard + Black Hair Colour + De-Tan + Head Massage)",
                             "price":  1199
                         },
                         {
+                            "code":  "M7",
                             "name":  "M7 — Spa Day (Haircut + Beard + Hair Spa + De-Tan + Facial + Foot Massage)",
                             "price":  2399
                         },
                         {
+                            "code":  "M8",
                             "name":  "M8 — The Royal (Haircut + Beard + Hair Spa + Premium Facial + De-Tan + Head Massage + Pedicure)",
                             "price":  3199
                         }
                     ],
     "Combo · Women":  [
                           {
+                              "code":  "W1",
                               "name":  "W1 — Quick Touch Up (Eyebrows + Upper Lip + Face De-Tan)",
                               "price":  499
                           },
                           {
+                              "code":  "W2",
                               "name":  "W2 — Fresh Glow (Eyebrows + Upper Lip + De-Tan + Hair Wash + Head Massage)",
                               "price":  1049
                           },
                           {
+                              "code":  "W3",
                               "name":  "W3 — Skin Treat (Brightening Facial + De-Tan + Body Scrub + Pedicure)",
                               "price":  1699
                           },
                           {
+                              "code":  "W4",
                               "name":  "W4 — Hair \u0026 Glow (Haircut + Blow Dry + De-Tan + Eyebrows + Hair Wash)",
                               "price":  1299
                           },
                           {
+                              "code":  "W5",
                               "name":  "W5 — Pamper Pack (Premium Facial + De-Tan + Full Arms Wax + Pedicure + Head Massage)",
                               "price":  2199
                           },
                           {
+                              "code":  "W6",
                               "name":  "W6 — Wax \u0026 Glow (Full Arms + Full Legs + Underarm Wax (Honey) + De-Tan + Eyebrows + Upper Lip)",
                               "price":  1299
                           },
                           {
+                              "code":  "W7",
                               "name":  "W7 — Bridal Lite (Haircut + Blow Dry + Premium Facial + De-Tan + Pedicure + Arms Wax + Eyebrows + Upper Lip)",
                               "price":  2649
                           },
                           {
+                              "code":  "W8",
                               "name":  "W8 — Queen\u0027s Package (Haircut + Blow Dry + Pearl Facial + De-Tan + Hair Spa + Pedicure + Arms Wax + Legs Wax + Eyebrows + Upper Lip)",
                               "price":  3799
                           }
                       ],
     "Combo · Couple":  [
                            {
+                               "code":  "C1",
                                "name":  "C1 — Quick Duo (His: Haircut + Beard + Wash | Hers: Eyebrows + Upper Lip + De-Tan + Wash)",
                                "price":  1099
                            },
                            {
+                               "code":  "C2",
                                "name":  "C2 — Date Night (His: Haircut + Beard + De-Tan + Head Massage | Hers: Premium Facial + De-Tan + Eyebrows + Pedicure)",
                                "price":  2549
                            },
                            {
+                               "code":  "C3",
                                "name":  "C3 — Power Couple (His: Haircut + Beard + Premium Facial + De-Tan + Hair Spa | Hers: Haircut + Blow Dry + Pearl Facial + De-Tan + Pedicure + Arms Wax + Eyebrows)",
                                "price":  4749
                            }
@@ -5000,6 +5164,7 @@ function subscribeLiveCollections() {
       arr.forEach(s => {
         if (!svcs[s.category]) svcs[s.category] = [];
         svcs[s.category].push({
+          code:  s.code || '',
           name: s.name,
           price: parseFloat(s.price) || 0,
           mins:  parseInt(s.mins) || 0,
@@ -5366,6 +5531,7 @@ async function init() {
       services.forEach(s => {
         if (!svcs[s.category]) svcs[s.category] = [];
         svcs[s.category].push({
+          code:  s.code || '',
           name: s.name,
           price: parseFloat(s.price) || 0,
           mins:  parseInt(s.mins) || 0,
@@ -5514,6 +5680,7 @@ function flattenServices(svcsObj) {
   Object.entries(svcsObj).forEach(([cat, items]) => {
     items.forEach(item => arr.push({
       category: cat,
+      code: item.code || '',
       name: item.name,
       price: item.price,
       mins: item.mins || 0,
@@ -6091,6 +6258,20 @@ function renderAttCard(s, att, status) {
 /* ────────────────────────────────────────────────────
    BILLING: HOME
 ──────────────────────────────────────────────────── */
+function serviceSearchText(svc, category) {
+  return [
+    svc && svc.code,
+    svc && svc.name,
+    category,
+    svc && svc.desc,
+  ].map(v => String(v || '').toLowerCase()).join(' ');
+}
+
+function serviceMatchesQuery(svc, category, query) {
+  const q = String(query || '').trim().toLowerCase();
+  return !q || serviceSearchText(svc, category).includes(q);
+}
+
 function renderHome() {
   document.getElementById('home-shop-name').textContent = config.shopName;
   const allCategories = Object.keys(config.services);
@@ -6214,7 +6395,7 @@ function renderHome() {
     allCats.forEach(cat => {
       const hits = (config.services[cat] || [])
         .map((svc, idx) => ({ svc, idx }))
-        .filter(o => String(o.svc.name || '').toLowerCase().includes(needle));
+        .filter(o => serviceMatchesQuery(o.svc, cat, needle));
       if (hits.length) { groups.push({ cat, hits }); totalHits += hits.length; }
     });
     if (!totalHits) {
@@ -6248,6 +6429,7 @@ function _buildServiceItemEl(svc, cat, idx) {
   const qty  = state.cart.reduce((s, i) => s + (i.name === svc.name ? i.qty : 0), 0);
   const mono = serviceMonogram(svc.name);
   const pal  = servicePalette(svc.name, cat);
+  const code = String(svc.code || '').trim();
   const div  = document.createElement('div');
   div.className = 'service-item';
   div.dataset.cat = cat;
@@ -6259,6 +6441,7 @@ function _buildServiceItemEl(svc, cat, idx) {
       <div class="service-info">
         <div class="service-name">${esc(svc.name)}</div>
         <div class="service-meta-row">
+          ${code ? `<span class="service-dur">${esc(code)}</span>` : ''}
           <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
           ${dur ? `<span class="service-dur">${dur}</span>` : ''}
         </div>
@@ -11121,7 +11304,7 @@ function renderSetupServices(host) {
     </div>
 
     <div class="svc-toolbar">
-      <input type="search" class="svc-search-input" id="svc-search" placeholder="🔎 Search service name…" value="${escAttr(search)}" oninput="onSvcSearchInput(this.value)">
+      <input type="search" class="svc-search-input" id="svc-search" placeholder="🔎 Search code or service name…" value="${escAttr(search)}" oninput="onSvcSearchInput(this.value)">
       <button class="btn btn-gold" style="flex:none;padding:10px 14px;font-size:11px" onclick="autoFillAllServices()">✨ Auto-fill all</button>
     </div>
 
@@ -11137,7 +11320,7 @@ function renderSetupServices(host) {
     const items = config.services[cat] || [];
     // If searching, only show categories with at least one match
     const visibleItems = search
-      ? items.filter(s => String(s.name || '').toLowerCase().includes(search) || String(s.desc || '').toLowerCase().includes(search))
+      ? items.filter(s => serviceMatchesQuery(s, cat, search))
       : items;
     if (search && !visibleItems.length) return;
 
@@ -11175,7 +11358,7 @@ function renderSetupServices(host) {
   Object.keys(config.services).forEach(cat => {
     const items = config.services[cat] || [];
     const visibleItems = search
-      ? items.filter(s => String(s.name || '').toLowerCase().includes(search) || String(s.desc || '').toLowerCase().includes(search))
+      ? items.filter(s => serviceMatchesQuery(s, cat, search))
       : items;
     if (search && !visibleItems.length) return;
     const catId = btoa(unescape(encodeURIComponent(cat))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
@@ -11195,6 +11378,7 @@ function renderSetupServices(host) {
       r.className = 'svc-card' + (isMissing ? ' missing' : '');
       r.innerHTML = `
         <div class="svc-card-row1">
+          <input type="text" class="svc-code" value="${escAttr(svc.code || '')}" placeholder="Code">
           <input type="text" class="svc-name" value="${escAttr(svc.name)}" placeholder="Service name">
           <button class="svc-del" title="Delete service">×</button>
         </div>
@@ -11212,6 +11396,7 @@ function renderSetupServices(host) {
         <textarea class="svc-desc" rows="2" placeholder="What's done in this service… (tap ✨ to auto-fill)">${esc(svc.desc || '')}</textarea>
         <button class="btn btn-secondary svc-edit-detail" type="button" style="font-size:12px;padding:8px 12px;align-self:flex-start;">${(config.serviceDetails && config.serviceDetails[svc.name]) ? '✎ Edit Details (customised)' : '✎ Edit Details'}</button>
       `;
+      const ci = r.querySelector('.svc-code');
       const ni = r.querySelector('.svc-name');
       const pi = r.querySelector('.svc-price');
       const mi = r.querySelector('.svc-mins');
@@ -11219,6 +11404,7 @@ function renderSetupServices(host) {
       const xb = r.querySelector('.svc-del');
       const af = r.querySelector('.svc-autofill');
       const persist = () => { saveConfig(); };
+      ci.oninput  = () => { svc.code = ci.value.trim().toUpperCase(); persist(); };
       ni.oninput  = () => { svc.name = ni.value.trim() || svc.name; persist(); };
       pi.oninput  = () => { svc.price = parseFloat(pi.value) || 0; persist(); };
       mi.oninput  = () => { svc.mins  = parseInt(mi.value) || 0; persist(); };
@@ -11294,7 +11480,7 @@ function autoFillAllServices() {
 }
 
 function addService(cat) {
-  config.services[cat].push({ name: 'New Service', price: 0, mins: 0, desc: '' });
+  config.services[cat].push({ code: '', name: 'New Service', price: 0, mins: 0, desc: '' });
   // Make sure the category we just added to is expanded
   state._svcCollapsed[cat] = false;
   saveConfig();
@@ -12867,33 +13053,34 @@ function renderApptSvcPicker(query) {
   const q = String(query || '').toLowerCase().trim();
   const all = [];
   Object.entries(config.services || {}).forEach(([cat, list]) => {
-    (list || []).forEach(s => all.push({ name: s.name, category: cat, price: s.price }));
+    (list || []).forEach(s => all.push({ code: s.code || '', name: s.name, category: cat, price: s.price }));
   });
-  const filtered = q ? all.filter(s => s.name.toLowerCase().includes(q) || s.category.toLowerCase().includes(q)) : all;
+  const filtered = q ? all.filter(s => serviceMatchesQuery(s, s.category, q)) : all;
   const limited = filtered.slice(0, 60);
   host.innerHTML = limited.map(s => {
     const meta = getServiceMeta(s.name, s.category);
     const room = serviceNeedsRoom(s.name) ? ' · 🛏 Room' : '';
+    const code = s.code ? esc(s.code) + ' · ' : '';
     const checked = (state.apptDraft.services || []).some(x => x.name === s.name) ? 'checked' : '';
     return `
       <label class="appt-svc-row">
-        <input type="checkbox" ${checked} onchange="toggleApptSvc('${escAttr(s.name)}','${escAttr(s.category)}',${s.price},this.checked)">
+        <input type="checkbox" ${checked} onchange="toggleApptSvc('${escAttr(s.name)}','${escAttr(s.category)}',${s.price},this.checked,'${escAttr(s.code || '')}')">
         <div class="svc-meta">
           <div class="svc-name">${esc(s.name)}</div>
-          <div class="svc-sub">${esc(s.category)} · ${meta.mins || '?'} min · ₹${(s.price || 0).toLocaleString('en-IN')}${room}</div>
+          <div class="svc-sub">${code}${esc(s.category)} · ${meta.mins || '?'} min · ₹${(s.price || 0).toLocaleString('en-IN')}${room}</div>
         </div>
       </label>
     `;
   }).join('') || '<div class="muted-text" style="padding:10px;font-size:12px;">No matches.</div>';
 }
 
-function toggleApptSvc(name, category, price, checked) {
+function toggleApptSvc(name, category, price, checked, code) {
   state.apptDraft.services = state.apptDraft.services || [];
   if (checked) {
     if (state.apptDraft.services.some(s => s.name === name)) return;
     const meta = getServiceMeta(name, category);
     state.apptDraft.services.push({
-      name, category, price: parseFloat(price) || 0,
+      code: code || '', name, category, price: parseFloat(price) || 0,
       mins: meta.mins || 30, staffName: '',
     });
   } else {
