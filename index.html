@@ -6395,7 +6395,15 @@ function renderHome() {
     allCats.forEach(cat => {
       const hits = (config.services[cat] || [])
         .map((svc, idx) => ({ svc, idx }))
-        .filter(o => serviceMatchesQuery(o.svc, cat, needle));
+        .filter(o => serviceMatchesQuery(o.svc, cat, needle))
+        .sort((a, b) => {
+          const ac = String(a.svc.code || '').trim().toLowerCase();
+          const bc = String(b.svc.code || '').trim().toLowerCase();
+          if (ac && bc) return ac.localeCompare(bc);
+          if (ac) return -1;
+          if (bc) return 1;
+          return String(a.svc.name || '').localeCompare(String(b.svc.name || ''));
+        });
       if (hits.length) { groups.push({ cat, hits }); totalHits += hits.length; }
     });
     if (!totalHits) {
@@ -6414,7 +6422,16 @@ function renderHome() {
       });
     }
   } else {
-    (config.services[state.tab] || []).forEach((svc, idx) => {
+    const services = (config.services[state.tab] || []).map((svc, idx) => ({ svc, idx }))
+      .sort((a, b) => {
+        const ac = String(a.svc.code || '').trim().toLowerCase();
+        const bc = String(b.svc.code || '').trim().toLowerCase();
+        if (ac && bc) return ac.localeCompare(bc);
+        if (ac) return -1;
+        if (bc) return 1;
+        return String(a.svc.name || '').localeCompare(String(b.svc.name || ''));
+      });
+    services.forEach(({ svc, idx }) => {
       listEl.appendChild(_buildServiceItemEl(svc, state.tab, idx));
     });
   }
@@ -6427,9 +6444,9 @@ function _buildServiceItemEl(svc, cat, idx) {
   const meta = getServiceMeta(svc.name, cat);
   const dur  = fmtDur(meta.mins);
   const qty  = state.cart.reduce((s, i) => s + (i.name === svc.name ? i.qty : 0), 0);
-  const mono = serviceMonogram(svc.name);
-  const pal  = servicePalette(svc.name, cat);
   const code = String(svc.code || '').trim();
+  const mono = code ? esc(code) : serviceMonogram(svc.name);
+  const pal  = servicePalette(svc.name, cat);
   const name = code ? `${esc(svc.name)} (${esc(code)})` : esc(svc.name);
   const div  = document.createElement('div');
   div.className = 'service-item';
