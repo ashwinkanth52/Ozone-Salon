@@ -6430,6 +6430,7 @@ function _buildServiceItemEl(svc, cat, idx) {
   const mono = serviceMonogram(svc.name);
   const pal  = servicePalette(svc.name, cat);
   const code = String(svc.code || '').trim();
+  const name = code ? `${esc(svc.name)} (${esc(code)})` : esc(svc.name);
   const div  = document.createElement('div');
   div.className = 'service-item';
   div.dataset.cat = cat;
@@ -6439,9 +6440,8 @@ function _buildServiceItemEl(svc, cat, idx) {
     <div class="service-row" onclick="toggleServiceDetail(this)">
       <div class="service-thumb" data-mono="${escAttr(mono)}" data-pal="${escAttr(pal)}" aria-hidden="true"><span class="mono-glow"></span></div>
       <div class="service-info">
-        <div class="service-name">${esc(svc.name)}</div>
+        <div class="service-name">${name}</div>
         <div class="service-meta-row">
-          ${code ? `<span class="service-dur">${esc(code)}</span>` : ''}
           <span class="service-price">₹${svc.price.toLocaleString('en-IN')}</span>
           ${dur ? `<span class="service-dur">${dur}</span>` : ''}
         </div>
@@ -13060,14 +13060,14 @@ function renderApptSvcPicker(query) {
   host.innerHTML = limited.map(s => {
     const meta = getServiceMeta(s.name, s.category);
     const room = serviceNeedsRoom(s.name) ? ' · 🛏 Room' : '';
-    const code = s.code ? esc(s.code) + ' · ' : '';
+    const displayName = s.code ? `${esc(s.name)} (${esc(s.code)})` : esc(s.name);
     const checked = (state.apptDraft.services || []).some(x => x.name === s.name) ? 'checked' : '';
     return `
       <label class="appt-svc-row">
         <input type="checkbox" ${checked} onchange="toggleApptSvc('${escAttr(s.name)}','${escAttr(s.category)}',${s.price},this.checked,'${escAttr(s.code || '')}')">
         <div class="svc-meta">
-          <div class="svc-name">${esc(s.name)}</div>
-          <div class="svc-sub">${code}${esc(s.category)} · ${meta.mins || '?'} min · ₹${(s.price || 0).toLocaleString('en-IN')}${room}</div>
+          <div class="svc-name">${displayName}</div>
+          <div class="svc-sub">${esc(s.category)} · ${meta.mins || '?'} min · ₹${(s.price || 0).toLocaleString('en-IN')}${room}</div>
         </div>
       </label>
     `;
@@ -13104,10 +13104,11 @@ function renderApptSelectedSvcs() {
       `<option value="${escAttr(n)}"${n === s.staffName ? ' selected' : ''}>${esc(n)}</option>`
     ).join('');
     const room = serviceNeedsRoom(s.name) ? '🛏 Room' : '✂️ Chair';
+    const title = s.code ? `${esc(s.name)} (${esc(s.code)})` : esc(s.name);
     return `
       <div class="appt-selected-svc">
         <div class="row1">
-          <div class="svc-title">${esc(s.name)}</div>
+          <div class="svc-title">${title}</div>
           <div class="svc-mins">${s.mins} min · ${room}</div>
           <button class="remove-x" onclick="removeApptSvc(${i})" aria-label="Remove">×</button>
         </div>
