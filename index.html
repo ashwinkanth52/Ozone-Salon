@@ -1726,7 +1726,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
 
     <div style="margin-top:auto;padding-top:32px;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.06em;">
       TODAY · <span id="landing-date"></span>
-      <div style="margin-top:5px;font-size:10px;opacity:.65;">DEPLOYED · 3 Jun 2026, 3:46 PM</div>
+      <div style="margin-top:5px;font-size:10px;opacity:.65;">DEPLOYED · 8 Jun 2026, 12:00 PM</div>
     </div>
   </div>
 </section>
@@ -1851,6 +1851,9 @@ img, video, canvas, svg{max-width:100%;height:auto;}
   <div class="screen-subtitle">Confirm services before payment</div>
   <div class="cart-time-bar" id="cart-time-bar" style="display:none"></div>
   <div class="cart-list" id="cart-list"></div>
+  <div style="padding:4px 16px 4px">
+    <button class="btn btn-secondary" style="width:100%;font-size:13px;" onclick="openAddManualService()">+ Add Extra / Adhoc Service</button>
+  </div>
   <div id="discount-area"></div>
   <div class="totals" id="totals-block"></div>
   <div class="cta-footer">
@@ -1873,6 +1876,10 @@ img, video, canvas, svg{max-width:100%;height:auto;}
   <div class="payment-wrap">
     <div class="payment-amount-label">Amount to Collect</div>
     <div class="payment-amount"><span class="curr">₹</span><span id="payment-amount">0</span></div>
+    <div class="split-row" style="max-width:320px;margin:0 auto 12px;">
+      <label style="font-size:14px;color:var(--muted);">Tip (optional)</label>
+      <div class="split-input"><span>₹</span><input type="number" inputmode="decimal" min="0" step="1" id="tip-amount" oninput="onTipChange()" placeholder="0"></div>
+    </div>
     <div class="pay-method-row">
       <button class="pay-method-btn" id="pay-btn-upi" onclick="setPaymentMethod('UPI')">UPI</button>
       <button class="pay-method-btn" id="pay-btn-cash" onclick="setPaymentMethod('Cash')">Cash</button>
@@ -2274,6 +2281,24 @@ img, video, canvas, svg{max-width:100%;height:auto;}
     <div style="display:flex;gap:10px;">
       <button class="btn btn-secondary" onclick="closeModal('modal-discount')">Cancel</button>
       <button class="btn btn-gold" onclick="applyDiscount()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: MANUAL / ADHOC SERVICE
+     ═══════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-manual-service">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Extra Service</div>
+    <label class="form-label">Service / Item Name</label>
+    <input type="text" class="input" id="manual-svc-name" placeholder="e.g. Extended Massage, Extra Treatment" maxlength="80" style="margin-bottom:16px;">
+    <label class="form-label">Price (₹)</label>
+    <input type="number" class="input" id="manual-svc-price" inputmode="decimal" min="0" step="1" placeholder="0" style="margin-bottom:20px;">
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-manual-service')">Cancel</button>
+      <button class="btn btn-primary" onclick="addManualService()">Add to Bill</button>
     </div>
   </div>
 </div>
@@ -4194,6 +4219,8 @@ let state = {
   capex: [],            // live cache of all CapEx docs (subscribed)
   capexEditingId: null, // when editing an existing CapEx item
   capexFilter: 'all',   // category filter on CapEx tab
+  tip: 0,              // tip amount added on payment screen
+  analyticsMonths: [], // selected months for analytics (empty = current month)
 };
 
 function loadConfig() {
@@ -7318,7 +7345,7 @@ function grandTotal() {
   const disc = discountAmount();
   const taxable = sub - disc;
   const gst = config.gstRate ? Math.round(taxable * config.gstRate / 100) : 0;
-  return taxable + gst;
+  return taxable + gst + (state.tip || 0);
 }
 
 function renderCart() {
@@ -7336,16 +7363,16 @@ function renderCart() {
     return `<option value=""${sel ? '' : ' selected'}>— who served this —</option>${opts}`;
   };
   state.cart.forEach(item => {
-    const meta = getServiceMeta(item.name);
+    const meta = item.manual ? {} : getServiceMeta(item.name);
     totalMins += (meta.mins || 0) * item.qty;
     const dur = fmtDur(meta.mins);
     const div = document.createElement('div');
     div.className = 'cart-item premium';
     div.innerHTML = `
-      <div class="cart-item-thumb" style="background-image:url('${meta.img}')"></div>
+      <div class="cart-item-thumb" style="${item.manual ? 'background:var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);' : `background-image:url('${meta.img}')`}">${item.manual ? 'ADHOC' : ''}</div>
       <div class="cart-item-body">
         <div class="cart-item-top">
-          <div class="cart-item-name">${esc(item.name)}</div>
+          <div class="cart-item-name">${esc(item.name)}${item.manual ? ' <span style="font-size:10px;background:var(--sage);color:#fff;padding:1px 5px;border-radius:4px;vertical-align:middle;">EXTRA</span>' : ''}</div>
           <div class="cart-item-subtotal">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
         </div>
         ${meta.desc ? `<div class="cart-item-desc">${esc(meta.desc)}</div>` : ''}
@@ -7466,6 +7493,26 @@ function applyDiscount() {
   renderCart();
 }
 
+function openAddManualService() {
+  const nameEl = document.getElementById('manual-svc-name');
+  const priceEl = document.getElementById('manual-svc-price');
+  if (nameEl) nameEl.value = '';
+  if (priceEl) priceEl.value = '';
+  openModal('modal-manual-service');
+}
+
+function addManualService() {
+  const name = ((document.getElementById('manual-svc-name') || {}).value || '').trim();
+  const price = parseFloat((document.getElementById('manual-svc-price') || {}).value) || 0;
+  if (!name) { toast('Enter a service name'); return; }
+  if (price <= 0) { toast('Enter a valid price'); return; }
+  state.cart.push({ id: uid(), name, price, qty: 1, staffName: '', manual: true });
+  closeModal('modal-manual-service');
+  renderCart();
+  updateCartFloat();
+  toast(name + ' added to bill');
+}
+
 /* ────────────────────────────────────────────────────
    PAYMENT
 ──────────────────────────────────────────────────── */
@@ -7477,6 +7524,8 @@ function renderPayment() {
     return;
   }
   document.getElementById('payment-amount').textContent = grandTotal().toLocaleString('en-IN');
+  const tipEl = document.getElementById('tip-amount');
+  if (tipEl) tipEl.value = state.tip ? String(state.tip) : '';
   const qrH = document.getElementById('qr-holder');
   if (config.qrImage) {
     qrH.innerHTML = `<img src="${config.qrImage}" alt="UPI QR">`;
@@ -7602,6 +7651,13 @@ function onSplitAmountChange() {
     Card: get('split-amt-card'),
   };
   refreshSplitSummary();
+}
+
+function onTipChange() {
+  const el = document.getElementById('tip-amount');
+  state.tip = Math.max(0, parseFloat((el || {}).value) || 0);
+  document.getElementById('payment-amount').textContent = grandTotal().toLocaleString('en-IN');
+  if (state.paymentMethod === 'Split') refreshSplitSummary();
 }
 
 function refreshSplitSummary() {
@@ -7767,7 +7823,8 @@ async function finaliseTransaction(phone, options) {
   const sub = subtotal();
   const disc = discountAmount();
   const gst = config.gstRate ? Math.round((sub - disc) * config.gstRate / 100) : 0;
-  const total = sub - disc + gst;
+  const tip = state.tip || 0;
+  const total = sub - disc + gst + tip;
 
   // SPLIT PAYMENT — validate sum of UPI+Cash+Card equals bill total before saving.
   let paymentSplits = null;
@@ -7824,6 +7881,7 @@ async function finaliseTransaction(phone, options) {
     discount: disc,
     discountLabel: state.discount ? (state.discount.label || '') : '',
     gst,
+    tip,
     total,
     paymentMethod: savedPaymentMethod,
     paymentSplits: paymentSplits,  // null for single-mode bills; array of {method,amount} for splits
@@ -7940,6 +7998,7 @@ function resetAndGoHome() {
   state.discount = null;
   state.paymentMethod = 'UPI';
   state.paymentSplit = { UPI: 0, Cash: 0, Card: 0 };
+  state.tip = 0;
   state.txInFlight = false;
   state.apptCheckoutId = null;
   state.lastTxForReceipt = null;
@@ -7947,6 +8006,7 @@ function resetAndGoHome() {
   const phEl = document.getElementById('customer-phone'); if (phEl) phEl.value = '';
   const nmEl = document.getElementById('customer-name');  if (nmEl) nmEl.value = '';
   const stEl = document.getElementById('receipt-staff');  if (stEl) stEl.value = '';
+  const tipEl = document.getElementById('tip-amount');    if (tipEl) tipEl.value = '';
   ['split-amt-upi','split-amt-cash','split-amt-card'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
@@ -7958,6 +8018,13 @@ function resetAndGoHome() {
     hint.style.color = '';
   }
   if (typeof _setCustHero === 'function') _setCustHero('empty');
+  // Clear cart DOM immediately so no stale items flash if cart screen is revisited.
+  const cartListEl = document.getElementById('cart-list'); if (cartListEl) cartListEl.innerHTML = '';
+  const totalsEl   = document.getElementById('totals-block'); if (totalsEl) totalsEl.innerHTML = '';
+  const discEl     = document.getElementById('discount-area'); if (discEl) discEl.innerHTML = '';
+  // Hide the cart float button.
+  updateCartFloat();
+  refreshServiceAddIndicators();
   showScreen('staff');
 }
 
@@ -10725,26 +10792,65 @@ async function deleteAdvance(id, staffName, amount) {
 async function renderAdminAnalytics() {
   const host = document.getElementById('admin-tab-analytics');
   const now  = new Date();
-  const ym   = state.todayStr.slice(0, 7);
+  const currentYm = state.todayStr.slice(0, 7);
 
-  // Previous month string (YYYY-MM)
-  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const prevYM = `${prev.getFullYear()}-${String(prev.getMonth()+1).padStart(2,'0')}`;
-  const prevMonthLabel = prev.toLocaleDateString('en-IN', { month:'short' });
+  // Initialize selected months to current month if empty
+  if (!state.analyticsMonths || !state.analyticsMonths.length) {
+    state.analyticsMonths = [currentYm];
+  }
+  const selectedMonths = state.analyticsMonths;
+  const singleMonth = selectedMonths.length === 1;
+
+  // Generate available months (last 12) for the selector
+  const availableMonths = [];
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label = d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+    availableMonths.push({ ym, label });
+  }
+
+  const monthChips = availableMonths.map(({ ym, label }) => {
+    const active = selectedMonths.includes(ym);
+    return `<button class="pay-method-btn${active ? ' active' : ''}" style="font-size:12px;padding:6px 10px;" onclick="toggleAnalyticsMonth('${ym}')">${label}</button>`;
+  }).join('');
+
+  // Previous month for single-month comparison
+  let prevYM = '', prevMonthLabel = '';
+  if (singleMonth) {
+    const [y, m] = selectedMonths[0].split('-').map(Number);
+    const prevD = new Date(y, m - 2, 1);
+    prevYM = `${prevD.getFullYear()}-${String(prevD.getMonth()+1).padStart(2,'0')}`;
+    prevMonthLabel = prevD.toLocaleDateString('en-IN', { month: 'short' });
+  }
+
+  const titleLabel = singleMonth
+    ? new Date(selectedMonths[0] + '-01').toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+    : `${selectedMonths.length} months combined`;
+
+  const monthSelectorHtml = `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Tap to select months · multi-select for combined view:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">${monthChips}</div>
+    </div>
+  `;
 
   host.innerHTML = `
-    <div class="admin-section-title">Analytics · ${now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
+    <div class="admin-section-title">Analytics · ${titleLabel}</div>
+    ${monthSelectorHtml}
     <div class="center muted-text" style="padding:20px"><div class="spinner" style="margin:0 auto 8px"></div>Crunching data…</div>
   `;
 
+  // Load transactions for all selected months + previous month (for comparison)
   let txs = [], txsPrev = [];
   try {
-    [txs, txsPrev] = await Promise.all([
-      fbQueryByMonth(COL.TRANSACTIONS, ym),
-      fbQueryByMonth(COL.TRANSACTIONS, prevYM),
-    ]);
+    const fetches = selectedMonths.map(ym => fbQueryByMonth(COL.TRANSACTIONS, ym));
+    const prevFetch = (singleMonth && prevYM) ? fbQueryByMonth(COL.TRANSACTIONS, prevYM) : Promise.resolve([]);
+    const [monthResults, prevResults] = await Promise.all([Promise.all(fetches), prevFetch]);
+    txs = monthResults.flat();
+    txsPrev = prevResults || [];
   } catch(e) {
-    host.innerHTML += `<div class="muted-text center">⚠️  Failed to load analytics.</div>`;
+    host.innerHTML = `<div class="admin-section-title">Analytics · ${titleLabel}</div>${monthSelectorHtml}<div class="muted-text center" style="padding:16px;">⚠️  Failed to load analytics.</div>`;
     return;
   }
 
@@ -10763,14 +10869,16 @@ async function renderAdminAnalytics() {
   const uniqueCustomers = new Set(txs.filter(t => t.customerId).map(t => t.customerId)).size;
   const uniqueCustomersPrev = new Set(txsPrev.filter(t => t.customerId).map(t => t.customerId)).size;
 
-  // Trend deltas
-  function deltaPill(now, prev) {
-    if (!prev) return prev === 0 && now > 0 ? '<span class="compare-up">▲ NEW</span>' : '<span class="muted-text" style="font-size:12px">—</span>';
-    const d = ((now - prev) / prev) * 100;
+  // Trend deltas (only meaningful for single-month comparison)
+  function deltaPill(nowV, prevV) {
+    if (!singleMonth) return '';
+    if (!prevV) return prevV === 0 && nowV > 0 ? '<span class="compare-up">▲ NEW</span>' : '<span class="muted-text" style="font-size:12px">—</span>';
+    const d = ((nowV - prevV) / prevV) * 100;
     const arrow = d >= 0 ? '▲' : '▼';
     const cls = d >= 0 ? 'compare-up' : 'compare-down';
     return `<span class="${cls}">${arrow} ${Math.abs(d).toFixed(0)}%</span>`;
   }
+  const vsLabel = singleMonth ? ` vs ${prevMonthLabel}` : '';
 
   // By staff
   const byStaff = {};
@@ -10847,7 +10955,6 @@ async function renderAdminAnalytics() {
     const m = tm.match(/^(\d{1,2})/);
     if (!m) return;
     let hr = parseInt(m[1]); if (isNaN(hr)) return;
-    // 12-hour format heuristic — Indian times often "10:32 AM" etc.
     if (/PM/i.test(tm) && hr < 12) hr += 12;
     if (/AM/i.test(tm) && hr === 12) hr = 0;
     if (hr >= 0 && hr < 24) hourBuckets[hr] += parseFloat(t.total) || 0;
@@ -10883,12 +10990,12 @@ async function renderAdminAnalytics() {
   // Stash exportable analytics rows
   window.__analyticsExport = {
     summary: [
-      { Metric:'Revenue (this month)',    Value:totalRevenue,    Previous:totalRevenuePrev },
-      { Metric:'Transactions',            Value:txCount,         Previous:txCountPrev },
-      { Metric:'Unique Customers',        Value:uniqueCustomers, Previous:uniqueCustomersPrev },
-      { Metric:'Average Bill',            Value:avgBill,         Previous:avgBillPrev },
-      { Metric:'Commissions',             Value:totalCommission, Previous:'' },
-      { Metric:'Discounts',               Value:totalDiscount,   Previous:'' },
+      { Metric:'Revenue',           Value:totalRevenue,    Previous: singleMonth ? totalRevenuePrev : '' },
+      { Metric:'Transactions',      Value:txCount,         Previous: singleMonth ? txCountPrev : '' },
+      { Metric:'Unique Customers',  Value:uniqueCustomers, Previous: singleMonth ? uniqueCustomersPrev : '' },
+      { Metric:'Average Bill',      Value:avgBill,         Previous: singleMonth ? avgBillPrev : '' },
+      { Metric:'Commissions',       Value:totalCommission, Previous:'' },
+      { Metric:'Discounts',         Value:totalDiscount,   Previous:'' },
     ],
     byStaff: topStaff.map(([n,d]) => ({ Staff:n, Bills:d.count, Revenue:Math.round(d.revenue), Commission:Math.round(d.comm), AvgBill:d.count?Math.round(d.revenue/d.count):0 })),
     byService: topServices.map(([n,d]) => ({ Service:n, Qty:d.qty, Revenue:Math.round(d.revenue) })),
@@ -10899,7 +11006,8 @@ async function renderAdminAnalytics() {
   };
 
   let html = `
-    <div class="admin-section-title">Analytics · ${now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
+    <div class="admin-section-title">Analytics · ${titleLabel}</div>
+    ${monthSelectorHtml}
 
     <div class="export-row">
       <button class="btn btn-primary" onclick='exportAnalyticsAs("pdf")'>📄 PDF</button>
@@ -10909,19 +11017,19 @@ async function renderAdminAnalytics() {
 
     <div class="erp-grid">
       <div class="erp-card gold full">
-        <div class="erp-label">Revenue · this month</div>
+        <div class="erp-label">Revenue · ${titleLabel}</div>
         <div class="erp-value gold">₹${fmt(totalRevenue)}</div>
-        <div class="erp-sub">${txCount} bills · Avg ₹${fmt(avgBill)} ${deltaPill(totalRevenue, totalRevenuePrev)} vs ${prevMonthLabel}</div>
+        <div class="erp-sub">${txCount} bills · Avg ₹${fmt(avgBill)} ${deltaPill(totalRevenue, totalRevenuePrev)}${vsLabel}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Unique Customers</div>
         <div class="erp-value">${uniqueCustomers}</div>
-        <div class="erp-sub">${deltaPill(uniqueCustomers, uniqueCustomersPrev)} (with phone)</div>
+        <div class="erp-sub">${deltaPill(uniqueCustomers, uniqueCustomersPrev)}${vsLabel} (with phone)</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Avg Bill</div>
         <div class="erp-value">₹${fmt(avgBill)}</div>
-        <div class="erp-sub">${deltaPill(avgBill, avgBillPrev)} vs ${prevMonthLabel}</div>
+        <div class="erp-sub">${deltaPill(avgBill, avgBillPrev)}${vsLabel}</div>
       </div>
       <div class="erp-card">
         <div class="erp-label">Commissions</div>
@@ -10937,7 +11045,7 @@ async function renderAdminAnalytics() {
 
     <div class="erp-card full" style="margin-bottom:16px;">
       <div class="erp-label">Daily revenue trend</div>
-      ${sparkHtml || '<div class="muted-text" style="padding:12px 0">No transactions yet this month.</div>'}
+      ${sparkHtml || '<div class="muted-text" style="padding:12px 0">No transactions in selected period.</div>'}
       <div class="erp-sub">Peak day: ₹${fmt(maxDay)} · ${dailyEntries.length} active days</div>
     </div>
 
@@ -10995,6 +11103,18 @@ async function renderAdminAnalytics() {
     `).join('') : '<div class="muted-text" style="padding:12px 0">No service data yet.</div>'}
   `;
   host.innerHTML = html;
+}
+
+function toggleAnalyticsMonth(ym) {
+  if (!state.analyticsMonths) state.analyticsMonths = [];
+  const idx = state.analyticsMonths.indexOf(ym);
+  if (idx >= 0) {
+    if (state.analyticsMonths.length === 1) return; // keep at least one selected
+    state.analyticsMonths.splice(idx, 1);
+  } else {
+    state.analyticsMonths.push(ym);
+  }
+  renderAdminAnalytics();
 }
 
 function exportAnalyticsAs(fmt) {
