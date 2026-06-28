@@ -1726,7 +1726,7 @@ img, video, canvas, svg{max-width:100%;height:auto;}
 
     <div style="margin-top:auto;padding-top:32px;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.06em;">
       TODAY · <span id="landing-date"></span>
-      <div style="margin-top:5px;font-size:10px;opacity:.65;">DEPLOYED · 8 Jun 2026, 12:00 PM</div>
+      <div style="margin-top:5px;font-size:10px;opacity:.65;">DEPLOYED · 28 Jun 2026, 9:25 PM</div>
     </div>
   </div>
 </section>
@@ -8941,6 +8941,13 @@ async function renderAdminSales() {
       <input type="month" id="sales-month" value="${ym}" class="setup-input" style="flex:1">
       <button class="btn btn-primary" style="flex:none;padding:12px 18px" onclick="loadSales()">Load</button>
     </div>
+    <div id="sales-date-filter-row" style="display:none;margin-top:8px">
+      <div class="month-picker" style="gap:8px">
+        <input type="date" id="sales-date" class="setup-input" style="flex:1" onchange="filterSalesByDate()">
+        <button class="btn btn-secondary" style="flex:none;padding:10px 14px;font-size:12px" onclick="setSalesDateToday()">Today</button>
+        <button class="btn btn-secondary" style="flex:none;padding:10px 14px;font-size:12px" onclick="clearSalesDateFilter()">All</button>
+      </div>
+    </div>
     <div id="sales-list"><div class="muted-text center" style="padding:20px">Select a month and tap Load.</div></div>
   `;
 }
@@ -8962,13 +8969,49 @@ async function loadSales() {
   });
   let total = 0;
   const paymentSplit = { UPI: 0, Cash: 0, Card: 0 };
-  let html = '';
   sorted.forEach(tx => {
     total += parseFloat(tx.total) || 0;
     const bd = getTxPaymentBreakdown(tx);
     paymentSplit.UPI  += bd.UPI;
     paymentSplit.Cash += bd.Cash;
     paymentSplit.Card += bd.Card;
+  });
+  host.innerHTML = `
+    <div id="sales-month-card">
+      <div class="erp-card gold" style="margin-bottom:12px">
+        <div class="erp-label">Month Total</div>
+        <div class="erp-value gold">₹${fmt(total)}</div>
+        <div class="erp-sub">${sorted.length} transactions · UPI ₹${fmt(paymentSplit.UPI)} · Cash ₹${fmt(paymentSplit.Cash)} · Card ₹${fmt(paymentSplit.Card)}</div>
+      </div>
+      <div class="export-row">
+        <button class="btn btn-primary" onclick='exportSalesAs("${ym}","pdf")'>📄 PDF</button>
+        <button class="btn btn-gold" onclick='exportSalesAs("${ym}","xlsx")'>📊 Excel</button>
+        <button class="btn btn-secondary" onclick='exportSalesAs("${ym}","csv")'>📋 CSV</button>
+      </div>
+      ${hasRoleAdmin() ? `<div class="muted-text" style="margin:6px 0 10px;font-size:12px;">Admin tip: tap <b>✎ Edit Date / Time</b> on any bill below to correct a wrong date (PIN + reason required).</div>` : ''}
+    </div>
+    <div id="sales-date-card" style="display:none"></div>
+    <div id="sales-rows">${buildTxRows(sorted)}</div>
+  `;
+  window.__lastSalesRows = sorted;
+  window.__lastSalesYm = ym;
+  const filterRow = document.getElementById('sales-date-filter-row');
+  if (filterRow) {
+    filterRow.style.display = '';
+    const dateEl = document.getElementById('sales-date');
+    if (dateEl) {
+      const [y, mo] = ym.split('-').map(Number);
+      const lastDay = new Date(y, mo, 0).getDate();
+      dateEl.min = `${ym}-01`;
+      dateEl.max = `${ym}-${String(lastDay).padStart(2, '0')}`;
+      dateEl.value = '';
+    }
+  }
+}
+
+function buildTxRows(txArray) {
+  let html = '';
+  txArray.forEach(tx => {
     const pm = describeTxPayment(tx);
     const canEdit = hasRoleAdmin();
     html += `
@@ -8991,21 +9034,54 @@ async function loadSales() {
       </div>
     `;
   });
-  host.innerHTML = `
-    <div class="erp-card gold" style="margin-bottom:12px">
-      <div class="erp-label">Month Total</div>
-      <div class="erp-value gold">₹${fmt(total)}</div>
-      <div class="erp-sub">${sorted.length} transactions · UPI ₹${fmt(paymentSplit.UPI)} · Cash ₹${fmt(paymentSplit.Cash)} · Card ₹${fmt(paymentSplit.Card)}</div>
+  return html;
+}
+
+function filterSalesByDate() {
+  const dateEl = document.getElementById('sales-date');
+  const date = dateEl ? dateEl.value : '';
+  const rowsEl = document.getElementById('sales-rows');
+  const dateCardEl = document.getElementById('sales-date-card');
+  if (!rowsEl || !window.__lastSalesRows) return;
+  if (!date) { clearSalesDateFilter(); return; }
+  const filtered = window.__lastSalesRows.filter(tx => tx.date === date);
+  rowsEl.innerHTML = filtered.length
+    ? buildTxRows(filtered)
+    : `<div class="muted-text center" style="padding:24px">No transactions on ${date}.</div>`;
+  if (!dateCardEl) return;
+  if (!filtered.length) { dateCardEl.style.display = 'none'; return; }
+  let dayTotal = 0;
+  const split = { UPI: 0, Cash: 0, Card: 0 };
+  filtered.forEach(tx => {
+    dayTotal += parseFloat(tx.total) || 0;
+    const bd = getTxPaymentBreakdown(tx);
+    split.UPI += bd.UPI; split.Cash += bd.Cash; split.Card += bd.Card;
+  });
+  dateCardEl.style.display = '';
+  dateCardEl.innerHTML = `
+    <div class="erp-card" style="margin-bottom:12px;border-left:3px solid var(--rose,#c9a0a0)">
+      <div class="erp-label">Day Total · ${date}</div>
+      <div class="erp-value">₹${fmt(dayTotal)}</div>
+      <div class="erp-sub">${filtered.length} transaction${filtered.length !== 1 ? 's' : ''} · UPI ₹${fmt(split.UPI)} · Cash ₹${fmt(split.Cash)} · Card ₹${fmt(split.Card)}</div>
     </div>
-    <div class="export-row">
-      <button class="btn btn-primary" onclick='exportSalesAs("${ym}","pdf")'>📄 PDF</button>
-      <button class="btn btn-gold" onclick='exportSalesAs("${ym}","xlsx")'>📊 Excel</button>
-      <button class="btn btn-secondary" onclick='exportSalesAs("${ym}","csv")'>📋 CSV</button>
-    </div>
-    ${hasRoleAdmin() ? `<div class="muted-text" style="margin:6px 0 10px;font-size:12px;">Admin tip: tap <b>✎ Edit Date / Time</b> on any bill below to correct a wrong date (PIN + reason required).</div>` : ''}
-    ${html}
   `;
-  window.__lastSalesRows = sorted;
+}
+
+function clearSalesDateFilter() {
+  const dateEl = document.getElementById('sales-date');
+  if (dateEl) dateEl.value = '';
+  const rowsEl = document.getElementById('sales-rows');
+  const dateCardEl = document.getElementById('sales-date-card');
+  if (dateCardEl) dateCardEl.style.display = 'none';
+  if (rowsEl && window.__lastSalesRows) rowsEl.innerHTML = buildTxRows(window.__lastSalesRows);
+}
+
+function setSalesDateToday() {
+  const ym = window.__lastSalesYm;
+  const todayYm = state.todayStr.slice(0, 7);
+  if (ym && ym !== todayYm) { toast('Load the current month first to use Today.'); return; }
+  const dateEl = document.getElementById('sales-date');
+  if (dateEl) { dateEl.value = state.todayStr; filterSalesByDate(); }
 }
 
 // Admin-only: correct the calendar date/time of a previously logged
