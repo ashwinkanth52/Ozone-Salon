@@ -1726,7 +1726,10 @@ img, video, canvas, svg{max-width:100%;height:auto;}
 
     <div style="margin-top:auto;padding-top:32px;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.06em;">
       TODAY · <span id="landing-date"></span>
-      <div style="margin-top:5px;font-size:10px;opacity:.65;">DEPLOYED · 28 Jun 2026, 9:25 PM</div>
+      <div style="margin-top:5px;font-size:10px;opacity:.65;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <span>DEPLOYED · 7 Jul 2026, 3:46 PM</span>
+        <button type="button" id="landing-refresh-btn" onclick="forceAppRefresh(this)" title="Check for latest version and refresh" style="background:none;border:1px solid var(--muted);color:var(--muted);border-radius:10px;padding:1px 7px;font-size:10px;line-height:1.6;cursor:pointer;">⟳ Refresh</button>
+      </div>
     </div>
   </div>
 </section>
@@ -2805,7 +2808,7 @@ const DEFAULTS = {
     roomKeywords: ['massage','spa','facial','pedicure','manicure','threading','wax','bleach','clean up','cleanup','straighten','keratin','d-tan','de-tan','detan'],
   },
   // Menu version — bump this when DEFAULTS.services changes to force-refresh stale local caches.
-  servicesVersion: 'v2026-06-docx-final',
+  servicesVersion: 'v2026-07-06-saree-pleating',
   // ── CAPEX (Capital Expenditure) ──
   // Industry-standard categories for a salon/spa. `dep` is suggested useful-life
   // in months for straight-line depreciation. `kind` separates real depreciable
@@ -3585,105 +3588,112 @@ const DEFAULTS = {
                                         "price":  100
                                     }
                                 ],
+    "Women · Styling & Makeup":  [
+                            {
+                                "code":  "WMU01",
+                                "name":  "Saree Pleating",
+                                "price":  500
+                            }
+                       ],
     "Combo · Men":  [
                         {
                             "code":  "M1",
                             "name":  "M1 — Quick Trim (Haircut + Beard Trim + Hair Wash)",
-                            "price":  399
+                            "price":  469
                         },
                         {
                             "code":  "M2",
-                            "name":  "M2 — Clean Slate (Haircut + Beard + Hair Wash + Face De-Tan)",
+                            "name":  "M2 — Clean Slate (Haircut + Beard Trim + Hair Wash + De-Tan)",
                             "price":  899
                         },
                         {
                             "code":  "M3",
-                            "name":  "M3 — Fresh Face (Haircut + Beard + Wash + De-Tan + Head Massage)",
-                            "price":  1099
+                            "name":  "M3 — Fresh Face (Haircut + Beard Trim + Hair Wash + De-Tan + Head Massage Oil)",
+                            "price":  1109
                         },
                         {
                             "code":  "M4",
-                            "name":  "M4 — Colour Pop (Haircut + Beard + Black Hair Colour + Hair Wash)",
+                            "name":  "M4 — Colour Pop (Haircut + Beard Trim + Beard/Moustache Colour + Hair Wash)",
                             "price":  649
                         },
                         {
                             "code":  "M5",
-                            "name":  "M5 — Glow Up (Haircut + Beard + Vitamin C Facial + De-Tan + Wash)",
-                            "price":  1399
+                            "name":  "M5 — Glow Up (Haircut + Beard Trim + Facial Fruit + De-Tan + Hair Wash)",
+                            "price":  1409
                         },
                         {
                             "code":  "M6",
-                            "name":  "M6 — Style King (Haircut + Beard + Black Hair Colour + De-Tan + Head Massage)",
+                            "name":  "M6 — Style King (Haircut + Beard Trim + Beard/Moustache Colour + De-Tan + Head Massage Oil)",
                             "price":  1199
                         },
                         {
                             "code":  "M7",
-                            "name":  "M7 — Spa Day (Haircut + Beard + Hair Spa + De-Tan + Facial + Foot Massage)",
+                            "name":  "M7 — Spa Day (Haircut + Beard Trim + Hair Spa + De-Tan + Facial Fruit + Foot Massage)",
                             "price":  2399
                         },
                         {
                             "code":  "M8",
-                            "name":  "M8 — The Royal (Haircut + Beard + Hair Spa + Premium Facial + De-Tan + Head Massage + Pedicure)",
-                            "price":  3199
+                            "name":  "M8 — The Royal (Haircut + Beard Trim + Hair Spa + O3 Facial + De-Tan + Head Massage Oil + Pedicure Basic)",
+                            "price":  4039
                         }
                     ],
     "Combo · Women":  [
                           {
                               "code":  "W1",
-                              "name":  "W1 — Quick Touch Up (Eyebrows + Upper Lip + Face De-Tan)",
+                              "name":  "W1 — Quick Touch Up (Eyebrow Threading + Upper Lip Threading + De-Tan)",
                               "price":  499
                           },
                           {
                               "code":  "W2",
-                              "name":  "W2 — Fresh Glow (Eyebrows + Upper Lip + De-Tan + Hair Wash + Head Massage)",
-                              "price":  1049
+                              "name":  "W2 — Fresh Glow (Eyebrow Threading + Upper Lip Threading + De-Tan + Hair Wash + Head Massage Oil)",
+                              "price":  969
                           },
                           {
                               "code":  "W3",
-                              "name":  "W3 — Skin Treat (Brightening Facial + De-Tan + Body Scrub + Pedicure)",
-                              "price":  1699
+                              "name":  "W3 — Skin Treat (Facial D-Tan Oxylife + De-Tan + Full Hand Scrub Pack + Pedicure Basic)",
+                              "price":  2979
                           },
                           {
                               "code":  "W4",
-                              "name":  "W4 — Hair \u0026 Glow (Haircut + Blow Dry + De-Tan + Eyebrows + Hair Wash)",
-                              "price":  1299
+                              "name":  "W4 — Hair \u0026 Glow (Haircut + Blow Dry (Upto Shoulder) + De-Tan + Eyebrow Threading + Hair Wash)",
+                              "price":  1449
                           },
                           {
                               "code":  "W5",
-                              "name":  "W5 — Pamper Pack (Premium Facial + De-Tan + Full Arms Wax + Pedicure + Head Massage)",
-                              "price":  2199
+                              "name":  "W5 — Pamper Pack (Facial Natural Gold + De-Tan + Full Arms Wax (Honey) + Pedicure Basic + Head Massage Oil)",
+                              "price":  2729
                           },
                           {
                               "code":  "W6",
-                              "name":  "W6 — Wax \u0026 Glow (Full Arms + Full Legs + Underarm Wax (Honey) + De-Tan + Eyebrows + Upper Lip)",
-                              "price":  1299
+                              "name":  "W6 — Wax \u0026 Glow (Full Arms Wax + Full Legs Wax + Underarm Wax (Honey) + De-Tan + Eyebrow Threading + Upper Lip Threading)",
+                              "price":  1599
                           },
                           {
                               "code":  "W7",
-                              "name":  "W7 — Bridal Lite (Haircut + Blow Dry + Premium Facial + De-Tan + Pedicure + Arms Wax + Eyebrows + Upper Lip)",
-                              "price":  2649
+                              "name":  "W7 — Bridal Lite (Haircut + Blow Dry (Upto Shoulder) + Facial Natural Gold + De-Tan + Pedicure Basic + Full Arms Wax (Honey) + Eyebrow Threading + Upper Lip Threading)",
+                              "price":  3299
                           },
                           {
                               "code":  "W8",
-                              "name":  "W8 — Queen\u0027s Package (Haircut + Blow Dry + Pearl Facial + De-Tan + Hair Spa + Pedicure + Arms Wax + Legs Wax + Eyebrows + Upper Lip)",
-                              "price":  3799
+                              "name":  "W8 — Queen\u0027s Package (Haircut + Blow Dry (Upto Shoulder) + Facial Natural Pearl + De-Tan + Hair Spa (Upto Shoulder) + Pedicure Basic + Full Arms Wax + Full Legs Wax (Honey) + Eyebrow Threading + Upper Lip Threading)",
+                              "price":  5259
                           }
                       ],
     "Combo · Couple":  [
                            {
                                "code":  "C1",
-                               "name":  "C1 — Quick Duo (His: Haircut + Beard + Wash | Hers: Eyebrows + Upper Lip + De-Tan + Wash)",
-                               "price":  1099
+                               "name":  "C1 — Quick Duo (His: Haircut + Beard Trim + Hair Wash | Hers: Eyebrow Threading + Upper Lip Threading + De-Tan + Hair Wash)",
+                               "price":  1139
                            },
                            {
                                "code":  "C2",
-                               "name":  "C2 — Date Night (His: Haircut + Beard + De-Tan + Head Massage | Hers: Premium Facial + De-Tan + Eyebrows + Pedicure)",
-                               "price":  2549
+                               "name":  "C2 — Date Night (His: Haircut + Beard Trim + De-Tan + Head Massage Oil | Hers: Facial Natural Gold + De-Tan + Eyebrow Threading + Pedicure Basic)",
+                               "price":  3149
                            },
                            {
                                "code":  "C3",
-                               "name":  "C3 — Power Couple (His: Haircut + Beard + Premium Facial + De-Tan + Hair Spa | Hers: Haircut + Blow Dry + Pearl Facial + De-Tan + Pedicure + Arms Wax + Eyebrows)",
-                               "price":  4749
+                               "name":  "C3 — Power Couple (His: Haircut + Beard Trim + O3 Facial + De-Tan + Hair Spa | Hers: Haircut + Blow Dry + Facial Natural Pearl + De-Tan + Pedicure Basic + Full Arms Wax + Eyebrow Threading)",
+                               "price":  6589
                            }
                        ]
 }
@@ -4003,6 +4013,7 @@ const CATEGORY_IMG = {
   "Women · Bleach & Facials":           _IMG.cat_skin_face,
   "Women · Waxing":                     _IMG.cat_body_spa,
   "Women · Body & Spa":                 _IMG.cat_body_spa,
+  "Women · Styling & Makeup":           _IMG.women_bridal,
   // Combo categories
   "Combo · Men":    _IMG.cat_combo,
   "Combo · Women":  _IMG.cat_combo,
@@ -12777,46 +12788,60 @@ function buildMonthlyPayrollAccrual(opts) {
    Firestore SDK handles offline persistence + write
    queue automatically (via IndexedDB). No manual sync.
 ──────────────────────────────────────────────────── */
-// Activate the waiting SW (called from the in-app update banner).
-function applyAppUpdate() {
-  if (window.__pendingWorker) {
-    window.__pendingWorker.postMessage({ type: 'SKIP_WAITING' });
-  }
-}
-
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js').then(reg => {
-      function showUpdateBanner(worker) {
+      function notifyUpdating() {
         const t = document.getElementById('save-toast');
         if (!t) return;
-        window.__pendingWorker = worker;
-        t.innerHTML =
-          '<span style="margin-right:10px">⤴ New version ready</span>' +
-          '<button type="button" onclick="applyAppUpdate()" style="background:white;color:var(--success);border:none;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">UPDATE</button>';
+        t.textContent = '⤴ Updating to the latest version…';
         t.classList.add('visible');
-        // Persist banner — do NOT auto-hide.
+        // Persist — page reloads on its own within a moment, no click needed.
         clearTimeout(toastTimer);
       }
-      if (reg.waiting) showUpdateBanner(reg.waiting);
+      if (reg.waiting) notifyUpdating();
       reg.addEventListener('updatefound', () => {
         const w = reg.installing;
         if (!w) return;
         w.addEventListener('statechange', () => {
           if (w.state === 'installed' && navigator.serviceWorker.controller) {
-            showUpdateBanner(w);
+            notifyUpdating();
           }
         });
       });
-      // Reload once the new SW activates and takes control.
+      // Reload once the new SW activates and takes control — fully automatic,
+      // since the SW itself calls skipWaiting()+clients.claim() on install.
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (refreshing) return;
         refreshing = true;
         window.location.reload();
       });
+      // Browsers only re-check service-worker.js for changes on navigation.
+      // This app is typically left open all day on till/reception devices,
+      // so without active polling a new deployment could sit undetected for
+      // hours. Poll periodically and whenever the tab regains focus.
+      setInterval(() => reg.update().catch(() => {}), 3 * 60 * 1000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') reg.update().catch(() => {});
+      });
     }).catch(() => {});
   });
+}
+
+// Manual "Refresh" button on the landing screen — forces an immediate check
+// for a new deployment instead of waiting for the periodic poll. If a new SW
+// is found, the controllerchange listener above reloads automatically; either
+// way we force a reload shortly after so the button always feels responsive.
+async function forceAppRefresh(btn) {
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ Checking…'; }
+  try {
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (reg) await reg.update();
+    }
+  } catch (e) {}
+  setTimeout(() => window.location.reload(), 600);
 }
 
 window.addEventListener('online',  () => showSync('ok'));
